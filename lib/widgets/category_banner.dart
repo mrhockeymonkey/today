@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import 'package:today/models/app_constants.dart';
 //import '../models/app_constants.dart';
 import '../models/todo_category.dart';
 
@@ -24,7 +26,7 @@ class CategoryBanner extends StatelessWidget {
           ),
           CircleAvatar(
             child: Text("10"),
-            radius: 35,
+            radius: AppConstants.cirleAvatarRadius,
             backgroundColor: Colors.white,
           ),
           IconButton(
@@ -32,7 +34,6 @@ class CategoryBanner extends StatelessWidget {
             color: Theme.of(context).accentColor,
 
             onPressed: () => Navigator.pushNamed<bool>(
-            //onPressed: () => Navigator.pushReplacementNamed(
                   context,
                   '/category',
                   arguments: category,

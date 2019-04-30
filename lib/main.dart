@@ -10,7 +10,6 @@ import 'pages/category_page.dart';
 import 'models/todo_category.dart';
 
 class MyApp extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     final routeObserver = AppConstants.of(context).routeObserver;

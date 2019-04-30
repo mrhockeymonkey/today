@@ -1,48 +1,66 @@
 import 'package:flutter/material.dart';
 
 import 'package:today/models/app_constants.dart';
-import 'package:today/models/todo_category.dart';
-import 'package:today/models/todo_item.dart';
-import 'package:today/pages/item_page.dart';
 import 'package:today/widgets/category_header.dart';
-import 'package:today/widgets/todo_list.dart';
+// import 'package:today/models/todo_category.dart';
+// import 'package:today/models/todo_item.dart';
+// import 'package:today/pages/item_page.dart';
 
-class CategoryPage extends StatefulWidget {
-  final Category category;
+class LaterPage extends StatefulWidget {
+  //final Category category;
 
-  CategoryPage(this.category);
+  //CategoryPage(this.category);
 
   @override
   State<StatefulWidget> createState() {
-    return _CategoryState();
+    return _LaterPageState();
   }
 }
 
-class _CategoryState extends State<CategoryPage> {
+class _LaterPageState extends State<LaterPage> {
   @override
   Widget build(BuildContext context) {
-    AppConstants.changeStatusColor(widget.category.color);
+    AppConstants.changeStatusColor(AppConstants.laterColor);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.category.name),
-        backgroundColor: widget.category.color,
+        title: Text("Later"),
+        backgroundColor: AppConstants.laterColor,
         elevation: 0.0,
       ),
       body: Column(
         children: <Widget>[
           CategoryHeader(
-            headerColor: widget.category.color,
-            headerCount: widget.category.leftToDoCount,
+            headerColor: AppConstants.laterColor,
+            headerCount: 99,
           ),
-          widget.category.items.length == 0
-              ? Text("ddddddddddddddd")
-              : ToDoList(
-                items: widget.category.itemsSorted,
-              ),
+          // widget.category.items.length == 0
+          //     ? Text("Nothing to do")
+          //     //: _buildTodoList(),
+          //     : Text('implement list'),
         ],
       ),
-      floatingActionButton: _buildFloatingActionButton(),
+      //floatingActionButton: _buildFloatingActionButton(),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Container(
+      padding: EdgeInsets.all(10.0),
+      //color: widget.category.color,
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: Text('Keep it up'),
+          ),
+          CircleAvatar(
+            //child: Text(widget.category.leftToDoCount.toString()),
+            child: Text("?"),
+            radius: 28, //sized to match floating action button
+            backgroundColor: Colors.white,
+          ),
+        ],
+      ),
     );
   }
 
@@ -140,16 +158,16 @@ class _CategoryState extends State<CategoryPage> {
   //   }
   // }
 
-  Widget _buildFloatingActionButton() {
-    return FloatingActionButton(
-      child: Icon(Icons.add),
-      backgroundColor: widget.category.color,
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => ItemPage(widget.category)),
-        );
-      },
-    );
-  }
+  // Widget _buildFloatingActionButton() {
+  //   return FloatingActionButton(
+  //     child: Icon(Icons.add),
+  //     backgroundColor: widget.category.color,
+  //     onPressed: () {
+  //       Navigator.push(
+  //         context,
+  //         MaterialPageRoute(builder: (context) => ItemPage(widget.category)),
+  //       );
+  //     },
+  //   );
+  // }
 }

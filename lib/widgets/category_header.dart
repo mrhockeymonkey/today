@@ -1,31 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+
+import 'package:today/models/app_constants.dart';
 
 class CategoryHeader extends StatelessWidget {
-  final Color color;
+  final Color headerColor;
+  final int headerCount;
 
   CategoryHeader({
-    this.color,
+    @required this.headerColor,
+    @required this.headerCount
   });
 
   @override
   Widget build(BuildContext context) {
-    // set the system bar colour
-    // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    //   statusBarColor: Color(color),
-    // ));
-
     return Container(
       padding: EdgeInsets.all(10.0),
-      color: color,
+      color: headerColor,
       child: Row(
         children: <Widget>[
           Expanded(
             child: Text('Keep it up'),
           ),
           CircleAvatar(
-            child: Text("10"),
-            radius: 35,
+            child: Text(headerCount.toString()),
+            radius: AppConstants.cirleAvatarRadius, //sized to match floating action button
             backgroundColor: Colors.white,
           ),
         ],

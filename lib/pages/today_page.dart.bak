@@ -1,49 +1,76 @@
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 import 'package:today/models/app_constants.dart';
+import 'package:today/models/app_state.dart';
 import 'package:today/models/todo_category.dart';
 import 'package:today/models/todo_item.dart';
 import 'package:today/pages/item_page.dart';
 import 'package:today/widgets/category_header.dart';
 import 'package:today/widgets/todo_list.dart';
 
-class CategoryPage extends StatefulWidget {
-  final Category category;
+class TodayPage extends StatefulWidget {
+  //final Category category;
 
-  CategoryPage(this.category);
+  //CategoryPage(this.category);
 
   @override
   State<StatefulWidget> createState() {
-    return _CategoryState();
+    return _TodayPageState();
   }
 }
 
-class _CategoryState extends State<CategoryPage> {
+class _TodayPageState extends State<TodayPage> {
+  Color todayColor = AppConstants.todayColor;
+
   @override
   Widget build(BuildContext context) {
-    AppConstants.changeStatusColor(widget.category.color);
+    AppConstants.changeStatusColor(todayColor);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.category.name),
-        backgroundColor: widget.category.color,
+        title: Text("Today"),
+        backgroundColor: todayColor,
         elevation: 0.0,
       ),
-      body: Column(
-        children: <Widget>[
-          CategoryHeader(
-            headerColor: widget.category.color,
-            headerCount: widget.category.leftToDoCount,
-          ),
-          widget.category.items.length == 0
-              ? Text("ddddddddddddddd")
-              : ToDoList(
-                items: widget.category.itemsSorted,
-              ),
-        ],
-      ),
+      body: _buildBody(),
       floatingActionButton: _buildFloatingActionButton(),
     );
+  }
+
+  Widget _buildBody() {
+    return ScopedModelDescendant(
+      builder: (BuildContext context, Widget widget, AppState appState) {
+        print("Build: today page");
+        List<ToDoItem> items = appState.allTodayItems;
+        return Column(
+          children: <Widget>[
+            CategoryHeader(
+              headerColor: todayColor,
+              headerCount: items.length,
+            ),
+            ToDoList(
+              items: items,
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildFloatingActionButton() {
+    return ScopedModelDescendant(
+        builder: (BuildContext context, Widget widget, AppState appState) {
+      return FloatingActionButton(
+        child: Icon(Icons.clear_all),
+        backgroundColor: todayColor,
+        onPressed: () {
+          setState(() {
+            appState.clearTodayItems();
+          });
+        },
+      );
+    });
   }
 
   // Widget _buildTodoList() {
@@ -140,16 +167,16 @@ class _CategoryState extends State<CategoryPage> {
   //   }
   // }
 
-  Widget _buildFloatingActionButton() {
-    return FloatingActionButton(
-      child: Icon(Icons.add),
-      backgroundColor: widget.category.color,
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => ItemPage(widget.category)),
-        );
-      },
-    );
-  }
+  // Widget _buildFloatingActionButton() {
+  //   return FloatingActionButton(
+  //     child: Icon(Icons.add),
+  //     backgroundColor: widget.category.color,
+  //     onPressed: () {
+  //       Navigator.push(
+  //         context,
+  //         MaterialPageRoute(builder: (context) => ItemPage(widget.category)),
+  //       );
+  //     },
+  //   );
+  // }
 }
