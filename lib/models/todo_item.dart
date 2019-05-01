@@ -28,4 +28,15 @@ class ToDoItem {
 
     return m;
   }
+
+  void markCompleted() {
+    isComplete = true;
+    isScheduled = false;
+    key = UniqueKey();
+  }
+
+  void markToday() {
+    isToday = true;
+    key = UniqueKey();
+  }
 }

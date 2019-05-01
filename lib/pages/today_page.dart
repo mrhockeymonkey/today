@@ -40,17 +40,8 @@ class _TodayPageState extends State<TodayPage> {
   }
 
   Widget _buildBody() {
-            //   child: FutureBuilder(
-            // future: storage.ready,
-            // builder: (BuildContext context, AsyncSnapshot snapshot) {
-            //   if (snapshot.data == null) {
-            //     return Center(
-            //       child: CircularProgressIndicator(),
-            //     );
-            //   }
     return ScopedModelDescendant(
       builder: (BuildContext context, Widget widget, AppState appState) {
-        
         return FutureBuilder(
           future: appState.storage.ready,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -65,20 +56,19 @@ class _TodayPageState extends State<TodayPage> {
             appState.initialize();
             items = appState.allTodayItems;
 
-            return Text(items.toString());
+            return Column(
+              children: <Widget>[
+                CategoryHeader(
+                  headerColor: todayColor,
+                  headerCount: items.length,
+                ),
+                ToDoList(
+                  items: items,
+                ),
+              ],
+            );
           },
         );
-        // return Column(
-        //   children: <Widget>[
-        //     CategoryHeader(
-        //       headerColor: todayColor,
-        //       headerCount: items.length,
-        //     ),
-        //     ToDoList(
-        //       items: items,
-        //     ),
-        //   ],
-        // );
       },
     );
   }
@@ -91,8 +81,7 @@ class _TodayPageState extends State<TodayPage> {
         backgroundColor: todayColor,
         onPressed: () {
           setState(() {
-            //appState.clearTodayItems();
-            appState.saveToStorage();
+            appState.clearTodayItems();
           });
         },
       );

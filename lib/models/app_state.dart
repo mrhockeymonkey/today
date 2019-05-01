@@ -34,6 +34,7 @@ class AppState extends Model {
     for (var c in _categories) {
       c.itemsToday.forEach((i) => i.isToday = false);
     }
+    saveToStorage();
   }
 
   void saveToStorage() {
@@ -61,8 +62,8 @@ class AppState extends Model {
       _categories[1].addItem(ToDoItem(title: 'goals2'));
       _categories[2].addItem(ToDoItem(title: 'fitin1'));
       _categories[2].addItem(ToDoItem(title: 'fitin2'));
-      _categories[2].addItem(ToDoItem(title: 'back1'));
-      _categories[2].addItem(ToDoItem(title: 'back2'));
+      _categories[3].addItem(ToDoItem(title: 'back1'));
+      _categories[3].addItem(ToDoItem(title: 'back2'));
       saveToStorage();
     } else {
       print("AppState.initialize: App data found");

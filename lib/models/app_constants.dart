@@ -6,6 +6,7 @@ import './todo_category.dart';
 
 // inherited widget used in main to propogate and share anywhere in the app
 class AppConstants extends InheritedWidget {
+  static final Color todoColor = Color(0xFFFBAF28);
   static final Color completeColor = Color(0xFF64DD17);
   static final Color todayColor = Color(0xFF6A88BA);
   static final Color laterColor = Color(0xFF6A88BA);
