@@ -46,13 +46,11 @@ class _TodayPageState extends State<TodayPage> {
           future: appState.storage.ready,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             List<ToDoItem> items;
-
             if (snapshot.data == null) {
               return Center(
                 child: CircularProgressIndicator(),
               );
             }
-
             appState.initialize();
             items = appState.allTodayItems;
 
@@ -64,6 +62,7 @@ class _TodayPageState extends State<TodayPage> {
                 ),
                 ToDoList(
                   items: items,
+                  pageType: PageType.today,
                 ),
               ],
             );
@@ -81,7 +80,7 @@ class _TodayPageState extends State<TodayPage> {
         backgroundColor: todayColor,
         onPressed: () {
           setState(() {
-            appState.clearTodayItems();
+            //appState.clearTodayItems();
           });
         },
       );

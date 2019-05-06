@@ -36,9 +36,10 @@ class _CategoryState extends State<CategoryPage> {
             headerCount: widget.category.leftToDoCount,
           ),
           widget.category.items.length == 0
-              ? Text("ddddddddddddddd")
+              ? Text("Nothing To Do")
               : ToDoList(
                 items: widget.category.itemsSorted,
+                pageType: PageType.category,
               ),
         ],
       ),

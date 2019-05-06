@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 
 import 'package:today/models/app_constants.dart';
-import 'package:today/pages/today_page.dart';
 import 'package:today/pages/later_page.dart';
-
+import 'package:today/pages/today_page.dart';
+import 'package:today/pages/completed_page.dart';
 
 import './categories_page.dart';
 import '../pages/category_page.dart';
 
 import '../models/todo_category.dart';
-
 
 class Home extends StatefulWidget {
   @override
@@ -20,7 +19,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> with RouteAware {
-  int _currentIndex = 1;
+  int _currentIndex = 2;
 
   @override
   void didChangeDependencies() {
@@ -45,28 +44,37 @@ class _HomeState extends State<Home> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
-    final Category today = AppConstants.of(context).today;
-    final _pages = [LaterPage(), TodayPage(), Categories(),];
+    //final Category today = AppConstants.of(context).today;
+    final _pages = [
+      LaterPage(),
+      Categories(),
+      TodayPage(),
+      CompletedPage(),
+    ];
 
     return Scaffold(
       body: _pages.elementAt(_currentIndex),
       bottomNavigationBar: BottomNavigationBar(
         onTap: onTabTapped,
         currentIndex: _currentIndex,
+        type: BottomNavigationBarType.fixed,
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.schedule),
+            icon: Icon(Icons.today),
             title: Text('Later'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list),
+            title: Text('To Do'),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.done),
             title: Text('Today'),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            title: Text('To Do'),
+            icon: Icon(Icons.done_all),
+            title: Text('Done'),
           ),
-
         ],
       ),
     );
