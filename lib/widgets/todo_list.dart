@@ -233,6 +233,7 @@ class _ToDoListState extends State<ToDoList> {
   }
 
   Widget _buildListTile(ToDoItem item) {
+    Widget subtitle;
 
     Widget completeTile = Ink(
       color: AppConstants.completedColor,
@@ -245,14 +246,22 @@ class _ToDoListState extends State<ToDoList> {
       ),
     );
 
+    // decide on subtitle
+    if (item.isToday) {
+      subtitle = Text('today');
+    } else if (item.isScheduled) {
+      subtitle = Text(item.dateFormattedStr);
+    } else {
+      subtitle = Container();
+    }
+
     Widget normalTile = ListTile(
       title: Text(item.title),
-      subtitle: item.isScheduled ? Text(item.dateFormattedStr): Container(),
+      subtitle: subtitle,
       trailing: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          item.isToday ? Icon(Icons.done) : Container(),
           item.isScheduled ? Icon(Icons.today) : Container(),
         ],
       ),

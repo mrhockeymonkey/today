@@ -26,11 +26,12 @@ class MyApp extends StatelessWidget {
         onGenerateRoute: (RouteSettings settings) {
           final List<String> _pathElements = settings.name.split('/');
 
+          // if pushing to /category page then pass through the index required also
           if (_pathElements[1] == 'category') {
-            final Category _category = settings.arguments;
+            final int _index = settings.arguments;
             return MaterialPageRoute<bool>(
               builder: (BuildContext context) =>
-                  CategoryPage(settings.arguments),
+                  CategoryPage(_index),
             );
           }
         },

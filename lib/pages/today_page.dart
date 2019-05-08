@@ -72,19 +72,35 @@ class _TodayPageState extends State<TodayPage> {
     );
   }
 
+  // Widget _buildFloatingActionButton() {
+  //   return FloatingActionButton(
+  //     child: Icon(Icons.add),
+  //     backgroundColor: widget.category.color,
+  //     onPressed: () {
+  //       Navigator.push(
+  //         context,
+  //         MaterialPageRoute(builder: (context) => ItemPage(widget.category)),
+  //       );
+  //     },
+  //   );
+  // }
+
   Widget _buildFloatingActionButton() {
     return ScopedModelDescendant(
-        builder: (BuildContext context, Widget widget, AppState appState) {
-      return FloatingActionButton(
-        child: Icon(Icons.clear_all),
-        backgroundColor: todayColor,
-        onPressed: () {
-          setState(() {
-            //appState.clearTodayItems();
-          });
-        },
-      );
-    });
+      builder: (BuildContext context, Widget widget, AppState appState) {
+        return FloatingActionButton(
+          child: Icon(Icons.add),
+          backgroundColor: todayColor,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => ItemPage(0)),
+            );
+          },
+        );
+      },
+    );
   }
 
   // Widget _buildTodoList() {

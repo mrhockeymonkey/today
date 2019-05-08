@@ -11,8 +11,8 @@ class ToDoItem {
   ToDoItem({
     @required this.title,
   }) {
-    _todayDate = DateTime.fromMicrosecondsSinceEpoch(0);
-    _scheduledDate = DateTime.fromMicrosecondsSinceEpoch(0);
+    _todayDate = DateTime.fromMillisecondsSinceEpoch(0);
+    _scheduledDate = DateTime.fromMillisecondsSinceEpoch(0);
   }
 
   ToDoItem.fromStorage({
@@ -22,13 +22,16 @@ class ToDoItem {
     scheduledMilliseconds,
   }) {
     _todayDate = DateTime.fromMillisecondsSinceEpoch(todayMilliseconds ?? 0);
-    _scheduledDate = DateTime.fromMillisecondsSinceEpoch(scheduledMilliseconds ?? 0);
+    _scheduledDate =
+        DateTime.fromMillisecondsSinceEpoch(scheduledMilliseconds ?? 0);
   }
 
-  // getters
+  // getters for items that are set to today based on the date
   bool get isToday {
     var now = DateTime.now();
-    if (_todayDate.day == now.day) {
+    if (_todayDate.day == now.day &&
+        _todayDate.month == now.month &&
+        _todayDate.year == now.year) {
       return true;
     } else {
       return false;
@@ -45,7 +48,8 @@ class ToDoItem {
 
   bool get isDue {
     var now = DateTime.now();
-    if (_scheduledDate.isBefore(now)) {
+    var zero = DateTime.fromMillisecondsSinceEpoch(0);
+    if (_scheduledDate.isBefore(now) && _scheduledDate != zero) {
       return true;
     } else {
       return false;

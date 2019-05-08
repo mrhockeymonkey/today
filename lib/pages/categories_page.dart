@@ -35,11 +35,23 @@ class _CategoriesState extends State<Categories> {
         List<Category> categories = appState.categories;
         List<Widget> categoryBanners = [];
 
-        categories.forEach((i) {
-          categoryBanners.add(Expanded(
-            child: _buildCategoryBanner(i),
+        categoryBanners.add(Expanded(
+            child: _buildCategoryBanner(0),
           ));
-        });
+        categoryBanners.add(Expanded(
+            child: _buildCategoryBanner(1),
+          ));
+        categoryBanners.add(Expanded(
+            child: _buildCategoryBanner(2),
+          ));
+        categoryBanners.add(Expanded(
+            child: _buildCategoryBanner(3),
+          ));
+        // categories.forEach((i) {
+        //   categoryBanners.add(Expanded(
+        //     child: _buildCategoryBanner(i),
+        //   ));
+        // });
 
         return Column(
           children: categoryBanners,
@@ -48,8 +60,10 @@ class _CategoriesState extends State<Categories> {
     );
   }
 
-  Widget _buildCategoryBanner(Category category) {
+  Widget _buildCategoryBanner(int index) {
     //final Category category = AppConstants.of(context).categories[index];
+    Category category =
+        ScopedModel.of<AppState>(context).categories[index];
 
     return Container(
       padding: EdgeInsets.all(10.0),
@@ -70,7 +84,7 @@ class _CategoriesState extends State<Categories> {
             onPressed: () => Navigator.pushNamed<bool>(
                   context,
                   '/category',
-                  arguments: category,
+                  arguments: index,
                 ),
           ),
         ],

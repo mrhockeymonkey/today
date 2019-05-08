@@ -55,6 +55,12 @@ class AppState extends Model {
   //   saveToStorage();
   // }
 
+  //
+  void addItemToCategory(int index, ToDoItem newItem) {
+    _categories[index].addItem(newItem);
+    saveToStorage();
+  }
+
   // delete all items
   void deleteCompletedItems() {
     for (var c in _categories) {
@@ -78,24 +84,25 @@ class AppState extends Model {
     List appData = storage.getItem('appdata');
     if (appData == null || appData.isEmpty) {
       print("AppState.initialize: No app data found, initializing defaults");
-      _categories
-        ..add(Category(name: 'FOCUS', color: const Color(0xFFEE534F)))
-        ..add(Category(name: 'GOALS', color: const Color(0xFF00B8D4)))
-        ..add(Category(name: 'FIT IN', color: const Color(0xFFFBAF28)))
-        ..add(Category(name: 'BACKBURNER', color: const Color(0xFF01BFA5)));
-      _categories[0]
-        ..addItem(ToDoItem(title: 'focus1'))
-        ..addItem(ToDoItem(title: 'focus2'));
-      _categories[1]
-        ..addItem(ToDoItem(title: 'goals1'))
-        ..addItem(ToDoItem(title: 'goals2'));
-      _categories[2]
-        ..addItem(ToDoItem(title: 'fitin1'))
-        ..addItem(ToDoItem(title: 'fitin2'));
-      _categories[3]
-        ..addItem(ToDoItem(title: 'back1'))
-        ..addItem(ToDoItem(title: 'back2'));
-      saveToStorage();
+      throw "lost storage???";
+      // _categories
+      //   ..add(Category(name: 'FOCUS', color: const Color(0xFFEE534F)))
+      //   ..add(Category(name: 'GOALS', color: const Color(0xFF00B8D4)))
+      //   ..add(Category(name: 'FIT IN', color: const Color(0xFFFBAF28)))
+      //   ..add(Category(name: 'BACKBURNER', color: const Color(0xFF01BFA5)));
+      // _categories[0]
+      //   ..addItem(ToDoItem(title: 'focus1'))
+      //   ..addItem(ToDoItem(title: 'focus2'));
+      // _categories[1]
+      //   ..addItem(ToDoItem(title: 'goals1'))
+      //   ..addItem(ToDoItem(title: 'goals2'));
+      // _categories[2]
+      //   ..addItem(ToDoItem(title: 'fitin1'))
+      //   ..addItem(ToDoItem(title: 'fitin2'));
+      // _categories[3]
+      //   ..addItem(ToDoItem(title: 'back1'))
+      //   ..addItem(ToDoItem(title: 'back2'));
+      // saveToStorage();
     } else {
       print("AppState.initialize: App data found, loading from local storage");
       _categories.clear();
