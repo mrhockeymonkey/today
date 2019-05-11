@@ -19,7 +19,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> with RouteAware {
-  int _currentIndex = 2;
+  int _currentIndex = 1;
 
   @override
   void didChangeDependencies() {
@@ -47,8 +47,8 @@ class _HomeState extends State<Home> with RouteAware {
     //final Category today = AppConstants.of(context).today;
     final _pages = [
       LaterPage(),
-      Categories(),
       TodayPage(),
+      Categories(),
       CompletedPage(),
     ];
 
@@ -64,12 +64,12 @@ class _HomeState extends State<Home> with RouteAware {
             title: Text('Later'),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            title: Text('To Do'),
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Icons.done),
             title: Text('Today'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list),
+            title: Text('To Do'),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.done_all),

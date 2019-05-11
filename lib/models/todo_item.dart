@@ -56,6 +56,19 @@ class ToDoItem {
     }
   }
 
+  bool get isOverDue {
+    // calculate the difference in time from now
+    var now = DateTime.now();
+    var today = DateTime(now.year, now.month, now.day);
+    var diffInDays = today.difference(_scheduledDate).inDays;
+    print("$title diff: $diffInDays");
+    if ( diffInDays >= 1) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   String get dateFormattedStr {
     var formatter = new DateFormat('d MMM');
     String formatted = formatter.format(_scheduledDate);
@@ -87,10 +100,11 @@ class ToDoItem {
     key = UniqueKey();
   }
 
-  void markScheduled(DateTime when) {
+  void markScheduled(int year, int month, int day) {
     print("marking $title as scheduled");
     //isScheduled = true;
-    _scheduledDate = DateTime.now();
+    _scheduledDate = DateTime(year, month, day);
+    _todayDate = DateTime.fromMillisecondsSinceEpoch(0);
     key = UniqueKey();
   }
 

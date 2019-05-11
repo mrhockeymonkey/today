@@ -78,10 +78,10 @@ class _ToDoListState extends State<ToDoList> {
           case PageType.later:
             item.markToday();
             break;
-          case PageType.category:
-            item.markToday();
-            break;
           case PageType.today:
+            item.markCompleted();
+            break;
+          case PageType.category:
             item.markCompleted();
             break;
           case PageType.completed:
@@ -95,13 +95,13 @@ class _ToDoListState extends State<ToDoList> {
       setState(() {
         switch (widget.pageType) {
           case PageType.later:
-            item.markScheduled(DateTime.now());
+            break; //nothing to do
+          case PageType.today:
+            var now = DateTime.now().add(Duration(days: -3));
+            item.markScheduled(now.year, now.month, now.day);
             break;
           case PageType.category:
-            item.markScheduled(DateTime.now());
-            break;
-          case PageType.today:
-            item.markUncompleted();
+            item.markToday();
             break;
           case PageType.completed:
             item.markUncompleted();
@@ -118,9 +118,9 @@ class _ToDoListState extends State<ToDoList> {
     switch (type) {
       case PageType.later:
         return _buildTodayBackground(align);
-      case PageType.category:
-        return _buildTodayBackground(align);
       case PageType.today:
+        return _buildCompleteBackground(align);
+      case PageType.category:
         return _buildCompleteBackground(align);
       case PageType.completed:
         return _buildDeleteBackground(align);
@@ -133,10 +133,10 @@ class _ToDoListState extends State<ToDoList> {
     switch (type) {
       case PageType.later:
         return Container();
-      case PageType.category:
-        return _buildLaterBackground(align);
       case PageType.today:
-        return _buildUncompleteBackground(align);
+        return _buildLaterBackground(align);
+      case PageType.category:
+        return _buildTodayBackground(align);
       case PageType.completed:
         return _buildUncompleteBackground(align);
     }
@@ -250,7 +250,18 @@ class _ToDoListState extends State<ToDoList> {
     if (item.isToday) {
       subtitle = Text('today');
     } else if (item.isScheduled) {
-      subtitle = Text(item.dateFormattedStr);
+      //subtitle = Text(item.dateFormattedStr);
+      subtitle = Row(
+        children: <Widget>[
+          item.isOverDue
+              ? Text(
+                  "overdue ",
+                  style: TextStyle(color: Colors.red),
+                )
+              : Container(),
+          Text(item.dateFormattedStr)
+        ],
+      );
     } else {
       subtitle = Container();
     }
