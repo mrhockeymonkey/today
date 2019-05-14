@@ -4,6 +4,7 @@ import 'package:today/models/app_constants.dart';
 import 'package:today/pages/later_page.dart';
 import 'package:today/pages/today_page.dart';
 import 'package:today/pages/completed_page.dart';
+import 'package:today/widgets/category_navigator.dart';
 
 import './categories_page.dart';
 import '../pages/category_page.dart';
@@ -35,21 +36,45 @@ class _HomeState extends State<Home> with RouteAware {
     super.dispose();
   }
 
-  // didPopNext called when the route above this is popped (with RouteAware)
+  // didPopNext called when the route above this is popped (uses RouteAware)
   @override
   void didPopNext() {
-    //FlutterStatusbarcolor.setStatusBarColor(Color(0xFF6A88BA));
     AppConstants.changeStatusColor(Color(0xFF6A88BA));
   }
 
   @override
   Widget build(BuildContext context) {
-    //final Category today = AppConstants.of(context).today;
+    // a navigator key to for use with CategoryNavigator
+    final navigatorKey = GlobalKey<NavigatorState>();
+    
+    // a list of pages to display per nav bar item
     final _pages = [
       LaterPage(),
       TodayPage(),
-      Categories(),
+      CategoryNavigator(
+        navigatorKey: navigatorKey,
+      ),
       CompletedPage(),
+    ];
+
+    // a list of nav bar items
+    final List<BottomNavigationBarItem> _bottomNavigationBarItems = [
+      BottomNavigationBarItem(
+        icon: Icon(Icons.today),
+        title: Text('Later'),
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(Icons.done),
+        title: Text('Today'),
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(Icons.list),
+        title: Text('To Do'),
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(Icons.done_all),
+        title: Text('Done'),
+      ),
     ];
 
     return Scaffold(
@@ -58,28 +83,12 @@ class _HomeState extends State<Home> with RouteAware {
         onTap: onTabTapped,
         currentIndex: _currentIndex,
         type: BottomNavigationBarType.fixed,
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.today),
-            title: Text('Later'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.done),
-            title: Text('Today'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            title: Text('To Do'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.done_all),
-            title: Text('Done'),
-          ),
-        ],
+        items: _bottomNavigationBarItems,
       ),
     );
   }
 
+  // updates displayed page based on selected nav bar item
   void onTabTapped(int index) {
     setState(() {
       _currentIndex = index;

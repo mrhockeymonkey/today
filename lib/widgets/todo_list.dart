@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'dart:async';
 
 import 'package:today/models/app_constants.dart';
 import 'package:today/models/todo_item.dart';
 import 'package:today/models/app_state.dart';
+import 'package:today/pages/item_page.dart';
+import 'package:today/models/todo_category.dart';
 
 // we want different swipe action and backgrounds based on the type of page
 enum PageType {
@@ -28,13 +31,33 @@ class ToDoList extends StatefulWidget {
   }
 }
 
-class _ToDoListState extends State<ToDoList> {
+class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
+
+  //---------- required to WidgetsBindingObserver
   @override
-  Widget build(BuildContext context) {
-    return _buildTodoList();
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
   }
 
-  Widget _buildTodoList() {
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  //---------- override the system back button
+  @override
+  didPopRoute() {
+    // didPopRoute called when back button is hit
+    // in this case we pop the top route ourselves becuase it is part of a different stack
+    Navigator.pop(context);
+    return new Future<bool>.value(true);
+  }
+
+  //---------- build method
+  @override
+  Widget build(BuildContext context) {
     return Expanded(
       child: ListView.builder(
         itemCount: widget.items.length,
@@ -69,7 +92,8 @@ class _ToDoListState extends State<ToDoList> {
     );
   }
 
-  // determines what needs to occur on dismiss
+
+  //---------- helper methods
   void _handleOnDismissed(DismissDirection direction, ToDoItem item) {
     // handle onDismiss >>
     if (direction == DismissDirection.startToEnd) {
@@ -232,6 +256,32 @@ class _ToDoListState extends State<ToDoList> {
     );
   }
 
+  // generates and pushes an item detail page for the tapped item
+  void _pushItemPage(BuildContext context, ToDoItem item) {
+    AppState appState = ScopedModel.of<AppState>(context);
+    Category itemCategory;
+    int categoryIndexToPush;
+    int itemIndexToPush;
+
+    // categories has a seperate navigator so we must find the root
+    Navigator.of(context, rootNavigator: true).push(
+      MaterialPageRoute(
+        builder: (context) {
+          // categoryIndex and itemIndex are required to build the item detail page
+          categoryIndexToPush = appState.categoryIndexOf(item);
+          itemCategory = appState.categories[categoryIndexToPush];
+          itemIndexToPush = itemCategory.items.indexOf(item);
+
+          // return item detail page
+          return ItemPage(
+            categoryIndex: categoryIndexToPush,
+            itemIndex: itemIndexToPush,
+          );
+        },
+      ),
+    );
+  }
+
   Widget _buildListTile(ToDoItem item) {
     Widget subtitle;
 
@@ -276,6 +326,7 @@ class _ToDoListState extends State<ToDoList> {
           item.isScheduled ? Icon(Icons.today) : Container(),
         ],
       ),
+      onTap: () => _pushItemPage(context, item),
     );
 
     if (item.isComplete) {

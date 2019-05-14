@@ -3,7 +3,6 @@ import 'package:scoped_model/scoped_model.dart';
 
 import 'package:today/models/app_constants.dart';
 import 'package:today/models/todo_category.dart';
-import 'package:today/models/todo_item.dart';
 import 'package:today/pages/item_page.dart';
 import 'package:today/widgets/category_header.dart';
 import 'package:today/widgets/todo_list.dart';
@@ -60,9 +59,11 @@ class _CategoryState extends State<CategoryPage> {
       child: Icon(Icons.add),
       backgroundColor: category.color,
       onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => ItemPage(widget.categoryIndex)),
+        Navigator.of(context, rootNavigator: true).push(
+          MaterialPageRoute(
+              builder: (context) => ItemPage(
+                    categoryIndex: widget.categoryIndex,
+                  )),
         );
       },
     );

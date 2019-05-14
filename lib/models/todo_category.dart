@@ -65,6 +65,12 @@ class Category {
     _items.add(item);
   }
 
+  void updateItem(int itemIndex, String newTitle, DateTime newScheduledDate) {
+    //_items[itemIndex].update(newTitle, newScheduledDate);
+    _items[itemIndex].title = newTitle;
+    _items[itemIndex].scheduledDate = newScheduledDate;
+  }
+
   void removeItem(ToDoItem item) {
     _items.remove(item);
   }

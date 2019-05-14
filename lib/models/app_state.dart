@@ -14,10 +14,18 @@ class AppState extends Model {
 
   final LocalStorage storage = new LocalStorage('today_app');
 
-
   // getter for categories
   List<Category> get categories {
     return List.from(_categories);
+  }
+
+  // getter for all items across all categories
+  List<ToDoItem> get allItems {
+    List<ToDoItem> _items = [];
+    for (var c in _categories) {
+      _items.addAll(c.items);
+    }
+    return _items;
   }
 
   // getter for all today's items across all categories
@@ -56,8 +64,31 @@ class AppState extends Model {
   // }
 
   //
+  int categoryIndexOf(ToDoItem item) {
+    int index;
+    for (var c in _categories) {
+      index =_categories.indexOf(c);
+      if (c.items.indexOf(item) >= 0) {
+        break;
+      }
+    }
+    return index;
+  }
+
+  //
   void addItemToCategory(int index, ToDoItem newItem) {
     _categories[index].addItem(newItem);
+    saveToStorage();
+  }
+
+  void updateItemInCategory({
+    int categoryIndex,
+    int itemIndex,
+    String newTitle,
+    DateTime newScheduledDate,
+  }) {
+    _categories[categoryIndex]
+        .updateItem(itemIndex, newTitle, newScheduledDate);
     saveToStorage();
   }
 
@@ -111,11 +142,10 @@ class AppState extends Model {
         List l = i['items'];
         l.forEach((j) {
           c.addItem(ToDoItem.fromStorage(
-            title: j['title'],
-            isComplete: j['isComplete'],
-            todayMilliseconds: j['todayMilliseconds'] ?? null,
-            scheduledMilliseconds: j['scheduledMilliseconds'] ?? null
-          ));
+              title: j['title'],
+              isComplete: j['isComplete'],
+              todayMilliseconds: j['todayMilliseconds'] ?? null,
+              scheduledMilliseconds: j['scheduledMilliseconds'] ?? null));
         });
         _categories.add(c);
       });

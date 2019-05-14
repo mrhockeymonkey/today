@@ -72,19 +72,6 @@ class _TodayPageState extends State<TodayPage> {
     );
   }
 
-  // Widget _buildFloatingActionButton() {
-  //   return FloatingActionButton(
-  //     child: Icon(Icons.add),
-  //     backgroundColor: widget.category.color,
-  //     onPressed: () {
-  //       Navigator.push(
-  //         context,
-  //         MaterialPageRoute(builder: (context) => ItemPage(widget.category)),
-  //       );
-  //     },
-  //   );
-  // }
-
   Widget _buildFloatingActionButton() {
     return ScopedModelDescendant(
       builder: (BuildContext context, Widget widget, AppState appState) {
@@ -95,7 +82,9 @@ class _TodayPageState extends State<TodayPage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => ItemPage(0)),
+                  builder: (context) => ItemPage(
+                        categoryIndex: 0,
+                      )),
             );
           },
         );

@@ -5,14 +5,18 @@ import 'package:today/models/app_state.dart';
 import 'package:today/models/todo_category.dart';
 import '../models/app_constants.dart';
 
-class Categories extends StatefulWidget {
+class CategoriesPage extends StatefulWidget {
+  final Function pushCategoryPage;
+
+  CategoriesPage(this.pushCategoryPage);
+
   @override
   State<StatefulWidget> createState() {
     return _CategoriesState();
   }
 }
 
-class _CategoriesState extends State<Categories> {
+class _CategoriesState extends State<CategoriesPage> {
   @override
   Widget build(BuildContext context) {
     // final double deviceHeight = MediaQuery.of(context).size.height;
@@ -36,17 +40,17 @@ class _CategoriesState extends State<Categories> {
         List<Widget> categoryBanners = [];
 
         categoryBanners.add(Expanded(
-            child: _buildCategoryBanner(0),
-          ));
+          child: _buildCategoryBanner(0),
+        ));
         categoryBanners.add(Expanded(
-            child: _buildCategoryBanner(1),
-          ));
+          child: _buildCategoryBanner(1),
+        ));
         categoryBanners.add(Expanded(
-            child: _buildCategoryBanner(2),
-          ));
+          child: _buildCategoryBanner(2),
+        ));
         categoryBanners.add(Expanded(
-            child: _buildCategoryBanner(3),
-          ));
+          child: _buildCategoryBanner(3),
+        ));
         // categories.forEach((i) {
         //   categoryBanners.add(Expanded(
         //     child: _buildCategoryBanner(i),
@@ -62,32 +66,30 @@ class _CategoriesState extends State<Categories> {
 
   Widget _buildCategoryBanner(int index) {
     //final Category category = AppConstants.of(context).categories[index];
-    Category category =
-        ScopedModel.of<AppState>(context).categories[index];
+    Category category = ScopedModel.of<AppState>(context).categories[index];
 
-    return Container(
-      padding: EdgeInsets.all(10.0),
-      color: category.color,
-      child: Row(
-        children: <Widget>[
-          Expanded(
-            child: Text(category.name),
-          ),
-          CircleAvatar(
-            child: Text(category.leftToDoCount.toString()),
-            radius: AppConstants.cirleAvatarRadius,
-            backgroundColor: Colors.white,
-          ),
-          IconButton(
-            icon: Icon(Icons.info),
-            color: Theme.of(context).accentColor,
-            onPressed: () => Navigator.pushNamed<bool>(
-                  context,
-                  '/category',
-                  arguments: index,
-                ),
-          ),
-        ],
+    return InkWell(
+      onTap: () => widget.pushCategoryPage(context, index),
+      child: Container(
+        padding: EdgeInsets.all(10.0),
+        color: category.color,
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              child: Text(category.name),
+            ),
+            CircleAvatar(
+              child: Text(category.leftToDoCount.toString()),
+              radius: AppConstants.cirleAvatarRadius,
+              backgroundColor: Colors.white,
+            ),
+            // IconButton(
+            //   icon: Icon(Icons.info),
+            //   color: Theme.of(context).accentColor,
+            //   onPressed: () => widget.pushCategoryPage(context, index),
+            // ),
+          ],
+        ),
       ),
     );
   }

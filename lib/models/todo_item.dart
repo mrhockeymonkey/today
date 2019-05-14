@@ -26,7 +26,15 @@ class ToDoItem {
         DateTime.fromMillisecondsSinceEpoch(scheduledMilliseconds ?? 0);
   }
 
-  // getters for items that are set to today based on the date
+  DateTime get scheduledDate {
+    return _scheduledDate;
+  }
+
+  set scheduledDate(DateTime date) {
+    // we exclude the concept of time and focus only on dates
+    _scheduledDate = DateTime(date.year, date.month, date.day);
+  }
+
   bool get isToday {
     var now = DateTime.now();
     if (_todayDate.day == now.day &&
@@ -61,8 +69,7 @@ class ToDoItem {
     var now = DateTime.now();
     var today = DateTime(now.year, now.month, now.day);
     var diffInDays = today.difference(_scheduledDate).inDays;
-    print("$title diff: $diffInDays");
-    if ( diffInDays >= 1) {
+    if (diffInDays >= 1) {
       return true;
     } else {
       return false;
@@ -86,6 +93,11 @@ class ToDoItem {
     return m;
   }
 
+  void update(String newTitle, DateTime newScheduledDate) {
+    title = newTitle;
+    scheduledDate = newScheduledDate;
+  }
+
   void markCompleted() {
     print("marking $title as completed");
     isComplete = true;
@@ -102,7 +114,6 @@ class ToDoItem {
 
   void markScheduled(int year, int month, int day) {
     print("marking $title as scheduled");
-    //isScheduled = true;
     _scheduledDate = DateTime(year, month, day);
     _todayDate = DateTime.fromMillisecondsSinceEpoch(0);
     key = UniqueKey();
