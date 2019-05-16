@@ -24,20 +24,21 @@ class _ItemPageState extends State<ItemPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isNewItem = true;
   Map<String, dynamic> _formData;
-  ToDoItem _item;
   int _itemIndex;
+  int _categoryIndex;
   Color _categoryColor;
 
   @override
   void initState() {
     super.initState();
 
+    _categoryIndex = widget.categoryIndex;
     var appState = ScopedModel.of<AppState>(context);
-    var category = appState.categories[widget.categoryIndex];
+    var category = appState.categories[_categoryIndex];
     _categoryColor = category.color;
 
     if (widget.itemIndex != null) {
-      _item = category.items[widget.itemIndex];
+      var _item = category.items[widget.itemIndex];
       _itemIndex = widget.itemIndex;
       _isNewItem = false;
 
@@ -56,6 +57,7 @@ class _ItemPageState extends State<ItemPage> {
   //---------- build method
   @override
   Widget build(BuildContext context) {
+    print("BUILD - item_page");
     return Scaffold(
       appBar: AppBar(
         backgroundColor: _categoryColor,
@@ -67,10 +69,11 @@ class _ItemPageState extends State<ItemPage> {
           _buildListView(),
         ],
       ),
-      floatingActionButton: _buildFloatingActionButton(widget.categoryIndex),
+      floatingActionButton: _buildFloatingActionButton(),
     );
   }
 
+  //---------- datepicker popup
   Future _selectDate() async {
     DateTime picked = await showDatePicker(
         context: context,
@@ -80,25 +83,18 @@ class _ItemPageState extends State<ItemPage> {
     if (picked != null) setState(() => _formData['itemScheduledDate'] = picked);
   }
 
+  //---------- input header
   Widget _buildInputHeader() {
     // category =
     //     ScopedModel.of<AppState>(context).categories[widget.categoryIndex];
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 25.0),
-      //margin: EdgeInsets.symmetric(horizontal: 10.0),
       color: _categoryColor, //category.color,
       child: Form(
         key: _formKey,
         child: TextFormField(
           decoration: InputDecoration(
             labelText: 'Title',
-            //labelStyle: TextStyle(color: Colors.white),
-            // border: UnderlineInputBorder(
-            //   borderSide: BorderSide(
-            //     color: Colors.white
-            //   )
-            // )
-            //contentPadding: EdgeInsets.all(25.0)
           ),
           initialValue: _formData['itemTitle'],
           autofocus: true,
@@ -110,6 +106,7 @@ class _ItemPageState extends State<ItemPage> {
     );
   }
 
+  //---------- item options (main body)
   Widget _buildListView() {
     return ListView(
       shrinkWrap: true,
@@ -134,13 +131,13 @@ class _ItemPageState extends State<ItemPage> {
     );
   }
 
-  Widget _buildFloatingActionButton(int categoryIndex) {
+  //---------- floating action button
+  Widget _buildFloatingActionButton() {
     return ScopedModelDescendant(
       builder: (BuildContext context, Widget widget, AppState appState) {
         return FloatingActionButton(
           child: Icon(Icons.done),
-          backgroundColor: _categoryColor, //category.color,
-          //backgroundColor: appState.categories[categoryIndex].color,
+          backgroundColor: _categoryColor,
           onPressed: () {
             if (!_formKey.currentState.validate()) {
               return;
@@ -152,10 +149,10 @@ class _ItemPageState extends State<ItemPage> {
               if (_formData['itemScheduledDate'] != null) {
                 _newItem.scheduledDate = _formData['itemScheduledDate'];
               }
-              appState.addItemToCategory(categoryIndex, _newItem);
+              appState.addItemToCategory(_categoryIndex, _newItem);
             } else {
               appState.updateItemInCategory(
-                categoryIndex: categoryIndex,
+                categoryIndex: _categoryIndex,
                 itemIndex: _itemIndex,
                 newTitle: _formData['itemTitle'],
                 newScheduledDate: _formData['itemScheduledDate'],

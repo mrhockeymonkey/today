@@ -25,9 +25,9 @@ class _TodayPageState extends State<TodayPage> {
 
   @override
   Widget build(BuildContext context) {
+    print("BUILD - today_page");
     AppConstants.changeStatusColor(todayColor);
 
-    print("Build: today page");
     return Scaffold(
       appBar: AppBar(
         title: Text("Today"),

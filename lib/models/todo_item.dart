@@ -112,9 +112,9 @@ class ToDoItem {
     key = UniqueKey();
   }
 
-  void markScheduled(int year, int month, int day) {
+  void markScheduled(DateTime newScheduledDate) {
     print("marking $title as scheduled");
-    _scheduledDate = DateTime(year, month, day);
+    scheduledDate = newScheduledDate;
     _todayDate = DateTime.fromMillisecondsSinceEpoch(0);
     key = UniqueKey();
   }

@@ -21,8 +21,11 @@ class CategoryPage extends StatefulWidget {
 }
 
 class _CategoryState extends State<CategoryPage> {
+
+  //---------- build method
   @override
   Widget build(BuildContext context) {
+    print("BUILD - category_page");
     Category category =
         ScopedModel.of<AppState>(context).categories[widget.categoryIndex];
     AppConstants.changeStatusColor(category.color);

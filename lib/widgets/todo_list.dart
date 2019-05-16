@@ -58,6 +58,7 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
   //---------- build method
   @override
   Widget build(BuildContext context) {
+    print("BUILD - todo_list");
     return Expanded(
       child: ListView.builder(
         itemCount: widget.items.length,
@@ -121,8 +122,8 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
           case PageType.later:
             break; //nothing to do
           case PageType.today:
-            var now = DateTime.now().add(Duration(days: -3));
-            item.markScheduled(now.year, now.month, now.day);
+            var tomorrow = DateTime.now().add(Duration(days: 1));
+            item.markScheduled(tomorrow);
             break;
           case PageType.category:
             item.markToday();

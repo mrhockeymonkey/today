@@ -44,6 +44,7 @@ class _HomeState extends State<Home> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
+    print("BUILD - home_widget");
     // a navigator key to for use with CategoryNavigator
     final navigatorKey = GlobalKey<NavigatorState>();
     
