@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:today/models/todo_item.dart';
 import 'package:today/models/app_state.dart';
+import 'package:today/models/todo_category.dart';
 
 class ItemPage extends StatefulWidget {
   final int categoryIndex;
@@ -26,6 +27,7 @@ class _ItemPageState extends State<ItemPage> {
   Map<String, dynamic> _formData;
   int _itemIndex;
   int _categoryIndex;
+  String _categoryTitle;
   Color _categoryColor;
 
   @override
@@ -36,6 +38,7 @@ class _ItemPageState extends State<ItemPage> {
     var appState = ScopedModel.of<AppState>(context);
     var category = appState.categories[_categoryIndex];
     _categoryColor = category.color;
+    _categoryTitle = category.name;
 
     if (widget.itemIndex != null) {
       var _item = category.items[widget.itemIndex];
@@ -45,11 +48,13 @@ class _ItemPageState extends State<ItemPage> {
       _formData = {
         "itemTitle": _item.title,
         "itemScheduledDate": _item.scheduledDate,
+        "itemIsToday": _item.isToday,
       };
     } else {
       _formData = {
         "itemTitle": null,
         "itemScheduledDate": null,
+        "itemIsToday": false,
       };
     }
   }
@@ -62,6 +67,7 @@ class _ItemPageState extends State<ItemPage> {
       appBar: AppBar(
         backgroundColor: _categoryColor,
         elevation: 0.0,
+        title: Text(_categoryTitle),
       ),
       body: Column(
         children: <Widget>[
@@ -81,6 +87,63 @@ class _ItemPageState extends State<ItemPage> {
         firstDate: DateTime.now().subtract(Duration(days: 365)),
         lastDate: DateTime.now().add(Duration(days: 365 * 2)));
     if (picked != null) setState(() => _formData['itemScheduledDate'] = picked);
+  }
+
+  //---------- today picker
+  void _selectToday() {
+    setState(() {
+      _formData['itemIsToday'] = ! _formData['itemIsToday'];
+    });
+  }
+
+  //---------- category picker popup
+  Future _selectCategory() async {
+    AppState appState = ScopedModel.of<AppState>(context);
+    List<Category> categories = appState.categories;
+    int picked;
+
+    picked = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          //title: const Text('Select category'),
+          children: <Widget>[
+            SimpleDialogOption(
+              onPressed: () {
+                Navigator.pop(context, 0);
+              },
+              child: Text(categories[0].name),
+            ),
+            SimpleDialogOption(
+              onPressed: () {
+                Navigator.pop(context, 1);
+              },
+              child: Text(categories[1].name),
+            ),
+            SimpleDialogOption(
+              onPressed: () {
+                Navigator.pop(context, 2);
+              },
+              child: Text(categories[2].name),
+            ),
+            SimpleDialogOption(
+              onPressed: () {
+                Navigator.pop(context, 3);
+              },
+              child: Text(categories[3].name),
+            ),
+          ],
+        );
+      },
+    );
+
+    print(picked);
+    if (picked != null)
+      setState(() {
+        _categoryIndex = picked;
+        _categoryTitle = categories[picked].name;
+        _categoryColor = categories[picked].color;
+      });
   }
 
   //---------- input header
@@ -115,11 +178,21 @@ class _ItemPageState extends State<ItemPage> {
           leading: Icon(Icons.category),
           title: Text('Category'),
           subtitle: Text("Organize items into categories"),
+          onTap: _selectCategory,
         ),
         ListTile(
-          leading: Icon(Icons.done),
+          leading: _formData['itemIsToday']
+              ? Icon(
+                  Icons.done,
+                  color: Colors.green,
+                )
+              : Icon(
+                  Icons.done,
+                  color: Colors.grey,
+                ),
           title: Text('Today'),
           subtitle: Text("Mark item as due today"),
+          onTap: _selectToday,
         ),
         ListTile(
           leading: Icon(Icons.today),
@@ -139,11 +212,13 @@ class _ItemPageState extends State<ItemPage> {
           child: Icon(Icons.done),
           backgroundColor: _categoryColor,
           onPressed: () {
+            // validate and save the form data
             if (!_formKey.currentState.validate()) {
               return;
             }
             _formKey.currentState.save();
 
+            // handle and save changes
             if (_isNewItem) {
               ToDoItem _newItem = ToDoItem(title: _formData['itemTitle']);
               if (_formData['itemScheduledDate'] != null) {
@@ -151,6 +226,7 @@ class _ItemPageState extends State<ItemPage> {
               }
               appState.addItemToCategory(_categoryIndex, _newItem);
             } else {
+              //?? if categoryindex has change then delete and re add??
               appState.updateItemInCategory(
                 categoryIndex: _categoryIndex,
                 itemIndex: _itemIndex,
@@ -158,6 +234,14 @@ class _ItemPageState extends State<ItemPage> {
                 newScheduledDate: _formData['itemScheduledDate'],
               );
             }
+
+            // handle if today was selected
+            if (_formData['itemIsToday']) {
+              print("should be today");
+              //appState.categories[_categoryIndex].items[_itemIndex].markToday();
+              //appState.saveToStorage();
+            }
+
             Navigator.pop(context);
           },
         );
