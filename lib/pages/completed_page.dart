@@ -15,9 +15,11 @@ class CompletedPage extends StatefulWidget {
 }
 
 class _CompletedPageState extends State<CompletedPage> {
+  Color todayColor = AppConstants.todayColor;
+  
   @override
   Widget build(BuildContext context) {
-    AppConstants.changeStatusColor(AppConstants.laterColor);
+    //AppConstants.changeStatusColor(AppConstants.laterColor);
 
     return Scaffold(
       appBar: AppBar(
@@ -38,11 +40,23 @@ class _CompletedPageState extends State<CompletedPage> {
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             List<ToDoItem> items;
 
+            // if (snapshot.data == null) {
+            //   return Center(
+            //     child: CircularProgressIndicator(),
+            //   );
+            // }
             if (snapshot.data == null) {
-              return Center(
-                child: CircularProgressIndicator(),
+              return Column(
+                children: <Widget>[
+                  CategoryHeader(
+                    headerColor: todayColor,
+                    headerCount: 0,
+                  ),
+                  CircularProgressIndicator()
+                ],
               );
             }
+
             appState.initialize();
             items = appState.allCompletedItems;
             Color completedColor = AppConstants.laterColor;

@@ -6,12 +6,12 @@ import 'package:today/models/app_constants.dart';
 import 'package:today/models/todo_item.dart';
 import 'package:today/models/app_state.dart';
 import 'package:today/pages/item_page.dart';
-import 'package:today/models/todo_category.dart';
+import '../models/category.dart';
 
 // we want different swipe action and backgrounds based on the type of page
 enum PageType {
   later,
-  category,
+  todo,
   today,
   completed,
 }
@@ -32,8 +32,7 @@ class ToDoList extends StatefulWidget {
 }
 
 class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
-
-  //---------- required to WidgetsBindingObserver
+  //---------- required to use WidgetsBindingObserver
   @override
   void initState() {
     super.initState();
@@ -93,7 +92,6 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
     );
   }
 
-
   //---------- helper methods
   void _handleOnDismissed(DismissDirection direction, ToDoItem item) {
     // handle onDismiss >>
@@ -103,10 +101,10 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
           case PageType.later:
             item.markToday();
             break;
-          case PageType.today:
-            item.markCompleted();
+          case PageType.todo:
+            item.markToday();
             break;
-          case PageType.category:
+          case PageType.today:
             item.markCompleted();
             break;
           case PageType.completed:
@@ -121,12 +119,13 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
         switch (widget.pageType) {
           case PageType.later:
             break; //nothing to do
-          case PageType.today:
+          case PageType.todo:
             var tomorrow = DateTime.now().add(Duration(days: 1));
             item.markScheduled(tomorrow);
             break;
-          case PageType.category:
-            item.markToday();
+          case PageType.today:
+            var tomorrow = DateTime.now().add(Duration(days: 1));
+            item.markScheduled(tomorrow);
             break;
           case PageType.completed:
             item.markUncompleted();
@@ -143,9 +142,9 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
     switch (type) {
       case PageType.later:
         return _buildTodayBackground(align);
+      case PageType.todo:
+        return _buildTodayBackground(align);
       case PageType.today:
-        return _buildCompleteBackground(align);
-      case PageType.category:
         return _buildCompleteBackground(align);
       case PageType.completed:
         return _buildDeleteBackground(align);
@@ -158,10 +157,10 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
     switch (type) {
       case PageType.later:
         return Container();
+      case PageType.todo:
+        return _buildLaterBackground(align);
       case PageType.today:
         return _buildLaterBackground(align);
-      case PageType.category:
-        return _buildTodayBackground(align);
       case PageType.completed:
         return _buildUncompleteBackground(align);
     }
@@ -284,7 +283,33 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
   }
 
   Widget _buildListTile(ToDoItem item) {
-    Widget subtitle;
+    AppState appState = ScopedModel.of<AppState>(context);
+    int itemIndex = appState.categoryIndexOf(item);
+    Category itemCategory = appState.categories[itemIndex];
+    List<Widget> subtitleElements = [];
+
+    // first build the subtitle
+    subtitleElements.add(
+      Text(
+        itemCategory.name.toUpperCase(),
+        style: TextStyle(
+          color: itemCategory.color,
+        ),
+      ),
+    );
+
+    if (item.isOverDue) {
+      subtitleElements.add(
+        Text(
+          " - ${item.daysOverdue} days ago",
+          //style: TextStyle(background: Paint()),
+        ),
+      );
+    } else if (item.isScheduled) {
+      subtitleElements.add(
+        Text(" - " + item.dateFormattedStr),
+      );
+    }
 
     Widget completeTile = Ink(
       color: AppConstants.completedColor,
@@ -297,35 +322,10 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
       ),
     );
 
-    // decide on subtitle
-    if (item.isToday) {
-      subtitle = Text('today');
-    } else if (item.isScheduled) {
-      //subtitle = Text(item.dateFormattedStr);
-      subtitle = Row(
-        children: <Widget>[
-          item.isOverDue
-              ? Text(
-                  "overdue ",
-                  style: TextStyle(color: Colors.red),
-                )
-              : Container(),
-          Text(item.dateFormattedStr)
-        ],
-      );
-    } else {
-      subtitle = Container();
-    }
-
     Widget normalTile = ListTile(
       title: Text(item.title),
-      subtitle: subtitle,
-      trailing: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          item.isScheduled ? Icon(Icons.today) : Container(),
-        ],
+      subtitle: Row(
+        children: subtitleElements,
       ),
       onTap: () => _pushItemPage(context, item),
     );

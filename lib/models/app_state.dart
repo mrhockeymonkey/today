@@ -3,7 +3,7 @@ import 'package:scoped_model/scoped_model.dart';
 import 'package:localstorage/localstorage.dart';
 
 import 'package:today/models/todo_item.dart';
-import './todo_category.dart';
+import './category.dart';
 
 class AppState extends Model {
   // for now we just declare categories here until we can save data to phone
@@ -20,10 +20,10 @@ class AppState extends Model {
   }
 
   // getter for all items across all categories
-  List<ToDoItem> get allItems {
+  List<ToDoItem> get allToDoItems {
     List<ToDoItem> _items = [];
     for (var c in _categories) {
-      _items.addAll(c.items);
+      _items.addAll(c.itemsToDo);
     }
     return _items;
   }
@@ -34,6 +34,7 @@ class AppState extends Model {
     for (var c in _categories) {
       _todayItems.addAll(c.itemsTodayAndDue);
     }
+    _todayItems.sort((a, b) => a.isComplete.toString().compareTo(b.isComplete.toString()));
     return _todayItems;
   }
 
@@ -52,6 +53,7 @@ class AppState extends Model {
     for (var c in _categories) {
       _scheduledItems.addAll(c.itemsScheduled);
     }
+    _scheduledItems.sort((a, b) => a.scheduledDate.compareTo(b.scheduledDate));
     return _scheduledItems;
   }
 
@@ -67,7 +69,7 @@ class AppState extends Model {
   int categoryIndexOf(ToDoItem item) {
     int index;
     for (var c in _categories) {
-      index =_categories.indexOf(c);
+      index = _categories.indexOf(c);
       if (c.items.indexOf(item) >= 0) {
         break;
       }
@@ -81,14 +83,36 @@ class AppState extends Model {
     saveToStorage();
   }
 
+  // update and item in a category
   void updateItemInCategory({
-    int categoryIndex,
-    int itemIndex,
+    @required int categoryIndex,
+    @required int itemIndex,
     String newTitle,
+    bool newIsToday,
     DateTime newScheduledDate,
   }) {
     _categories[categoryIndex]
-        .updateItem(itemIndex, newTitle, newScheduledDate);
+        .updateItem(itemIndex, newTitle, newIsToday, newScheduledDate);
+    saveToStorage();
+  }
+
+  // update an item and moves it to a new category
+  void updateItemMoveCategory({
+    @required int originalCategoryIndex, 
+    @required int newCategoryIndex,
+    @required int itemIndex,
+    String newTitle,
+    bool newIsToday,
+    DateTime newScheduledDate,
+  }) {
+    var originalCategory = _categories[originalCategoryIndex];
+    var newCategory = _categories[newCategoryIndex];
+    var item = originalCategory.items[itemIndex];
+    originalCategory.removeItem(item);
+    newCategory.addItem(item);
+    var newIndex = newCategory.items.indexOf(item);
+    newCategory.updateItem(newIndex, newTitle, newIsToday, newScheduledDate);
+
     saveToStorage();
   }
 
@@ -144,7 +168,7 @@ class AppState extends Model {
           c.addItem(ToDoItem.fromStorage(
               title: j['title'],
               isComplete: j['isComplete'],
-              todayMilliseconds: j['todayMilliseconds'] ?? null,
+              isToday: j['isToday'],
               scheduledMilliseconds: j['scheduledMilliseconds'] ?? null));
         });
         _categories.add(c);

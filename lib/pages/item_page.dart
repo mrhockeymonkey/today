@@ -4,7 +4,8 @@ import 'dart:async';
 
 import 'package:today/models/todo_item.dart';
 import 'package:today/models/app_state.dart';
-import 'package:today/models/todo_category.dart';
+import 'package:today/models/category.dart';
+import 'package:today/models/app_constants.dart';
 
 class ItemPage extends StatefulWidget {
   final int categoryIndex;
@@ -27,6 +28,7 @@ class _ItemPageState extends State<ItemPage> {
   Map<String, dynamic> _formData;
   int _itemIndex;
   int _categoryIndex;
+  int _originalCategoryIndex;
   String _categoryTitle;
   Color _categoryColor;
 
@@ -35,6 +37,7 @@ class _ItemPageState extends State<ItemPage> {
     super.initState();
 
     _categoryIndex = widget.categoryIndex;
+    _originalCategoryIndex = widget.categoryIndex;
     var appState = ScopedModel.of<AppState>(context);
     var category = appState.categories[_categoryIndex];
     _categoryColor = category.color;
@@ -53,7 +56,7 @@ class _ItemPageState extends State<ItemPage> {
     } else {
       _formData = {
         "itemTitle": null,
-        "itemScheduledDate": null,
+        "itemScheduledDate": DateTime.fromMillisecondsSinceEpoch(0),
         "itemIsToday": false,
       };
     }
@@ -62,6 +65,7 @@ class _ItemPageState extends State<ItemPage> {
   //---------- build method
   @override
   Widget build(BuildContext context) {
+    //AppConstants.changeStatusColor(_categoryColor);
     print("BUILD - item_page");
     return Scaffold(
       appBar: AppBar(
@@ -86,13 +90,18 @@ class _ItemPageState extends State<ItemPage> {
         initialDate: DateTime.now(),
         firstDate: DateTime.now().subtract(Duration(days: 365)),
         lastDate: DateTime.now().add(Duration(days: 365 * 2)));
-    if (picked != null) setState(() => _formData['itemScheduledDate'] = picked);
+    if (picked != null) {
+      setState(() {
+        _formData['itemScheduledDate'] = picked;
+        _formData['itemIsToday'] = false;
+      });
+    }
   }
 
   //---------- today picker
   void _selectToday() {
     setState(() {
-      _formData['itemIsToday'] = ! _formData['itemIsToday'];
+      _formData['itemIsToday'] = !_formData['itemIsToday'];
     });
   }
 
@@ -100,39 +109,37 @@ class _ItemPageState extends State<ItemPage> {
   Future _selectCategory() async {
     AppState appState = ScopedModel.of<AppState>(context);
     List<Category> categories = appState.categories;
+    List<Widget> options = [];
     int picked;
+
+    for (var i = 0; i < 4; i++) {
+      options.add(
+        SimpleDialogOption(
+          onPressed: () {
+            Navigator.pop(context, i);
+          },
+          child: Container(
+            child: Row(
+              children: <Widget>[
+                Text(
+                  categories[i].name,
+                  style: TextStyle(color: Colors.white),
+                ),
+              ],
+            ),
+            color: categories[i].color,
+            height: 80.0,
+            padding: EdgeInsets.symmetric(horizontal: 10.0),
+          ),
+        ),
+      );
+    }
 
     picked = await showDialog(
       context: context,
       builder: (BuildContext context) {
         return SimpleDialog(
-          //title: const Text('Select category'),
-          children: <Widget>[
-            SimpleDialogOption(
-              onPressed: () {
-                Navigator.pop(context, 0);
-              },
-              child: Text(categories[0].name),
-            ),
-            SimpleDialogOption(
-              onPressed: () {
-                Navigator.pop(context, 1);
-              },
-              child: Text(categories[1].name),
-            ),
-            SimpleDialogOption(
-              onPressed: () {
-                Navigator.pop(context, 2);
-              },
-              child: Text(categories[2].name),
-            ),
-            SimpleDialogOption(
-              onPressed: () {
-                Navigator.pop(context, 3);
-              },
-              child: Text(categories[3].name),
-            ),
-          ],
+          children: options,
         );
       },
     );
@@ -148,22 +155,27 @@ class _ItemPageState extends State<ItemPage> {
 
   //---------- input header
   Widget _buildInputHeader() {
-    // category =
-    //     ScopedModel.of<AppState>(context).categories[widget.categoryIndex];
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 25.0),
-      color: _categoryColor, //category.color,
+      padding: EdgeInsets.symmetric(horizontal: 25),
+      height: AppConstants.headerHeight,
+      color: _categoryColor,
       child: Form(
         key: _formKey,
         child: TextFormField(
-          decoration: InputDecoration(
-            labelText: 'Title',
-          ),
+          style: TextStyle(color: Colors.white),
+          textCapitalization: TextCapitalization.words,
           initialValue: _formData['itemTitle'],
           autofocus: true,
           onSaved: (String value) {
             _formData['itemTitle'] = value;
           },
+          decoration: InputDecoration(
+            hintText: 'Do Something',
+            labelText: 'Title',
+            labelStyle: TextStyle(color: Colors.white),
+            focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.white)),
+          ),
         ),
       ),
     );
@@ -171,31 +183,52 @@ class _ItemPageState extends State<ItemPage> {
 
   //---------- item options (main body)
   Widget _buildListView() {
+    print("isToday: " + _formData['itemIsToday'].toString());
+
     return ListView(
       shrinkWrap: true,
       children: <Widget>[
         ListTile(
-          leading: Icon(Icons.category),
-          title: Text('Category'),
-          subtitle: Text("Organize items into categories"),
-          onTap: _selectCategory,
-        ),
-        ListTile(
           leading: _formData['itemIsToday']
               ? Icon(
-                  Icons.done,
-                  color: Colors.green,
+                  Icons.event_available,
+                  color: _categoryColor,
                 )
               : Icon(
-                  Icons.done,
+                  Icons.event_available,
                   color: Colors.grey,
                 ),
-          title: Text('Today'),
-          subtitle: Text("Mark item as due today"),
+          title: Text('Focus'),
+          subtitle: Text("Mark item as \"next to complete\""),
           onTap: _selectToday,
         ),
         ListTile(
-          leading: Icon(Icons.today),
+          leading: Icon(Icons.category, color: _categoryColor),
+          title: Text('Category'),
+          subtitle: Text("Pick this item's category"),
+          onTap: _selectCategory,
+        ),
+        ListTile(
+          trailing: DateTime.fromMillisecondsSinceEpoch(0).isAtSameMomentAs(_formData['itemScheduledDate'])
+              ? null
+              : IconButton(
+                  icon: Icon(Icons.cancel),
+                  onPressed: () {
+                    setState(() {
+                      _formData['itemScheduledDate'] =
+                          DateTime.fromMillisecondsSinceEpoch(0);
+                    });
+                  },
+                ),
+          leading: DateTime.fromMillisecondsSinceEpoch(0).isAtSameMomentAs(_formData['itemScheduledDate'])
+              ? Icon(
+                  Icons.today,
+                  color: Colors.grey,
+                )
+              : Icon(
+                  Icons.today,
+                  color: _categoryColor,
+                ),
           title: Text('Schedule'),
           subtitle: Text("Mark item as due for a later date"),
           onTap: _selectDate,
@@ -218,28 +251,37 @@ class _ItemPageState extends State<ItemPage> {
             }
             _formKey.currentState.save();
 
-            // handle and save changes
+            //---------- handle adding a new item
             if (_isNewItem) {
               ToDoItem _newItem = ToDoItem(title: _formData['itemTitle']);
               if (_formData['itemScheduledDate'] != null) {
                 _newItem.scheduledDate = _formData['itemScheduledDate'];
               }
+              if (_formData['itemIsToday']) {
+                _newItem.isToday = true;
+              }
               appState.addItemToCategory(_categoryIndex, _newItem);
-            } else {
-              //?? if categoryindex has change then delete and re add??
+            }
+            //---------- handle updating an existing item + category change
+            else if (_categoryIndex != _originalCategoryIndex) {
+              appState.updateItemMoveCategory(
+                originalCategoryIndex: _originalCategoryIndex,
+                newCategoryIndex: _categoryIndex,
+                itemIndex: _itemIndex,
+                newTitle: _formData['itemTitle'],
+                newIsToday: _formData['itemIsToday'],
+                newScheduledDate: _formData['itemScheduledDate'],
+              );
+            }
+            //---------- handle updating an existing item
+            else {
               appState.updateItemInCategory(
                 categoryIndex: _categoryIndex,
                 itemIndex: _itemIndex,
                 newTitle: _formData['itemTitle'],
+                newIsToday: _formData['itemIsToday'],
                 newScheduledDate: _formData['itemScheduledDate'],
               );
-            }
-
-            // handle if today was selected
-            if (_formData['itemIsToday']) {
-              print("should be today");
-              //appState.categories[_categoryIndex].items[_itemIndex].markToday();
-              //appState.saveToStorage();
             }
 
             Navigator.pop(context);
