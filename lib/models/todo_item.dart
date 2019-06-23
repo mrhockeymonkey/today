@@ -106,8 +106,9 @@ class ToDoItem {
   void markCompleted() {
     print("marking $title as completed");
     isComplete = true;
+    isToday = false;
     _scheduledDate = DateTime.fromMillisecondsSinceEpoch(0);
-    key = UniqueKey();
+    //key = UniqueKey();
   }
 
   void markToday() {

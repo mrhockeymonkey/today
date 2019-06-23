@@ -112,7 +112,7 @@ class _ItemPageState extends State<ItemPage> {
     List<Widget> options = [];
     int picked;
 
-    for (var i = 0; i < 4; i++) {
+    for (var i = 0; i < categories.length; i++) {
       options.add(
         SimpleDialogOption(
           onPressed: () {

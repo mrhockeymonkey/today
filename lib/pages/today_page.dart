@@ -8,7 +8,7 @@ import 'package:today/models/todo_item.dart';
 import 'package:today/widgets/category_header.dart';
 import 'package:today/widgets/todo_list.dart';
 import 'package:today/widgets/new_item_fab.dart';
-import 'package:today/widgets/drawer_menu.dart';
+import './settings_page.dart';
 
 class TodayPage extends StatefulWidget {
   @override
@@ -30,8 +30,18 @@ class _TodayPageState extends State<TodayPage> {
         title: Text("Today"),
         backgroundColor: todayColor,
         elevation: 0.0,
+        // actions: <Widget>[
+        //   IconButton(
+        //     icon: Icon(Icons.settings),
+        //     onPressed: () {
+        //       Navigator.push(
+        //         context,
+        //         MaterialPageRoute(builder: (context) => SettingsPage()),
+        //       );
+        //     },
+        //   )
+        // ],
       ),
-      drawer: DrawerMenu(),
       body: _buildBody(),
       floatingActionButton: NewItemFab(),
     );

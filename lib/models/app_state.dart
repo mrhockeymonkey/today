@@ -14,6 +14,7 @@ class AppState extends Model {
 
   final LocalStorage storage = new LocalStorage('today_app');
 
+
   // getter for categories
   List<Category> get categories {
     return List.from(_categories);
@@ -34,7 +35,7 @@ class AppState extends Model {
     for (var c in _categories) {
       _todayItems.addAll(c.itemsTodayAndDue);
     }
-    _todayItems.sort((a, b) => a.isComplete.toString().compareTo(b.isComplete.toString()));
+    //_todayItems.sort((a, b) => a.isComplete.toString().compareTo(b.isComplete.toString()));
     return _todayItems;
   }
 
@@ -131,7 +132,8 @@ class AppState extends Model {
     });
 
     storage.setItem('appdata', jsonEncoded);
-    print("saved to local storage");
+    notifyListeners();
+    print("saved to local storage, notified listerners");
   }
 
   /// reads from local storage or creates some default appdata if not found

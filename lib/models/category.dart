@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:today/models/todo_item.dart';
 
 class Category {
-  final String name;
+  String name;
   final Color color;
   List<ToDoItem> _items = [];
 
