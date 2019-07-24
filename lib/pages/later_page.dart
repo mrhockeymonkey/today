@@ -18,7 +18,7 @@ class LaterPage extends StatefulWidget {
 }
 
 class _LaterPageState extends State<LaterPage> {
-  Color todayColor = AppConstants.todayColor;
+  Color headerColor = AppConstants.laterHeaderColor;
 
   @override
   Widget build(BuildContext context) {
@@ -28,13 +28,14 @@ class _LaterPageState extends State<LaterPage> {
     return Scaffold(
         appBar: AppBar(
           title: Text("Later"),
-          backgroundColor: AppConstants.laterColor,
+          backgroundColor: headerColor,
           elevation: 0.0,
         ),
         body: _buildBody()
         //floatingActionButton: _buildFloatingActionButton(),
         );
   }
+
 
   Widget _buildBody() {
     return ScopedModelDescendant(
@@ -48,7 +49,7 @@ class _LaterPageState extends State<LaterPage> {
               return Column(
                 children: <Widget>[
                   CategoryHeader(
-                    headerColor: todayColor,
+                    headerColor: headerColor,
                     headerCount: 0,
                   ),
                   CircularProgressIndicator()
@@ -63,12 +64,11 @@ class _LaterPageState extends State<LaterPage> {
 
             appState.initialize();
             items = appState.allScheduledItems;
-            Color completedColor = AppConstants.laterColor;
 
             return Column(
               children: <Widget>[
                 CategoryHeader(
-                  headerColor: completedColor,
+                  headerColor: headerColor,
                   headerCount: items.length,
                 ),
                 ToDoList(

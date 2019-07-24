@@ -38,7 +38,7 @@ class Category {
   // getter for all todo items
   List<ToDoItem> get itemsToDo {
     List<ToDoItem> _itemsCompleted =
-        _items.where((i) => !i.isComplete).toList();
+        _items.where((i) => !i.isComplete && !i.isScheduled).toList();
     return _itemsCompleted;
   }
 

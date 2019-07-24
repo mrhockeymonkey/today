@@ -18,7 +18,7 @@ class TodayPage extends StatefulWidget {
 }
 
 class _TodayPageState extends State<TodayPage> {
-  Color todayColor = AppConstants.todayColor;
+  Color headerColor = AppConstants.todayHeaderColor;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,7 @@ class _TodayPageState extends State<TodayPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Today"),
-        backgroundColor: todayColor,
+        backgroundColor: headerColor,
         elevation: 0.0,
         // actions: <Widget>[
         //   IconButton(
@@ -43,7 +43,10 @@ class _TodayPageState extends State<TodayPage> {
         // ],
       ),
       body: _buildBody(),
-      floatingActionButton: NewItemFab(),
+      floatingActionButton: NewItemFab(
+        color: headerColor,
+        initIsToday: true,
+      ),
     );
   }
 
@@ -64,7 +67,7 @@ class _TodayPageState extends State<TodayPage> {
               return Column(
                 children: <Widget>[
                   CategoryHeader(
-                    headerColor: todayColor,
+                    headerColor: headerColor,
                     headerCount: 0,
                   ),
                   CircularProgressIndicator()
@@ -78,7 +81,7 @@ class _TodayPageState extends State<TodayPage> {
             return Column(
               children: <Widget>[
                 CategoryHeader(
-                  headerColor: todayColor,
+                  headerColor: headerColor,
                   headerCount: items.length,
                 ),
                 ToDoList(

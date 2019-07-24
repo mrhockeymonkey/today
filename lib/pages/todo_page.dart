@@ -19,22 +19,25 @@ class ToDoPage extends StatefulWidget {
 }
 
 class _ToDoPageState extends State<ToDoPage> {
-  Color todayColor = AppConstants.todayColor;
-  
+  Color headerColor = AppConstants.todoHeaderColor;
+
   @override
   Widget build(BuildContext context) {
     //AppConstants.changeStatusColor(AppConstants.laterColor);
 
     print("Build: todo page");
     return Scaffold(
-        appBar: AppBar(
-          title: Text("To Do"),
-          backgroundColor: AppConstants.laterColor,
-          elevation: 0.0,
-        ),
-        body: _buildBody(),
-        floatingActionButton: NewItemFab(),
-        );
+      appBar: AppBar(
+        title: Text("To Do"),
+        backgroundColor: headerColor,
+        elevation: 0.0,
+      ),
+      body: _buildBody(),
+      floatingActionButton: NewItemFab(
+        color: headerColor,
+        initIsToday: false,
+      ),
+    );
   }
 
   Widget _buildBody() {
@@ -54,7 +57,7 @@ class _ToDoPageState extends State<ToDoPage> {
               return Column(
                 children: <Widget>[
                   CategoryHeader(
-                    headerColor: todayColor,
+                    headerColor: headerColor,
                     headerCount: 0,
                   ),
                   CircularProgressIndicator()
@@ -64,12 +67,11 @@ class _ToDoPageState extends State<ToDoPage> {
 
             appState.initialize();
             items = appState.allToDoItems;
-            Color completedColor = AppConstants.laterColor;
 
             return Column(
               children: <Widget>[
                 CategoryHeader(
-                  headerColor: completedColor,
+                  headerColor: headerColor,
                   headerCount: items.length,
                 ),
                 ToDoList(

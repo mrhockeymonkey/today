@@ -67,6 +67,9 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
             if (direction == DismissDirection.startToEnd &&
                 widget.pageType == PageType.completed) {
               return false;
+            } else if (direction == DismissDirection.endToStart &&
+                widget.pageType == PageType.later) {
+              return false;
             } else {
               return true;
             }
@@ -276,6 +279,7 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
           return ItemPage(
             categoryIndex: categoryIndexToPush,
             itemIndex: itemIndexToPush,
+            initIsToday: false,
           );
         },
       ),

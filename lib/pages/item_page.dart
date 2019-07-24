@@ -10,10 +10,12 @@ import 'package:today/models/app_constants.dart';
 class ItemPage extends StatefulWidget {
   final int categoryIndex;
   final int itemIndex;
+  bool initIsToday;
 
   ItemPage({
     @required this.categoryIndex,
     this.itemIndex,
+    @required this.initIsToday
   });
 
   @override
@@ -57,7 +59,7 @@ class _ItemPageState extends State<ItemPage> {
       _formData = {
         "itemTitle": null,
         "itemScheduledDate": DateTime.fromMillisecondsSinceEpoch(0),
-        "itemIsToday": false,
+        "itemIsToday": widget.initIsToday,
       };
     }
   }
@@ -198,8 +200,8 @@ class _ItemPageState extends State<ItemPage> {
                   Icons.event_available,
                   color: Colors.grey,
                 ),
-          title: Text('Focus'),
-          subtitle: Text("Mark item as \"next to complete\""),
+          title: Text('Today'),
+          subtitle: Text("Display item on the Today list"),
           onTap: _selectToday,
         ),
         ListTile(

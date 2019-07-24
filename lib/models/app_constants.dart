@@ -7,15 +7,25 @@ import './category.dart';
 
 // inherited widget used in main to propogate and share anywhere in the app
 class AppConstants extends InheritedWidget {
+  // action colors
   static final Color todoColor = Color(0xFFFBAF28);
   static final Color completeColor = Color(0xFF64DD17);
   static final Color completedColor = Colors.grey;
-  static final Color todayColor = Color(0xFF6A88BA);
-  static final Color laterColor = Color(0xFF6A88BA);
+  static final Color laterColor = Colors.grey;
+
+  
+  // page header colors
+  static final Color laterHeaderColor = Color(0xFF23395B);
+  static final Color todoHeaderColor = Color(0xFF214D7A);
+  static final Color todayHeaderColor = Color(0xFFF07618E);
+  static final Color completedHeaderColor = Color(0xFF247BA0);
+  static final Color highlightColor = Color(0xFF37C7CB);
+  
+
   static final double cirleAvatarRadius = 28.0;
   static final double headerHeight = 90.0;
 
-  final Category today = Category(name: 'TODAY', color: todayColor);
+  final Category today = Category(name: 'TODAY', color: todayHeaderColor);
 
   final RouteObserver<Route> routeObserver = new RouteObserver<Route>();
 

@@ -44,10 +44,11 @@ class ToDoItem {
   }
 
   bool get isDue {
-    var now = DateTime.now();
+    var nowSortable = ToDoItem.toSortableDate(DateTime.now());
+    var scheduledSortable = ToDoItem.toSortableDate(_scheduledDate);
     var zero = DateTime.fromMillisecondsSinceEpoch(0);
 
-    if (_scheduledDate.isBefore(now) && _scheduledDate != zero) {
+    if (scheduledSortable.isBefore(nowSortable) && _scheduledDate != zero) {
       return true;
     } else {
       return false;
@@ -61,13 +62,15 @@ class ToDoItem {
       return false;
     } else {
       var now = DateTime.now();
-      int todaySortable = int.parse(
-          now.year.toString() + now.month.toString() + now.day.toString());
-      int scheduledSortable = int.parse(_scheduledDate.year.toString() +
-          _scheduledDate.month.toString() +
-          _scheduledDate.day.toString());
+      var todaySortable = ToDoItem.toSortableDate(now);
+      // now.toint.parse(
+      //    now.year.toString() + now.month.toString() + now.day.toString());
+      var scheduledSortable = ToDoItem.toSortableDate(_scheduledDate);
+      // int.parse(_scheduledDate.year.toString() +
+       //   _scheduledDate.month.toString() +
+       //   _scheduledDate.day.toString());
 
-      if (scheduledSortable < todaySortable) {
+      if (scheduledSortable.isBefore(todaySortable)) {
         return true;
       } else {
         return false;
@@ -96,6 +99,14 @@ class ToDoItem {
     m['scheduledMilliseconds'] = _scheduledDate.millisecondsSinceEpoch;
 
     return m;
+  }
+
+  static DateTime toSortableDate(DateTime date) {
+    DateTime sortable = DateTime(date.year, date.month, date.day);
+    // int sortable = int.parse(date.year.toString() +
+    //       date.month.toString() +
+    //       date.day.toString());
+    return sortable;
   }
 
   void update(String newTitle, DateTime newScheduledDate) {

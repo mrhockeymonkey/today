@@ -15,7 +15,7 @@ class CompletedPage extends StatefulWidget {
 }
 
 class _CompletedPageState extends State<CompletedPage> {
-  Color todayColor = AppConstants.todayColor;
+  Color headerColor = AppConstants.completedHeaderColor;
   
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class _CompletedPageState extends State<CompletedPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Completed"),
-        backgroundColor: AppConstants.laterColor,
+        backgroundColor: headerColor,
         elevation: 0.0,
       ),
       body: _buildBody(),
@@ -49,7 +49,7 @@ class _CompletedPageState extends State<CompletedPage> {
               return Column(
                 children: <Widget>[
                   CategoryHeader(
-                    headerColor: todayColor,
+                    headerColor: headerColor,
                     headerCount: 0,
                   ),
                   CircularProgressIndicator()
@@ -59,12 +59,11 @@ class _CompletedPageState extends State<CompletedPage> {
 
             appState.initialize();
             items = appState.allCompletedItems;
-            Color completedColor = AppConstants.laterColor;
 
             return Column(
               children: <Widget>[
                 CategoryHeader(
-                  headerColor: completedColor,
+                  headerColor: headerColor,
                   headerCount: items.length,
                 ),
                 ToDoList(
