@@ -58,7 +58,7 @@ class _ItemPageState extends State<ItemPage> {
     } else {
       _formData = {
         "itemTitle": null,
-        "itemScheduledDate": DateTime.fromMillisecondsSinceEpoch(0),
+        "itemScheduledDate": 0,
         "itemIsToday": widget.initIsToday,
       };
     }
@@ -94,7 +94,8 @@ class _ItemPageState extends State<ItemPage> {
         lastDate: DateTime.now().add(Duration(days: 365 * 2)));
     if (picked != null) {
       setState(() {
-        _formData['itemScheduledDate'] = picked;
+        int intPicked = ToDoItem.toSortableDate(picked);
+        _formData['itemScheduledDate'] = intPicked;
         _formData['itemIsToday'] = false;
       });
     }
@@ -211,7 +212,7 @@ class _ItemPageState extends State<ItemPage> {
           onTap: _selectCategory,
         ),
         ListTile(
-          trailing: DateTime.fromMillisecondsSinceEpoch(0).isAtSameMomentAs(_formData['itemScheduledDate'])
+          trailing: _formData['itemScheduledDate'] == 0
               ? null
               : IconButton(
                   icon: Icon(Icons.cancel),
@@ -222,7 +223,7 @@ class _ItemPageState extends State<ItemPage> {
                     });
                   },
                 ),
-          leading: DateTime.fromMillisecondsSinceEpoch(0).isAtSameMomentAs(_formData['itemScheduledDate'])
+          leading: _formData['itemScheduledDate'] == 0
               ? Icon(
                   Icons.today,
                   color: Colors.grey,

@@ -123,12 +123,14 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
           case PageType.later:
             break; //nothing to do
           case PageType.todo:
-            var tomorrow = DateTime.now().add(Duration(days: 1));
-            item.markScheduled(tomorrow);
+            DateTime tomorrow = DateTime.now().add(Duration(days: 1));
+            int intTomorrow = ToDoItem.toSortableDate(tomorrow);
+            item.markScheduled(intTomorrow);
             break;
           case PageType.today:
-            var tomorrow = DateTime.now().add(Duration(days: 1));
-            item.markScheduled(tomorrow);
+            DateTime tomorrow = DateTime.now().add(Duration(days: 1));
+            int intTomorrow = ToDoItem.toSortableDate(tomorrow);
+            item.markScheduled(intTomorrow);
             break;
           case PageType.completed:
             item.markUncompleted();

@@ -38,7 +38,7 @@ class Category {
   // getter for all todo items
   List<ToDoItem> get itemsToDo {
     List<ToDoItem> _itemsCompleted =
-        _items.where((i) => !i.isComplete && !i.isScheduled).toList();
+        _items.where((i) => !i.isComplete && !i.isScheduled && !i.isToday).toList();
     return _itemsCompleted;
   }
 
@@ -57,7 +57,7 @@ class Category {
   // getter for all scheduled items
   List<ToDoItem> get itemsScheduled {
     List<ToDoItem> _itemsScheduled =
-        _items.where((i) => i.isScheduled).toList();
+        _items.where((i) => i.isScheduled && !i.isDue).toList();
     return _itemsScheduled;
   }
 
@@ -76,7 +76,7 @@ class Category {
     int itemIndex,
     String newTitle,
     bool newIsToday,
-    DateTime newScheduledDate,
+    int newScheduledDate,
   ) {
     //_items[itemIndex].update(newTitle, newScheduledDate);
     _items[itemIndex].isToday = newIsToday;

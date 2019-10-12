@@ -30,17 +30,17 @@ class _TodayPageState extends State<TodayPage> {
         title: Text("Today"),
         backgroundColor: headerColor,
         elevation: 0.0,
-        // actions: <Widget>[
-        //   IconButton(
-        //     icon: Icon(Icons.settings),
-        //     onPressed: () {
-        //       Navigator.push(
-        //         context,
-        //         MaterialPageRoute(builder: (context) => SettingsPage()),
-        //       );
-        //     },
-        //   )
-        // ],
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SettingsPage()),
+              );
+            },
+          )
+        ],
       ),
       body: _buildBody(),
       floatingActionButton: NewItemFab(
