@@ -6,36 +6,39 @@ import 'package:today/widgets/category_header.dart';
 import 'package:today/widgets/todo_list.dart';
 import 'package:today/models/app_state.dart';
 import 'package:today/models/todo_item.dart';
-// import 'package:today/models/todo_category.dart';
+import 'package:today/models/category.dart';
 // import 'package:today/models/todo_item.dart';
-// import 'package:today/pages/item_page.dart';
+import 'package:today/pages/item_page.dart';
+import 'package:today/widgets/new_item_fab.dart';
 
-class LaterPage extends StatefulWidget {
+class ToDoPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return _LaterPageState();
+    return _ToDoPageState();
   }
 }
 
-class _LaterPageState extends State<LaterPage> {
-  Color headerColor = AppConstants.laterHeaderColor;
+class _ToDoPageState extends State<ToDoPage> {
+  Color headerColor = AppConstants.todoHeaderColor;
 
   @override
   Widget build(BuildContext context) {
     //AppConstants.changeStatusColor(AppConstants.laterColor);
 
-    print("Build: later page");
+    print("Build: todo page");
     return Scaffold(
-        appBar: AppBar(
-          title: Text("Later"),
-          backgroundColor: headerColor,
-          elevation: 0.0,
-        ),
-        body: _buildBody()
-        //floatingActionButton: _buildFloatingActionButton(),
-        );
+      appBar: AppBar(
+        title: Text("To Do"),
+        backgroundColor: headerColor,
+        elevation: 0.0,
+      ),
+      body: _buildBody(),
+      floatingActionButton: NewItemFab(
+        color: headerColor,
+        initIsToday: false,
+      ),
+    );
   }
-
 
   Widget _buildBody() {
     return ScopedModelDescendant(
@@ -44,6 +47,11 @@ class _LaterPageState extends State<LaterPage> {
           future: appState.storage.ready,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             List<ToDoItem> items;
+            // if (snapshot.data == null) {
+            //   return Center(
+            //     child: CircularProgressIndicator(),
+            //   );
+            // }
 
             if (snapshot.data == null) {
               return Column(
@@ -56,14 +64,9 @@ class _LaterPageState extends State<LaterPage> {
                 ],
               );
             }
-            // if (snapshot.data == null) {
-            //   return Center(
-            //     child: CircularProgressIndicator(),
-            //   );
-            // }
 
             appState.initialize();
-            items = appState.allScheduledItems;
+            items = appState.allToDoItems;
 
             return Column(
               children: <Widget>[
@@ -73,7 +76,7 @@ class _LaterPageState extends State<LaterPage> {
                 ),
                 ToDoList(
                   items: items,
-                  pageType: PageType.later,
+                  pageType: PageType.todo,
                 ),
               ],
             );
@@ -83,6 +86,23 @@ class _LaterPageState extends State<LaterPage> {
     );
   }
 
+  // Widget _buildFloatingActionButton() {
+  //   // Category category =
+  //   //     ScopedModel.of<AppState>(context).categories[widget.categoryIndex];
+
+  //   return FloatingActionButton(
+  //     child: Icon(Icons.add),
+  //     backgroundColor: Colors.indigo,
+  //     onPressed: () {
+  //       Navigator.of(context, rootNavigator: true).push(
+  //         MaterialPageRoute(
+  //             builder: (context) => ItemPage(
+  //                   categoryIndex: 2, // defaults to fit in?
+  //                 )),
+  //       );
+  //     },
+  //   );
+  // }
   // Widget _buildHeader() {
   //   return Container(
   //     padding: EdgeInsets.all(10.0),

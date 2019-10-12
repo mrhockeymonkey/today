@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:today/models/todo_item.dart';
 
 class Category {
-  final String name;
+  String name;
   final Color color;
   List<ToDoItem> _items = [];
 
@@ -35,10 +35,11 @@ class Category {
     return _itemsSorted;
   }
 
-  // getter for all today items
-  List<ToDoItem> get itemsToday {
-    List<ToDoItem> _itemsToday = _items.where((i) => i.isToday).toList();
-    return _itemsToday;
+  // getter for all todo items
+  List<ToDoItem> get itemsToDo {
+    List<ToDoItem> _itemsCompleted =
+        _items.where((i) => !i.isComplete && !i.isScheduled && !i.isToday).toList();
+    return _itemsCompleted;
   }
 
   // getter for all completed items
@@ -47,10 +48,16 @@ class Category {
     return _itemsCompleted;
   }
 
+  // getter for all today items
+  List<ToDoItem> get itemsToday {
+    List<ToDoItem> _itemsToday = _items.where((i) => i.isToday).toList();
+    return _itemsToday;
+  }
+
   // getter for all scheduled items
   List<ToDoItem> get itemsScheduled {
     List<ToDoItem> _itemsScheduled =
-        _items.where((i) => i.isScheduled).toList();
+        _items.where((i) => i.isScheduled && !i.isDue).toList();
     return _itemsScheduled;
   }
 
@@ -65,10 +72,20 @@ class Category {
     _items.add(item);
   }
 
-  void updateItem(int itemIndex, String newTitle, DateTime newScheduledDate) {
+  void updateItem(
+    int itemIndex,
+    String newTitle,
+    bool newIsToday,
+    int newScheduledDate,
+  ) {
     //_items[itemIndex].update(newTitle, newScheduledDate);
-    _items[itemIndex].title = newTitle;
-    _items[itemIndex].scheduledDate = newScheduledDate;
+    _items[itemIndex].isToday = newIsToday;
+    if (newTitle != null) {
+      _items[itemIndex].title = newTitle;
+    }
+    if (newScheduledDate != null) {
+      _items[itemIndex].scheduledDate = newScheduledDate;
+    }
   }
 
   void removeItem(ToDoItem item) {

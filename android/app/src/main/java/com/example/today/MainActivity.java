@@ -1,4 +1,4 @@
-package com.example.today;
+package uk.co.mrhockeymonkey.today;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;

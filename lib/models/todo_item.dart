@@ -5,49 +5,44 @@ class ToDoItem {
   String title;
   UniqueKey key = UniqueKey();
   bool isComplete = false;
-  DateTime _todayDate;
-  DateTime _scheduledDate;
+  bool isToday = false;
+  int scheduledDate = 0;
+  //DateTime _scheduledDate;
 
   ToDoItem({
     @required this.title,
-  }) {
-    _todayDate = DateTime.fromMillisecondsSinceEpoch(0);
-    _scheduledDate = DateTime.fromMillisecondsSinceEpoch(0);
-  }
+  });
+  // {
+  //   _scheduledDate = 0;
+  // }
 
   ToDoItem.fromStorage({
     @required this.title,
     @required this.isComplete,
-    todayMilliseconds,
-    scheduledMilliseconds,
-  }) {
-    _todayDate = DateTime.fromMillisecondsSinceEpoch(todayMilliseconds ?? 0);
-    _scheduledDate =
-        DateTime.fromMillisecondsSinceEpoch(scheduledMilliseconds ?? 0);
-  }
+    @required this.isToday,
+    @required this.scheduledDate
+    //scheduledMilliseconds,
+  });
+  // {
+  //   _scheduledDate =
+  //       DateTime.fromMillisecondsSinceEpoch(scheduledMilliseconds ?? 0);
+  // }
 
-  DateTime get scheduledDate {
-    return _scheduledDate;
-  }
+  //---------- getter/setter for scheduledDate
+  // DateTime get scheduledDate {
+  //   return _scheduledDate;
+  // }
 
-  set scheduledDate(DateTime date) {
-    // we exclude the concept of time and focus only on dates
-    _scheduledDate = DateTime(date.year, date.month, date.day);
-  }
+  // set scheduledDate(DateTime date) {
+  //   //_scheduledDate = DateTime(date.year, date.month, date.day);
+  //   _scheduledDate = date;
+  // }
 
-  bool get isToday {
-    var now = DateTime.now();
-    if (_todayDate.day == now.day &&
-        _todayDate.month == now.month &&
-        _todayDate.year == now.year) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
+  //--------- helper methods for conditionals
   bool get isScheduled {
-    if (_scheduledDate.millisecondsSinceEpoch > 0) {
+    // if the scheduledDate value is anything but 0 consider it to be scheduled
+    //if (_scheduledDate.millisecondsSinceEpoch > 0 && !isComplete) {
+    if (scheduledDate > 0 && !isComplete) {
       return true;
     } else {
       return false;
@@ -55,30 +50,58 @@ class ToDoItem {
   }
 
   bool get isDue {
-    var now = DateTime.now();
-    var zero = DateTime.fromMillisecondsSinceEpoch(0);
-    if (_scheduledDate.isBefore(now) && _scheduledDate != zero) {
+    // if the scheduledDate is in the past then consider it to be due
+    var todaysDate = ToDoItem.toSortableDate(DateTime.now());
+    //var scheduledSortable = ToDoItem.toSortableDate(_scheduledDate);
+    //var zero = DateTime.fromMillisecondsSinceEpoch(0);
+
+    //if (scheduledSortable.isBefore(nowSortable) && _scheduledDate != zero) {
+    if (scheduledDate <= todaysDate && scheduledDate > 0) {
       return true;
     } else {
       return false;
     }
   }
 
+  // REMOVE?
   bool get isOverDue {
     // calculate the difference in time from now
-    var now = DateTime.now();
-    var today = DateTime(now.year, now.month, now.day);
-    var diffInDays = today.difference(_scheduledDate).inDays;
-    if (diffInDays >= 1) {
-      return true;
-    } else {
+    // done using sortable integer of format yyyymmdd 
+    if (!isScheduled) {
       return false;
+    } else {
+      //var now = DateTime.now();
+      //var todaySortable = ToDoItem.toSortableDate(now);
+      // now.toint.parse(
+      //    now.year.toString() + now.month.toString() + now.day.toString());
+      //var scheduledSortable = ToDoItem.toSortableDate(_scheduledDate);
+      // int.parse(_scheduledDate.year.toString() +
+       //   _scheduledDate.month.toString() +
+       //   _scheduledDate.day.toString());
+      var todaysDate = ToDoItem.toSortableDate(DateTime.now());
+
+      if (scheduledDate < todaysDate) {
+        return true;
+      } else {
+        return false;
+      }
     }
+  }
+
+  int get daysOverdue {
+    DateTime now = DateTime.now();
+    DateTime then = ToDoItem.toDateTime(scheduledDate);
+
+    // var then = DateTime()
+    var diff = now.difference(then);
+
+    return diff.inDays;
   }
 
   String get dateFormattedStr {
-    var formatter = new DateFormat('d MMM');
-    String formatted = formatter.format(_scheduledDate);
+    DateFormat formatter = new DateFormat('d MMM');
+    DateTime date = ToDoItem.toDateTime(scheduledDate);
+    String formatted = formatter.format(date);
     return formatted;
   }
 
@@ -87,13 +110,36 @@ class ToDoItem {
 
     m['title'] = title;
     m['isComplete'] = isComplete;
-    m['todayMilliseconds'] = _todayDate.millisecondsSinceEpoch;
-    m['scheduledMilliseconds'] = _scheduledDate.millisecondsSinceEpoch;
+    m['isToday'] = isToday;
+    m['scheduledDate'] = scheduledDate;
 
     return m;
   }
 
-  void update(String newTitle, DateTime newScheduledDate) {
+  static int toSortableDate(DateTime date) {
+    DateFormat formatter = new DateFormat('yyyyMMdd');
+    String sortableStr = formatter.format(date);
+    //String sortableStr = date.year.toString() + date.month.toString() + date.day.toString();
+    int sortableInt = int.parse(sortableStr);
+    return sortableInt;
+  }
+
+  static DateTime toDateTime(int sortableDate) {
+    String strDate = sortableDate.toString();
+    int year = int.parse(strDate.substring(0,4));
+    int month = int.parse(strDate.substring(4,6));
+    int day = int.parse(strDate.substring(6,8));
+    return DateTime(year, month, day);
+  }
+  // static DateTime toSortableDate(DateTime date) {
+  //   DateTime sortable = DateTime(date.year, date.month, date.day);
+  //   // int sortable = int.parse(date.year.toString() +
+  //   //       date.month.toString() +
+  //   //       date.day.toString());
+  //   return sortable;
+  // }
+
+  void update(String newTitle, int newScheduledDate) {
     title = newTitle;
     scheduledDate = newScheduledDate;
   }
@@ -101,21 +147,21 @@ class ToDoItem {
   void markCompleted() {
     print("marking $title as completed");
     isComplete = true;
-    _scheduledDate = DateTime.fromMillisecondsSinceEpoch(0);
-    key = UniqueKey();
+    isToday = false;
+    scheduledDate = 0;
+    //key = UniqueKey(); ???
   }
 
   void markToday() {
     print("marking $title as today");
-    //isToday = true;
-    _todayDate = DateTime.now();
+    isToday = true;
     key = UniqueKey();
   }
 
-  void markScheduled(DateTime newScheduledDate) {
+  void markScheduled(int newScheduledDate) {
     print("marking $title as scheduled");
     scheduledDate = newScheduledDate;
-    _todayDate = DateTime.fromMillisecondsSinceEpoch(0);
+    isToday = false;
     key = UniqueKey();
   }
 

@@ -3,7 +3,7 @@ import 'package:scoped_model/scoped_model.dart';
 import 'package:localstorage/localstorage.dart';
 
 import 'package:today/models/todo_item.dart';
-import './todo_category.dart';
+import './category.dart';
 
 class AppState extends Model {
   // for now we just declare categories here until we can save data to phone
@@ -20,10 +20,10 @@ class AppState extends Model {
   }
 
   // getter for all items across all categories
-  List<ToDoItem> get allItems {
+  List<ToDoItem> get allToDoItems {
     List<ToDoItem> _items = [];
     for (var c in _categories) {
-      _items.addAll(c.items);
+      _items.addAll(c.itemsToDo);
     }
     return _items;
   }
@@ -34,6 +34,7 @@ class AppState extends Model {
     for (var c in _categories) {
       _todayItems.addAll(c.itemsTodayAndDue);
     }
+    //_todayItems.sort((a, b) => a.isComplete.toString().compareTo(b.isComplete.toString()));
     return _todayItems;
   }
 
@@ -52,6 +53,7 @@ class AppState extends Model {
     for (var c in _categories) {
       _scheduledItems.addAll(c.itemsScheduled);
     }
+    _scheduledItems.sort((a, b) => a.scheduledDate.compareTo(b.scheduledDate));
     return _scheduledItems;
   }
 
@@ -67,7 +69,7 @@ class AppState extends Model {
   int categoryIndexOf(ToDoItem item) {
     int index;
     for (var c in _categories) {
-      index =_categories.indexOf(c);
+      index = _categories.indexOf(c);
       if (c.items.indexOf(item) >= 0) {
         break;
       }
@@ -81,14 +83,36 @@ class AppState extends Model {
     saveToStorage();
   }
 
+  // update and item in a category
   void updateItemInCategory({
-    int categoryIndex,
-    int itemIndex,
+    @required int categoryIndex,
+    @required int itemIndex,
     String newTitle,
-    DateTime newScheduledDate,
+    bool newIsToday,
+    int newScheduledDate,
   }) {
     _categories[categoryIndex]
-        .updateItem(itemIndex, newTitle, newScheduledDate);
+        .updateItem(itemIndex, newTitle, newIsToday, newScheduledDate);
+    saveToStorage();
+  }
+
+  // update an item and moves it to a new category
+  void updateItemMoveCategory({
+    @required int originalCategoryIndex,
+    @required int newCategoryIndex,
+    @required int itemIndex,
+    String newTitle,
+    bool newIsToday,
+    int newScheduledDate,
+  }) {
+    var originalCategory = _categories[originalCategoryIndex];
+    var newCategory = _categories[newCategoryIndex];
+    var item = originalCategory.items[itemIndex];
+    originalCategory.removeItem(item);
+    newCategory.addItem(item);
+    var newIndex = newCategory.items.indexOf(item);
+    newCategory.updateItem(newIndex, newTitle, newIsToday, newScheduledDate);
+
     saveToStorage();
   }
 
@@ -100,6 +124,20 @@ class AppState extends Model {
     saveToStorage();
   }
 
+  String getJson() {
+    List jsonEncoded = [];
+    String jsonString = "";
+    _categories.forEach((i) {
+      jsonEncoded.add(i.toJsonEncodable());
+    });
+
+    jsonEncoded.forEach((i) {
+      jsonString = jsonString + i.toString();
+    });
+
+    return jsonString;
+  }
+
   void saveToStorage() {
     List jsonEncoded = [];
     _categories.forEach((i) {
@@ -107,7 +145,8 @@ class AppState extends Model {
     });
 
     storage.setItem('appdata', jsonEncoded);
-    print("saved to local storage");
+    notifyListeners();
+    print("saved to local storage, notified listerners");
   }
 
   /// reads from local storage or creates some default appdata if not found
@@ -115,25 +154,25 @@ class AppState extends Model {
     List appData = storage.getItem('appdata');
     if (appData == null || appData.isEmpty) {
       print("AppState.initialize: No app data found, initializing defaults");
-      throw "lost storage???";
-      // _categories
-      //   ..add(Category(name: 'FOCUS', color: const Color(0xFFEE534F)))
-      //   ..add(Category(name: 'GOALS', color: const Color(0xFF00B8D4)))
-      //   ..add(Category(name: 'FIT IN', color: const Color(0xFFFBAF28)))
-      //   ..add(Category(name: 'BACKBURNER', color: const Color(0xFF01BFA5)));
-      // _categories[0]
-      //   ..addItem(ToDoItem(title: 'focus1'))
-      //   ..addItem(ToDoItem(title: 'focus2'));
-      // _categories[1]
-      //   ..addItem(ToDoItem(title: 'goals1'))
-      //   ..addItem(ToDoItem(title: 'goals2'));
-      // _categories[2]
-      //   ..addItem(ToDoItem(title: 'fitin1'))
-      //   ..addItem(ToDoItem(title: 'fitin2'));
-      // _categories[3]
-      //   ..addItem(ToDoItem(title: 'back1'))
-      //   ..addItem(ToDoItem(title: 'back2'));
-      // saveToStorage();
+      //throw "lost storage???";
+      _categories
+        ..add(Category(name: 'FOCUS', color: const Color(0xFFEE534F)))
+        ..add(Category(name: 'GOALS', color: const Color(0xFF00B8D4)))
+        ..add(Category(name: 'FIT IN', color: const Color(0xFFFBAF28)))
+        ..add(Category(name: 'BACKBURNER', color: const Color(0xFF01BFA5)));
+      _categories[0]
+        ..addItem(ToDoItem(title: 'focus1'))
+        ..addItem(ToDoItem(title: 'focus2'));
+      _categories[1]
+        ..addItem(ToDoItem(title: 'goals1'))
+        ..addItem(ToDoItem(title: 'goals2'));
+      _categories[2]
+        ..addItem(ToDoItem(title: 'fitin1'))
+        ..addItem(ToDoItem(title: 'fitin2'));
+      _categories[3]
+        ..addItem(ToDoItem(title: 'back1'))
+        ..addItem(ToDoItem(title: 'back2'));
+      saveToStorage();
     } else {
       print("AppState.initialize: App data found, loading from local storage");
       _categories.clear();
@@ -141,11 +180,14 @@ class AppState extends Model {
         Category c = Category(name: i['name'], color: Color(i['color']));
         List l = i['items'];
         l.forEach((j) {
-          c.addItem(ToDoItem.fromStorage(
+          c.addItem(
+            ToDoItem.fromStorage(
               title: j['title'],
               isComplete: j['isComplete'],
-              todayMilliseconds: j['todayMilliseconds'] ?? null,
-              scheduledMilliseconds: j['scheduledMilliseconds'] ?? null));
+              isToday: j['isToday'],
+              scheduledDate: j['scheduledDate'] ?? 0,
+            ),
+          );
         });
         _categories.add(c);
       });

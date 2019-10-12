@@ -2,14 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'package:today/models/app_constants.dart';
 import 'package:today/pages/later_page.dart';
+import 'package:today/pages/todo_page.dart';
 import 'package:today/pages/today_page.dart';
 import 'package:today/pages/completed_page.dart';
-import 'package:today/widgets/category_navigator.dart';
-
-import './categories_page.dart';
-import '../pages/category_page.dart';
-
-import '../models/todo_category.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -19,42 +14,21 @@ class Home extends StatefulWidget {
   }
 }
 
-class _HomeState extends State<Home> with RouteAware {
-  int _currentIndex = 1;
-
-  @override
-  void didChangeDependencies() {
-    final routeObserver = AppConstants.of(context).routeObserver;
-    super.didChangeDependencies();
-    routeObserver.subscribe(this, ModalRoute.of(context));
-  }
-
-  @override
-  void dispose() {
-    final routeObserver = AppConstants.of(context).routeObserver;
-    routeObserver.unsubscribe(this);
-    super.dispose();
-  }
-
-  // didPopNext called when the route above this is popped (uses RouteAware)
-  @override
-  void didPopNext() {
-    AppConstants.changeStatusColor(Color(0xFF6A88BA));
-  }
+class _HomeState extends State<Home> {
+  int _currentIndex = 2;
 
   @override
   Widget build(BuildContext context) {
     print("BUILD - home_widget");
+    AppConstants.changeStatusColor(Colors.transparent);
     // a navigator key to for use with CategoryNavigator
-    final navigatorKey = GlobalKey<NavigatorState>();
-    
+    //final navigatorKey = GlobalKey<NavigatorState>();
+
     // a list of pages to display per nav bar item
     final _pages = [
       LaterPage(),
+      ToDoPage(),
       TodayPage(),
-      CategoryNavigator(
-        navigatorKey: navigatorKey,
-      ),
       CompletedPage(),
     ];
 
@@ -65,12 +39,12 @@ class _HomeState extends State<Home> with RouteAware {
         title: Text('Later'),
       ),
       BottomNavigationBarItem(
-        icon: Icon(Icons.done),
-        title: Text('Today'),
-      ),
-      BottomNavigationBarItem(
         icon: Icon(Icons.list),
         title: Text('To Do'),
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(Icons.event_available),
+        title: Text('Today'),
       ),
       BottomNavigationBarItem(
         icon: Icon(Icons.done_all),
@@ -78,15 +52,30 @@ class _HomeState extends State<Home> with RouteAware {
       ),
     ];
 
-    return Scaffold(
-      body: _pages.elementAt(_currentIndex),
-      bottomNavigationBar: BottomNavigationBar(
-        onTap: onTabTapped,
-        currentIndex: _currentIndex,
-        type: BottomNavigationBarType.fixed,
-        items: _bottomNavigationBarItems,
+    return WillPopScope(
+      onWillPop: () {
+        print("back pressed");
+      },
+      child: Scaffold(
+        body: _pages.elementAt(_currentIndex),
+        bottomNavigationBar: BottomNavigationBar(
+          onTap: onTabTapped,
+          currentIndex: _currentIndex,
+          type: BottomNavigationBarType.fixed,
+          items: _bottomNavigationBarItems,
+          fixedColor: AppConstants.highlightColor,
+        ),
       ),
     );
+    // return Scaffold(
+    //   body: _pages.elementAt(_currentIndex),
+    //   bottomNavigationBar: BottomNavigationBar(
+    //     onTap: onTabTapped,
+    //     currentIndex: _currentIndex,
+    //     type: BottomNavigationBarType.fixed,
+    //     items: _bottomNavigationBarItems,
+    //   ),
+    // );
   }
 
   // updates displayed page based on selected nav bar item

@@ -28,7 +28,7 @@ class _CategoryState extends State<CategoryPage> {
     print("BUILD - category_page");
     Category category =
         ScopedModel.of<AppState>(context).categories[widget.categoryIndex];
-    AppConstants.changeStatusColor(category.color);
+    //AppConstants.changeStatusColor(category.color);
 
     return Scaffold(
       appBar: AppBar(
