@@ -218,8 +218,7 @@ class _ItemPageState extends State<ItemPage> {
                   icon: Icon(Icons.cancel),
                   onPressed: () {
                     setState(() {
-                      _formData['itemScheduledDate'] =
-                          DateTime.fromMillisecondsSinceEpoch(0);
+                      _formData['itemScheduledDate'] = 0;
                     });
                   },
                 ),

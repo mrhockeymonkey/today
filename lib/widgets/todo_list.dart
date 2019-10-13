@@ -10,8 +10,8 @@ import '../models/category.dart';
 
 // we want different swipe action and backgrounds based on the type of page
 enum PageType {
-  later,
   todo,
+  later,
   today,
   completed,
 }
@@ -68,7 +68,7 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
                 widget.pageType == PageType.completed) {
               return false;
             } else if (direction == DismissDirection.endToStart &&
-                widget.pageType == PageType.later) {
+                widget.pageType == PageType.todo) {
               return false;
             } else {
               return true;
@@ -101,10 +101,10 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
     if (direction == DismissDirection.startToEnd) {
       setState(() {
         switch (widget.pageType) {
-          case PageType.later:
+          case PageType.todo:
             item.markToday();
             break;
-          case PageType.todo:
+          case PageType.later:
             item.markToday();
             break;
           case PageType.today:
@@ -120,12 +120,10 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
     else {
       setState(() {
         switch (widget.pageType) {
-          case PageType.later:
-            break; //nothing to do
           case PageType.todo:
-            DateTime tomorrow = DateTime.now().add(Duration(days: 1));
-            int intTomorrow = ToDoItem.toSortableDate(tomorrow);
-            item.markScheduled(intTomorrow);
+            break; // nothing to do
+          case PageType.later:
+            item.markScheduled(0); // 0 effectively being unscheduled
             break;
           case PageType.today:
             DateTime tomorrow = DateTime.now().add(Duration(days: 1));
@@ -145,9 +143,9 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
   Widget _buildBackground(PageType type, ToDoItem item) {
     var align = MainAxisAlignment.start;
     switch (type) {
-      case PageType.later:
-        return _buildTodayBackground(align);
       case PageType.todo:
+        return _buildTodayBackground(align);
+      case PageType.later:
         return _buildTodayBackground(align);
       case PageType.today:
         return _buildCompleteBackground(align);
@@ -160,10 +158,10 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
   Widget _buildSecondaryBackground(PageType type) {
     var align = MainAxisAlignment.end;
     switch (type) {
-      case PageType.later:
-        return Container();
       case PageType.todo:
-        return _buildLaterBackground(align);
+        return Container();
+      case PageType.later:
+        return _buildToDoBackground(align);
       case PageType.today:
         return _buildLaterBackground(align);
       case PageType.completed:
@@ -189,6 +187,24 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
     );
   }
 
+  Widget _buildToDoBackground(MainAxisAlignment align) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 15.0),
+      //alignment: Alignment.centerRight,
+      color: AppConstants.todoColor,
+      child: Row(
+        mainAxisAlignment: align,
+        children: <Widget>[
+          Icon(
+            Icons.list,
+            color: Colors.white,
+          ),
+          Text('BACKLOG')
+        ],
+      ),
+    );
+  }
+
   Widget _buildLaterBackground(MainAxisAlignment align) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 15.0),
@@ -201,7 +217,7 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
             Icons.today,
             color: Colors.white,
           ),
-          Text('LATER')
+          Text('TOMORROW')
         ],
       ),
     );

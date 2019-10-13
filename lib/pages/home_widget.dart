@@ -26,8 +26,8 @@ class _HomeState extends State<Home> {
 
     // a list of pages to display per nav bar item
     final _pages = [
-      LaterPage(),
       ToDoPage(),
+      LaterPage(),
       TodayPage(),
       CompletedPage(),
     ];
@@ -35,12 +35,12 @@ class _HomeState extends State<Home> {
     // a list of nav bar items
     final List<BottomNavigationBarItem> _bottomNavigationBarItems = [
       BottomNavigationBarItem(
-        icon: Icon(Icons.today),
-        title: Text('Later'),
+        icon: Icon(Icons.list),
+        title: Text('Backlog'),
       ),
       BottomNavigationBarItem(
-        icon: Icon(Icons.list),
-        title: Text('To Do'),
+        icon: Icon(Icons.today),
+        title: Text('Scheduled'),
       ),
       BottomNavigationBarItem(
         icon: Icon(Icons.event_available),
