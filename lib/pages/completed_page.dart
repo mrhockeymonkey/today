@@ -6,6 +6,7 @@ import 'package:today/widgets/category_header.dart';
 import 'package:today/models/app_state.dart';
 import 'package:today/models/todo_item.dart';
 import 'package:today/widgets/todo_list.dart';
+import './settings_page.dart';
 
 class CompletedPage extends StatefulWidget {
   @override
@@ -26,6 +27,17 @@ class _CompletedPageState extends State<CompletedPage> {
         title: Text("Completed"),
         backgroundColor: headerColor,
         elevation: 0.0,
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SettingsPage()),
+              );
+            },
+          )
+        ],
       ),
       body: _buildBody(),
       floatingActionButton: _buildFloatingActionButton(),
