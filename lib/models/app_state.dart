@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:localstorage/localstorage.dart';
+//import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:today/models/todo_item.dart';
 import './category.dart';
@@ -8,14 +9,48 @@ import './category.dart';
 class AppState extends Model {
   // for now we just declare categories here until we can save data to phone
   List<Category> _categories = [];
-  //List<String>
+  // final List<String> _categoryKeys = [
+  //   "categoryName0",
+  //   "categoryName1",
+  //   "categoryName2",
+  //   "categoryName3"
+  // ];
+  // final List<String> _categoryDefaultNames = [
+  //   "Default1",
+  //   "Default2",
+  //   "Default3",
+  //   "Default4"
+  // ];
+  
+  // Future<String> getCategoryName(int categoryId) async {
+	//   final SharedPreferences prefs = await SharedPreferences.getInstance();
+  // 	String key = _categoryKeys[categoryId];
+  //   String defaultName = _categoryDefaultNames[categoryId];
+  //   return prefs.getString(key) ?? defaultName;
+  // }
+  // Future<String> getCategoryName(int categoryId) async {
+  //   await settings.ready;
+  //   String key = _categoryKeys[categoryId];
+  //   String defaultName = _categoryDefaultNames[categoryId];
+  //   return settings.getItem(key) ?? defaultName;
+  // }
+
+  // List<String> categoryNames = [
+  //   "FOCUS",
+  //   "SCHMOALS",
+  //   "FIT IN",
+  //   "MEH"
+  // ];
 
   final LocalStorage storage = new LocalStorage('today_app');
+  //final LocalStorage settings = new LocalStorage('today_settings');
 
   // getter for categories
   List<Category> get categories {
     return List.from(_categories);
   }
+
+
 
   // getter for all items across all categories
   List<ToDoItem> get allToDoItems {
@@ -94,6 +129,14 @@ class AppState extends Model {
     saveToStorage();
   }
 
+  void updateCategoryName({
+    @required int categoryIndex,
+    @required String newName,
+  }) {
+    _categories[categoryIndex].name = newName;
+    saveToStorage();
+  }
+
   // update an item and moves it to a new category
   void updateItemMoveCategory({
     @required int originalCategoryIndex,
@@ -148,16 +191,16 @@ class AppState extends Model {
   }
 
   /// reads from local storage or creates some default appdata if not found
-  void initialize() {
+  void initialize() async {
     List appData = storage.getItem('appdata');
+
     if (appData == null || appData.isEmpty) {
       print("AppState.initialize: No app data found, initializing defaults");
-      //throw "lost storage???";
       _categories
-        ..add(Category(name: 'FOCUS', color: const Color(0xFFEE534F)))
-        ..add(Category(name: 'GOALS', color: const Color(0xFF00B8D4)))
-        ..add(Category(name: 'FIT IN', color: const Color(0xFFFBAF28)))
-        ..add(Category(name: 'BACKBURNER', color: const Color(0xFF01BFA5)));
+        ..add(Category(name: "one", color: const Color(0xFFEE534F)))
+        ..add(Category(name: "two", color: const Color(0xFF00B8D4)))
+        ..add(Category(name: "three", color: const Color(0xFFFBAF28)))
+        ..add(Category(name: "four", color: const Color(0xFF01BFA5)));
       _categories[0]
         ..addItem(ToDoItem(title: 'focus1'))
         ..addItem(ToDoItem(title: 'focus2'));

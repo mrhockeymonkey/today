@@ -9,6 +9,7 @@ import 'package:today/models/todo_item.dart';
 import 'package:today/models/category.dart';
 // import 'package:today/models/todo_item.dart';
 import 'package:today/pages/item_page.dart';
+import './settings_page.dart';
 import 'package:today/widgets/new_item_fab.dart';
 
 class ToDoPage extends StatefulWidget {
@@ -31,6 +32,17 @@ class _ToDoPageState extends State<ToDoPage> {
         title: Text("To Do"),
         backgroundColor: headerColor,
         elevation: 0.0,
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SettingsPage()),
+              );
+            },
+          )
+        ],
       ),
       body: _buildBody(),
       floatingActionButton: NewItemFab(

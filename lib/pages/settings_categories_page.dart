@@ -34,6 +34,7 @@ class _SettingsCategoriesPageState extends State<SettingsCategoriesPage> {
         itemCount: categories.length,
         itemBuilder: (BuildContext context, int index) {
           Category category = categories[index];
+          int categoryIndex = appState.categories.indexOf(category);
           return Card(
             color: category.color,
             elevation: 0.0,
@@ -41,7 +42,7 @@ class _SettingsCategoriesPageState extends State<SettingsCategoriesPage> {
               title: Text(category.name),
               trailing: IconButton(
                 icon: Icon(Icons.edit),
-                onPressed: () => _displayDialog(context),
+                onPressed: () => _displayDialog(context, categoryIndex),
               ),
             ),
           );
@@ -50,17 +51,28 @@ class _SettingsCategoriesPageState extends State<SettingsCategoriesPage> {
     );
   }
 
-  _displayDialog(BuildContext context) async {
+  _displayDialog(BuildContext context, int categoryId) async {
+    AppState appState = ScopedModel.of<AppState>(context);
+    _textFieldController.clear();
+    Category thisCategory = appState.categories[categoryId];
+
     return showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text('TextField in Dialog'),
+            title: Text('Category Name'),
             content: TextField(
               controller: _textFieldController,
-              decoration: InputDecoration(hintText: "TextField in Dialog"),
+              decoration: InputDecoration(hintText: thisCategory.name),
             ),
             actions: <Widget>[
+              new FlatButton(
+                child: new Text('OK'),
+                onPressed: () {
+                  appState.updateCategoryName(categoryIndex: categoryId, newName: _textFieldController.text.toUpperCase());
+                  Navigator.of(context).pop();
+                },
+              ),
               new FlatButton(
                 child: new Text('CANCEL'),
                 onPressed: () {
