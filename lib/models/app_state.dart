@@ -8,9 +8,7 @@ import './category.dart';
 class AppState extends Model {
   // for now we just declare categories here until we can save data to phone
   List<Category> _categories = [];
-
-  // the today category is immutable, core principal of the apps purpose
-  //final Category today = Category(name: 'TODAY', color: const Color(0xFF6A88BA));
+  //List<String>
 
   final LocalStorage storage = new LocalStorage('today_app');
 
