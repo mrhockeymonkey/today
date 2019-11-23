@@ -197,15 +197,15 @@ class AppState extends Model {
     if (appData == null || appData.isEmpty) {
       print("AppState.initialize: No app data found, initializing defaults");
       _categories
-        ..add(Category(name: "one", color: const Color(0xFFEE534F)))
-        ..add(Category(name: "two", color: const Color(0xFF00B8D4)))
-        ..add(Category(name: "three", color: const Color(0xFFFBAF28)))
-        ..add(Category(name: "four", color: const Color(0xFF01BFA5)));
+        ..add(Category(name: "MUST DO", color: const Color(0xFFEE534F)))
+        ..add(Category(name: "SHOULD DO", color: const Color(0xFF00B8D4)))
+        ..add(Category(name: "COULD DO", color: const Color(0xFFFBAF28)))
+        ..add(Category(name: "SOMEDAY MAYBE", color: const Color(0xFF01BFA5)));
       _categories[0]
         ..addItem(ToDoItem(title: 'focus1'))
         ..addItem(ToDoItem(title: 'focus2'));
       _categories[1]
-        ..addItem(ToDoItem(title: 'goals1'))
+        ..addItem(ToDoItem(title: 'Take out'))
         ..addItem(ToDoItem(title: 'goals2'));
       _categories[2]
         ..addItem(ToDoItem(title: 'fitin1'))
