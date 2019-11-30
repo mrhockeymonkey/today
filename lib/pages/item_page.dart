@@ -12,11 +12,10 @@ class ItemPage extends StatefulWidget {
   final int itemIndex;
   bool initIsToday;
 
-  ItemPage({
-    @required this.categoryIndex,
-    this.itemIndex,
-    @required this.initIsToday
-  });
+  ItemPage(
+      {@required this.categoryIndex,
+      this.itemIndex,
+      @required this.initIsToday});
 
   @override
   State<StatefulWidget> createState() {
@@ -82,6 +81,7 @@ class _ItemPageState extends State<ItemPage> {
         ],
       ),
       floatingActionButton: _buildFloatingActionButton(),
+      resizeToAvoidBottomInset: false,
     );
   }
 
@@ -106,6 +106,65 @@ class _ItemPageState extends State<ItemPage> {
     setState(() {
       _formData['itemIsToday'] = !_formData['itemIsToday'];
     });
+  }
+
+  //---------- repeat picker
+  Future _selectRepeat() async {
+    List<String> numbers = List<String>.generate(31, (i) => (i + 1).toString());
+
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text("foo"),
+              DropdownButton<String>(
+                items: numbers.map((String value) {
+                  return new DropdownMenuItem<String>(
+                    value: value,
+                    child: new Text(value),
+                  );
+                }).toList(),
+                onChanged: (_) {},
+              ),
+              Container(
+                child: Text("bar"),
+              ),
+              Container(
+                child: Text("baz"),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  //---------- days picker popup
+  Future _displayDialog(BuildContext context) async {
+    TextEditingController _textFieldController = TextEditingController();
+
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('TextField in Dialog'),
+            content: TextField(
+              controller: _textFieldController,
+              decoration: InputDecoration(hintText: "TextField in Dialog"),
+            ),
+            actions: <Widget>[
+              new FlatButton(
+                child: new Text('CANCEL'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              )
+            ],
+          );
+        });
   }
 
   //---------- category picker popup
@@ -235,6 +294,12 @@ class _ItemPageState extends State<ItemPage> {
           subtitle: Text("Mark item as due for a later date"),
           onTap: _selectDate,
         ),
+        ListTile(
+          leading: Icon(Icons.repeat, color: _categoryColor),
+          title: Text("Repeat"),
+          subtitle: Text("Schedule a new task once completed"),
+          onTap: _selectRepeat,
+        )
       ],
     );
   }
