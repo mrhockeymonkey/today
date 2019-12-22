@@ -6,6 +6,7 @@ import 'package:today/models/todo_item.dart';
 import 'package:today/models/app_state.dart';
 import 'package:today/models/category.dart';
 import 'package:today/models/app_constants.dart';
+import '../widgets/repeater_picker.dart';
 
 class ItemPage extends StatefulWidget {
   final int categoryIndex;
@@ -32,19 +33,23 @@ class _ItemPageState extends State<ItemPage> {
   int _originalCategoryIndex;
   String _categoryTitle;
   Color _categoryColor;
+  int _repeatNum;
+  String _repeatLen;
 
   @override
   void initState() {
     super.initState();
 
     _categoryIndex = widget.categoryIndex;
-    _originalCategoryIndex = widget.categoryIndex;
+    _originalCategoryIndex = widget
+        .categoryIndex; //used to detect if category was changed before saving
     var appState = ScopedModel.of<AppState>(context);
     var category = appState.categories[_categoryIndex];
     _categoryColor = category.color;
     _categoryTitle = category.name;
 
     if (widget.itemIndex != null) {
+      // form data for existing item
       var _item = category.items[widget.itemIndex];
       _itemIndex = widget.itemIndex;
       _isNewItem = false;
@@ -53,12 +58,17 @@ class _ItemPageState extends State<ItemPage> {
         "itemTitle": _item.title,
         "itemScheduledDate": _item.scheduledDate,
         "itemIsToday": _item.isToday,
+        "itemRepeatNum": _item.repeatNum,
+        "itemRepeatLen": _item.repeatLen
       };
     } else {
+      // form data for a new item
       _formData = {
         "itemTitle": null,
         "itemScheduledDate": 0,
         "itemIsToday": widget.initIsToday,
+        "itemRepeatNum": 0,
+        "itemRepeatLun": "days"
       };
     }
   }
@@ -110,62 +120,69 @@ class _ItemPageState extends State<ItemPage> {
 
   //---------- repeat picker
   Future _selectRepeat() async {
-    List<String> numbers = List<String>.generate(31, (i) => (i + 1).toString());
-
     await showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text("foo"),
-              DropdownButton<String>(
-                items: numbers.map((String value) {
-                  return new DropdownMenuItem<String>(
-                    value: value,
-                    child: new Text(value),
-                  );
-                }).toList(),
-                onChanged: (_) {},
-              ),
-              Container(
-                child: Text("bar"),
-              ),
-              Container(
-                child: Text("baz"),
-              ),
-            ],
-          ),
+          content: RepeatPicker(_updateRepeatValues),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('CANCEL'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            FlatButton(
+              child: Text('OK'),
+              onPressed: () {
+                setState(() {
+                  _formData['itemRepeatNum'] = _repeatNum;
+                  _formData['itemRepeatLen'] = _repeatLen;
+                  print("repeatNum: " +
+                      _repeatNum.toString() +
+                      " repeatLen: " +
+                      _repeatLen);
+                });
+                Navigator.of(context).pop();
+              },
+            )
+          ],
         );
       },
     );
   }
 
-  //---------- days picker popup
-  Future _displayDialog(BuildContext context) async {
-    TextEditingController _textFieldController = TextEditingController();
-
-    return showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text('TextField in Dialog'),
-            content: TextField(
-              controller: _textFieldController,
-              decoration: InputDecoration(hintText: "TextField in Dialog"),
-            ),
-            actions: <Widget>[
-              new FlatButton(
-                child: new Text('CANCEL'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              )
-            ],
-          );
-        });
+  void _updateRepeatValues(String newNum, String newLen) {
+    setState(() {
+      _repeatNum = int.parse(newNum);
+      _repeatLen = newLen;
+    });
   }
+
+  // //---------- days picker popup
+  // Future _displayDialog(BuildContext context) async {
+  //   TextEditingController _textFieldController = TextEditingController();
+
+  //   return showDialog(
+  //       context: context,
+  //       builder: (context) {
+  //         return AlertDialog(
+  //           title: Text('TextField in Dialog'),
+  //           content: TextField(
+  //             controller: _textFieldController,
+  //             decoration: InputDecoration(hintText: "TextField in Dialog"),
+  //           ),
+  //           actions: <Widget>[
+  //             new FlatButton(
+  //               child: new Text('CANCEL'),
+  //               onPressed: () {
+  //                 Navigator.of(context).pop();
+  //               },
+  //             )
+  //           ],
+  //         );
+  //       });
+  // }
 
   //---------- category picker popup
   Future _selectCategory() async {
@@ -267,7 +284,7 @@ class _ItemPageState extends State<ItemPage> {
         ListTile(
           leading: Icon(Icons.category, color: _categoryColor),
           title: Text('Category'),
-          subtitle: Text("Pick this item's category"),
+          subtitle: Text(_categoryTitle),
           onTap: _selectCategory,
         ),
         ListTile(
@@ -282,22 +299,32 @@ class _ItemPageState extends State<ItemPage> {
                   },
                 ),
           leading: _formData['itemScheduledDate'] == 0
-              ? Icon(
-                  Icons.today,
-                  color: Colors.grey,
-                )
-              : Icon(
-                  Icons.today,
-                  color: _categoryColor,
-                ),
+              ? Icon(Icons.today, color: Colors.grey)
+              : Icon(Icons.today, color: _categoryColor),
           title: Text('Schedule'),
-          subtitle: Text("Mark item as due for a later date"),
+          subtitle:  _formData['itemScheduledDate'] == 0
+            ? Text("Set a due date")
+            : Text(_formData['itemScheduledDate'].toString()), //this could be formatted nicer
           onTap: _selectDate,
         ),
         ListTile(
-          leading: Icon(Icons.repeat, color: _categoryColor),
+          trailing: _formData['itemRepeatNum'] == 0
+              ? null
+              : IconButton(
+                  icon: Icon(Icons.cancel),
+                  onPressed: () {
+                    setState(() {
+                      _formData['itemRepeatNum'] = 0;
+                    });
+                  },
+                ),
+          leading: _formData['itemRepeatNum'] == 0
+              ? Icon(Icons.repeat, color: Colors.grey)
+              : Icon(Icons.repeat, color: _categoryColor),
           title: Text("Repeat"),
-          subtitle: Text("Schedule a new task once completed"),
+          subtitle: _formData['itemRepeatNum'] == 0
+            ? Text("Set a recurring schedule")
+            : Text("Every " + _formData['itemRepeatNum'].toString() + " " + _formData['itemRepeatLen']),
           onTap: _selectRepeat,
         )
       ],
@@ -321,11 +348,15 @@ class _ItemPageState extends State<ItemPage> {
             //---------- handle adding a new item
             if (_isNewItem) {
               ToDoItem _newItem = ToDoItem(title: _formData['itemTitle']);
-              if (_formData['itemScheduledDate'] != null) {
+              if (_formData['itemScheduledDate'] != 0) {
                 _newItem.scheduledDate = _formData['itemScheduledDate'];
               }
               if (_formData['itemIsToday']) {
                 _newItem.isToday = true;
+              }
+              if (_formData['itemRepeatNum'] != 0) {
+                _newItem.repeatNum = _formData['itemRepeatNum'];
+                _newItem.repeatLen = _formData['itemRepeatLen'];
               }
               appState.addItemToCategory(_categoryIndex, _newItem);
             }
@@ -338,6 +369,8 @@ class _ItemPageState extends State<ItemPage> {
                 newTitle: _formData['itemTitle'],
                 newIsToday: _formData['itemIsToday'],
                 newScheduledDate: _formData['itemScheduledDate'],
+                newRepeatNum: _formData['itemRepeatNum'],
+                newRepeatLen: _formData['itemRepeatLen'],
               );
             }
             //---------- handle updating an existing item
@@ -348,6 +381,8 @@ class _ItemPageState extends State<ItemPage> {
                 newTitle: _formData['itemTitle'],
                 newIsToday: _formData['itemIsToday'],
                 newScheduledDate: _formData['itemScheduledDate'],
+                newRepeatNum: _formData['itemRepeatNum'],
+                newRepeatLen: _formData['itemRepeatLen'],
               );
             }
 

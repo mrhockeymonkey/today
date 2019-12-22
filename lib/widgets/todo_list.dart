@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'dart:async';
+import 'package:intl/intl.dart';
+import 'package:jiffy/jiffy.dart';
 
 import 'package:today/models/app_constants.dart';
 import 'package:today/models/todo_item.dart';
@@ -108,7 +110,52 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
             item.markToday();
             break;
           case PageType.today:
-            item.markCompleted();
+            DateTime next;
+
+            if (item.isRecurring) {
+              Jiffy now = Jiffy();
+
+              switch (item.repeatLen) {
+                case 'days':
+                  next = now.add(days: item.repeatNum);
+                  break;
+                case 'weeks':
+                  next = now.add(weeks: item.repeatNum);
+                  break;
+                case 'months':
+                  next = now.add(months: item.repeatNum);
+                  break;
+              }
+
+              Scaffold.of(context).showSnackBar(
+                SnackBar(
+                  content: Row(
+                    children: <Widget>[
+                      Icon(
+                        Icons.repeat,
+                        color: AppConstants.todoColor,
+                      ),
+                      Text(" Repeats on " + DateFormat.MMMd().format(next)),
+                    ],
+                  ),
+                ),
+              );
+            } else {
+              item.markCompleted();
+              Scaffold.of(context).showSnackBar(
+                SnackBar(
+                  content: Row(
+                    children: <Widget>[
+                      Icon(
+                        Icons.done,
+                        color: AppConstants.completeColor,
+                      ),
+                      Text(" Completed"),
+                    ],
+                  ),
+                ),
+              );
+            }
             break;
           case PageType.completed:
             break; //nothing to do
