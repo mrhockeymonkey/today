@@ -7,7 +7,8 @@ class ToDoItem {
   bool isComplete = false;
   bool isToday = false;
   int scheduledDate = 0;
-  //DateTime _scheduledDate;
+  int repeatNum = 0;
+  String repeatLen = 'days';
 
   ToDoItem({
     @required this.title,
@@ -20,8 +21,9 @@ class ToDoItem {
     @required this.title,
     @required this.isComplete,
     @required this.isToday,
-    @required this.scheduledDate
-    //scheduledMilliseconds,
+    @required this.scheduledDate,
+    @required this.repeatNum,
+    @required this.repeatLen,
   });
   // {
   //   _scheduledDate =
@@ -49,6 +51,14 @@ class ToDoItem {
     }
   }
 
+  bool get isRecurring {
+    if (repeatNum > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   bool get isDue {
     // if the scheduledDate is in the past then consider it to be due
     var todaysDate = ToDoItem.toSortableDate(DateTime.now());
@@ -66,7 +76,7 @@ class ToDoItem {
   // REMOVE?
   bool get isOverDue {
     // calculate the difference in time from now
-    // done using sortable integer of format yyyymmdd 
+    // done using sortable integer of format yyyymmdd
     if (!isScheduled) {
       return false;
     } else {
@@ -76,8 +86,8 @@ class ToDoItem {
       //    now.year.toString() + now.month.toString() + now.day.toString());
       //var scheduledSortable = ToDoItem.toSortableDate(_scheduledDate);
       // int.parse(_scheduledDate.year.toString() +
-       //   _scheduledDate.month.toString() +
-       //   _scheduledDate.day.toString());
+      //   _scheduledDate.month.toString() +
+      //   _scheduledDate.day.toString());
       var todaysDate = ToDoItem.toSortableDate(DateTime.now());
 
       if (scheduledDate < todaysDate) {
@@ -112,6 +122,8 @@ class ToDoItem {
     m['isComplete'] = isComplete;
     m['isToday'] = isToday;
     m['scheduledDate'] = scheduledDate;
+    m['repeatNum'] = repeatNum;
+    m['repeatLen'] = repeatLen;
 
     return m;
   }
@@ -126,9 +138,9 @@ class ToDoItem {
 
   static DateTime toDateTime(int sortableDate) {
     String strDate = sortableDate.toString();
-    int year = int.parse(strDate.substring(0,4));
-    int month = int.parse(strDate.substring(4,6));
-    int day = int.parse(strDate.substring(6,8));
+    int year = int.parse(strDate.substring(0, 4));
+    int month = int.parse(strDate.substring(4, 6));
+    int day = int.parse(strDate.substring(6, 8));
     return DateTime(year, month, day);
   }
   // static DateTime toSortableDate(DateTime date) {

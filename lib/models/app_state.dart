@@ -21,9 +21,9 @@ class AppState extends Model {
   //   "Default3",
   //   "Default4"
   // ];
-  
+
   // Future<String> getCategoryName(int categoryId) async {
-	//   final SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   final SharedPreferences prefs = await SharedPreferences.getInstance();
   // 	String key = _categoryKeys[categoryId];
   //   String defaultName = _categoryDefaultNames[categoryId];
   //   return prefs.getString(key) ?? defaultName;
@@ -49,8 +49,6 @@ class AppState extends Model {
   List<Category> get categories {
     return List.from(_categories);
   }
-
-
 
   // getter for all items across all categories
   List<ToDoItem> get allToDoItems {
@@ -123,9 +121,17 @@ class AppState extends Model {
     String newTitle,
     bool newIsToday,
     int newScheduledDate,
+    int newRepeatNum,
+    String newRepeatLen,
   }) {
-    _categories[categoryIndex]
-        .updateItem(itemIndex, newTitle, newIsToday, newScheduledDate);
+    _categories[categoryIndex].updateItem(
+      itemIndex,
+      newTitle,
+      newIsToday,
+      newScheduledDate,
+      newRepeatNum,
+      newRepeatLen,
+    );
     saveToStorage();
   }
 
@@ -145,6 +151,8 @@ class AppState extends Model {
     String newTitle,
     bool newIsToday,
     int newScheduledDate,
+    int newRepeatNum,
+    String newRepeatLen,
   }) {
     var originalCategory = _categories[originalCategoryIndex];
     var newCategory = _categories[newCategoryIndex];
@@ -152,7 +160,14 @@ class AppState extends Model {
     originalCategory.removeItem(item);
     newCategory.addItem(item);
     var newIndex = newCategory.items.indexOf(item);
-    newCategory.updateItem(newIndex, newTitle, newIsToday, newScheduledDate);
+    newCategory.updateItem(
+      newIndex,
+      newTitle,
+      newIsToday,
+      newScheduledDate,
+      newRepeatNum,
+      newRepeatLen,
+    );
 
     saveToStorage();
   }
@@ -227,6 +242,8 @@ class AppState extends Model {
               isComplete: j['isComplete'],
               isToday: j['isToday'],
               scheduledDate: j['scheduledDate'] ?? 0,
+              repeatNum: j['repeatNum'] ?? 0,
+              repeatLen: j['repeatLen'] ?? 'days',
             ),
           );
         });
