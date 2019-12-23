@@ -57,6 +57,7 @@ class _TodayPageState extends State<TodayPage> {
           future: appState.storage.ready,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             List<ToDoItem> items;
+            int backlogCount;
             //var formatter = new DateFormat.MMMMEEEEd();
             // Widget headerText = Text(
             //   DateFormat.MMMMEEEEd().format(DateTime.now()),
@@ -77,19 +78,61 @@ class _TodayPageState extends State<TodayPage> {
 
             appState.initialize();
             items = appState.allTodayItems;
+            backlogCount = appState.allToDoItems.length;
 
-            return Column(
-              children: <Widget>[
-                CategoryHeader(
-                  headerColor: headerColor,
-                  headerCount: items.length,
+            return CustomScrollView(
+              slivers: <Widget>[
+                                SliverList(
+                  delegate: SliverChildListDelegate(
+                    [
+                      CategoryHeader(
+                        headerColor: headerColor,
+                        headerCount: items.length,
+                      ),
+                    ],
+                  ),
                 ),
                 ToDoList(
                   items: items,
                   pageType: PageType.today,
                 ),
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  fillOverscroll: false,
+                  child: Container(),
+                ),
+                SliverList(
+                  delegate: SliverChildListDelegate([
+                    Ink(
+                      color: Colors.grey,
+                      height: AppConstants.headerHeight,
+                      child: ListTile(
+                        title: Text("${backlogCount.toString()} more items in backlog..."),
+                      ),
+                    ),
+                  ]),
+                )
               ],
             );
+
+            // return Column(
+            //   children: <Widget>[
+            //     CategoryHeader(
+            //       headerColor: headerColor,
+            //       headerCount: items.length,
+            //     ),
+            //     ToDoList(
+            //       items: items,
+            //       pageType: PageType.today,
+            //     ),
+            //     Ink(
+            //       color: Colors.grey,
+            //       child: ListTile(
+            //         title: Text("Plus x more items in backlog..."),
+            //       ),
+            //     )
+            //   ],
+            // );
           },
         );
       },

@@ -60,42 +60,80 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     print("BUILD - todo_list");
-    return Expanded(
-      child: ListView.builder(
-        itemCount: widget.items.length,
-        itemBuilder: (BuildContext context, int index) {
-          ToDoItem item = widget.items[index];
-          Future<bool> _confirmDismiss(DismissDirection direction) async {
-            if (direction == DismissDirection.startToEnd &&
-                widget.pageType == PageType.completed) {
-              return false;
-            } else if (direction == DismissDirection.endToStart &&
-                widget.pageType == PageType.todo) {
-              return false;
-            } else {
-              return true;
-            }
+    return SliverFixedExtentList(
+      itemExtent: 72.0,
+      delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
+        ToDoItem item = widget.items[index];
+        Future<bool> _confirmDismiss(DismissDirection direction) async {
+          if (direction == DismissDirection.startToEnd &&
+              widget.pageType == PageType.completed) {
+            return false;
+          } else if (direction == DismissDirection.endToStart &&
+              widget.pageType == PageType.todo) {
+            return false;
+          } else {
+            return true;
           }
+        }
 
-          return Dismissible(
-            key: item.key,
-            direction: DismissDirection.horizontal,
-            confirmDismiss: (DismissDirection direction) =>
-                _confirmDismiss(direction),
-            onDismissed: (DismissDirection direction) =>
-                _handleOnDismissed(direction, item),
-            background: _buildBackground(widget.pageType, item),
-            secondaryBackground: _buildSecondaryBackground(widget.pageType),
-            child: Column(
-              children: <Widget>[
-                _buildListTile(item),
-              ],
-            ),
-          );
-        },
-      ),
+        return Dismissible(
+          key: item.key,
+          direction: DismissDirection.horizontal,
+          confirmDismiss: (DismissDirection direction) =>
+              _confirmDismiss(direction),
+          onDismissed: (DismissDirection direction) =>
+              _handleOnDismissed(direction, item),
+          background: _buildBackground(widget.pageType, item),
+          secondaryBackground: _buildSecondaryBackground(widget.pageType),
+          child: Column(
+            children: <Widget>[
+              _buildListTile(item),
+            ],
+          ),
+        );
+      }, childCount: widget.items.length),
     );
   }
+  // //---------- build method
+  // @override
+  // Widget build(BuildContext context) {
+  //   print("BUILD - todo_list");
+  //   return Expanded(
+  //     child: ListView.builder(
+  //       itemCount: widget.items.length,
+  //       itemBuilder: (BuildContext context, int index) {
+  //         ToDoItem item = widget.items[index];
+  //         Future<bool> _confirmDismiss(DismissDirection direction) async {
+  //           if (direction == DismissDirection.startToEnd &&
+  //               widget.pageType == PageType.completed) {
+  //             return false;
+  //           } else if (direction == DismissDirection.endToStart &&
+  //               widget.pageType == PageType.todo) {
+  //             return false;
+  //           } else {
+  //             return true;
+  //           }
+  //         }
+
+  //         return Dismissible(
+  //           key: item.key,
+  //           direction: DismissDirection.horizontal,
+  //           confirmDismiss: (DismissDirection direction) =>
+  //               _confirmDismiss(direction),
+  //           onDismissed: (DismissDirection direction) =>
+  //               _handleOnDismissed(direction, item),
+  //           background: _buildBackground(widget.pageType, item),
+  //           secondaryBackground: _buildSecondaryBackground(widget.pageType),
+  //           child: Column(
+  //             children: <Widget>[
+  //               _buildListTile(item),
+  //             ],
+  //           ),
+  //         );
+  //       },
+  //     ),
+  //   );
+  // }
 
   //---------- helper methods
   void _handleOnDismissed(DismissDirection direction, ToDoItem item) {
@@ -137,26 +175,27 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
                         Icons.repeat,
                         color: AppConstants.todoColor,
                       ),
-                      Text(" Repeats on " + DateFormat.MMMd().format(next)),
+                      Text(
+                          " Repeats on " + DateFormat.MMMMEEEEd().format(next)),
                     ],
                   ),
                 ),
               );
             } else {
               item.markCompleted();
-              Scaffold.of(context).showSnackBar(
-                SnackBar(
-                  content: Row(
-                    children: <Widget>[
-                      Icon(
-                        Icons.done,
-                        color: AppConstants.completeColor,
-                      ),
-                      Text(" Completed"),
-                    ],
-                  ),
-                ),
-              );
+              // Scaffold.of(context).showSnackBar(
+              //   SnackBar(
+              //     content: Row(
+              //       children: <Widget>[
+              //         Icon(
+              //           Icons.done,
+              //           color: AppConstants.completeColor,
+              //         ),
+              //         Text(" Completed"),
+              //       ],
+              //     ),
+              //   ),
+              // );
             }
             break;
           case PageType.completed:
@@ -178,6 +217,20 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
             DateTime tomorrow = DateTime.now().add(Duration(days: 1));
             int intTomorrow = ToDoItem.toSortableDate(tomorrow);
             item.markScheduled(intTomorrow);
+            Scaffold.of(context).showSnackBar(
+              SnackBar(
+                content: Row(
+                  children: <Widget>[
+                    Icon(
+                      Icons.done,
+                      color: AppConstants.completeColor,
+                    ),
+                    Text(" Scheduled " +
+                        DateFormat.MMMMEEEEd().format(tomorrow)),
+                  ],
+                ),
+              ),
+            );
             break;
           case PageType.completed:
             item.markUncompleted();
@@ -284,7 +337,7 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
             Icons.done,
             color: Colors.white,
           ),
-          Text('COMPLETE')
+          Text('DONE')
         ],
       ),
     );
@@ -389,6 +442,7 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
           item.title,
           style: TextStyle(decoration: TextDecoration.lineThrough),
         ),
+        subtitle: Text("DONE"),
         trailing: Icon(Icons.done_all),
       ),
     );

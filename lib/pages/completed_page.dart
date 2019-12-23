@@ -17,14 +17,14 @@ class CompletedPage extends StatefulWidget {
 
 class _CompletedPageState extends State<CompletedPage> {
   Color headerColor = AppConstants.completedHeaderColor;
-  
+
   @override
   Widget build(BuildContext context) {
     //AppConstants.changeStatusColor(AppConstants.laterColor);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Completed"),
+        title: Text("Done"),
         backgroundColor: headerColor,
         elevation: 0.0,
         actions: <Widget>[
@@ -52,11 +52,6 @@ class _CompletedPageState extends State<CompletedPage> {
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             List<ToDoItem> items;
 
-            // if (snapshot.data == null) {
-            //   return Center(
-            //     child: CircularProgressIndicator(),
-            //   );
-            // }
             if (snapshot.data == null) {
               return Column(
                 children: <Widget>[
@@ -72,11 +67,17 @@ class _CompletedPageState extends State<CompletedPage> {
             appState.initialize();
             items = appState.allCompletedItems;
 
-            return Column(
-              children: <Widget>[
-                CategoryHeader(
-                  headerColor: headerColor,
-                  headerCount: items.length,
+            return CustomScrollView(
+              slivers: <Widget>[
+                SliverList(
+                  delegate: SliverChildListDelegate(
+                    [
+                      CategoryHeader(
+                        headerColor: headerColor,
+                        headerCount: items.length,
+                      ),
+                    ],
+                  ),
                 ),
                 ToDoList(
                   items: items,
@@ -84,6 +85,18 @@ class _CompletedPageState extends State<CompletedPage> {
                 ),
               ],
             );
+            // return Column(
+            //   children: <Widget>[
+            //     CategoryHeader(
+            //       headerColor: headerColor,
+            //       headerCount: items.length,
+            //     ),
+            //     ToDoList(
+            //       items: items,
+            //       pageType: PageType.completed,
+            //     ),
+            //   ],
+            // );
           },
         );
       },

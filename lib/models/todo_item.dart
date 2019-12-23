@@ -5,7 +5,7 @@ class ToDoItem {
   String title;
   UniqueKey key = UniqueKey();
   bool isComplete = false;
-  bool isToday = false;
+  bool isToday = true;
   int scheduledDate = 0;
   int repeatNum = 0;
   String repeatLen = 'days';
@@ -143,13 +143,6 @@ class ToDoItem {
     int day = int.parse(strDate.substring(6, 8));
     return DateTime(year, month, day);
   }
-  // static DateTime toSortableDate(DateTime date) {
-  //   DateTime sortable = DateTime(date.year, date.month, date.day);
-  //   // int sortable = int.parse(date.year.toString() +
-  //   //       date.month.toString() +
-  //   //       date.day.toString());
-  //   return sortable;
-  // }
 
   void update(String newTitle, int newScheduledDate) {
     title = newTitle;
@@ -159,9 +152,8 @@ class ToDoItem {
   void markCompleted() {
     print("marking $title as completed");
     isComplete = true;
-    isToday = false;
     scheduledDate = 0;
-    //key = UniqueKey(); ???
+    isToday = false;
   }
 
   void markToday() {
@@ -180,8 +172,7 @@ class ToDoItem {
   void markUncompleted() {
     print("marking $title as uncompleted");
     isComplete = false;
-    //isToday = false;
-    //isScheduled = false;
+    isToday = true;
     key = UniqueKey();
   }
 }

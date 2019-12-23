@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'dart:async';
+import 'package:intl/intl.dart';
 
 import 'package:today/models/todo_item.dart';
 import 'package:today/models/app_state.dart';
@@ -111,11 +112,68 @@ class _ItemPageState extends State<ItemPage> {
     }
   }
 
-  //---------- today picker
-  void _selectToday() {
-    setState(() {
-      _formData['itemIsToday'] = !_formData['itemIsToday'];
-    });
+  // //---------- today picker
+  // void _selectToday() {
+  //   setState(() {
+  //     _formData['itemIsToday'] = !_formData['itemIsToday'];
+  //   });
+  // }
+
+  //---------- category picker popup
+  Future _selectToday() async {
+    int picked;
+
+    picked = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          children: <Widget>[
+            SimpleDialogOption(
+              onPressed: () {
+                Navigator.pop(context, 0);
+              },
+              child: Container(
+                child: Row(
+                  children: <Widget>[
+                    Text(
+                      "TODAY",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ],
+                ),
+                color: _categoryColor,
+                height: 80.0,
+                padding: EdgeInsets.symmetric(horizontal: 10.0),
+              ),
+            ),
+            SimpleDialogOption(
+              onPressed: () {
+                Navigator.pop(context, 1);
+              },
+              child: Container(
+                child: Row(
+                  children: <Widget>[
+                    Text(
+                      "BACKLOG",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ],
+                ),
+                color: Colors.grey,
+                height: 80.0,
+                padding: EdgeInsets.symmetric(horizontal: 10.0),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    print(picked);
+    if (picked != null)
+      setState(() {
+        _formData['itemIsToday'] = picked == 0 ? true : false;
+      });
   }
 
   //---------- repeat picker
@@ -277,8 +335,11 @@ class _ItemPageState extends State<ItemPage> {
                   Icons.event_available,
                   color: Colors.grey,
                 ),
-          title: Text('Today'),
-          subtitle: Text("Display item on the Today list"),
+          title: Text("Focus"),
+          // title: _formData['itemIsToday']
+          //   ? Text('Today')
+          //   : Text('Backlog'),
+          subtitle: _formData['itemIsToday'] ? Text("Today") : Text("Backlog"),
           onTap: _selectToday,
         ),
         ListTile(
@@ -302,9 +363,10 @@ class _ItemPageState extends State<ItemPage> {
               ? Icon(Icons.today, color: Colors.grey)
               : Icon(Icons.today, color: _categoryColor),
           title: Text('Schedule'),
-          subtitle:  _formData['itemScheduledDate'] == 0
-            ? Text("Set a due date")
-            : Text(_formData['itemScheduledDate'].toString()), //this could be formatted nicer
+          subtitle: _formData['itemScheduledDate'] == 0
+              ? Text("Set a due date")
+              : Text(DateFormat.MMMMEEEEd()
+                  .format(ToDoItem.toDateTime(_formData['itemScheduledDate']))),
           onTap: _selectDate,
         ),
         ListTile(
@@ -323,8 +385,11 @@ class _ItemPageState extends State<ItemPage> {
               : Icon(Icons.repeat, color: _categoryColor),
           title: Text("Repeat"),
           subtitle: _formData['itemRepeatNum'] == 0
-            ? Text("Set a recurring schedule")
-            : Text("Every " + _formData['itemRepeatNum'].toString() + " " + _formData['itemRepeatLen']),
+              ? Text("Set a recurring schedule")
+              : Text("Every " +
+                  _formData['itemRepeatNum'].toString() +
+                  " " +
+                  _formData['itemRepeatLen']),
           onTap: _selectRepeat,
         )
       ],

@@ -20,10 +20,9 @@ class AppConstants extends InheritedWidget {
   static final Color todayHeaderColor = Color(0xFFF07618E);
   static final Color completedHeaderColor = Color(0xFF247BA0);
   static final Color highlightColor = Color(0xFF37C7CB);
-  
 
   static final double cirleAvatarRadius = 28.0;
-  static final double headerHeight = 90.0;
+  static final double headerHeight = 72.0; //90.0;
 
   final Category today = Category(name: 'TODAY', color: todayHeaderColor);
 

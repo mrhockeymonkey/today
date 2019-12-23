@@ -28,7 +28,7 @@ class _LaterPageState extends State<LaterPage> {
     print("Build: later page");
     return Scaffold(
         appBar: AppBar(
-          title: Text("Later"),
+          title: Text("Scheduled"),
           backgroundColor: headerColor,
           elevation: 0.0,
           actions: <Widget>[
@@ -67,27 +67,38 @@ class _LaterPageState extends State<LaterPage> {
                 ],
               );
             }
-            // if (snapshot.data == null) {
-            //   return Center(
-            //     child: CircularProgressIndicator(),
-            //   );
-            // }
 
             appState.initialize();
             items = appState.allScheduledItems;
 
-            return Column(
-              children: <Widget>[
-                CategoryHeader(
-                  headerColor: headerColor,
-                  headerCount: items.length,
+            return CustomScrollView(slivers: <Widget>[
+              SliverList(
+                delegate: SliverChildListDelegate(
+                  [
+                    CategoryHeader(
+                      headerColor: headerColor,
+                      headerCount: items.length,
+                    ),
+                  ],
                 ),
-                ToDoList(
-                  items: items,
-                  pageType: PageType.later,
-                ),
-              ],
-            );
+              ),
+              ToDoList(
+                items: items,
+                pageType: PageType.later,
+              ),
+            ]);
+            // return Column(
+            //   children: <Widget>[
+            //     CategoryHeader(
+            //       headerColor: headerColor,
+            //       headerCount: items.length,
+            //     ),
+            //     ToDoList(
+            //       items: items,
+            //       pageType: PageType.later,
+            //     ),
+            //   ],
+            // );
           },
         );
       },
