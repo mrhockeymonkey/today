@@ -33,8 +33,8 @@ class _ItemPageState extends State<ItemPage> {
   int _originalCategoryIndex;
   String _categoryTitle;
   Color _categoryColor;
-  int _repeatNum;
-  String _repeatLen;
+  int _repeatNum = 1;
+  String _repeatLen = 'days';
 
   @override
   void initState() {

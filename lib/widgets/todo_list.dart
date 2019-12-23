@@ -126,6 +126,8 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
                   next = now.add(months: item.repeatNum);
                   break;
               }
+              int intNext = ToDoItem.toSortableDate(next);
+              item.markScheduled(intNext);
 
               Scaffold.of(context).showSnackBar(
                 SnackBar(
