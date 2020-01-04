@@ -8,6 +8,7 @@ import 'package:today/models/todo_item.dart';
 import 'package:today/widgets/category_header.dart';
 import 'package:today/widgets/todo_list.dart';
 import 'package:today/widgets/new_item_fab.dart';
+import '../widgets/drawer_menu.dart';
 import './settings_page.dart';
 
 class TodayPage extends StatefulWidget {
@@ -27,7 +28,7 @@ class _TodayPageState extends State<TodayPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Today"),
+        title: Text("5 Things"),
         backgroundColor: headerColor,
         elevation: 0.0,
         actions: <Widget>[
@@ -43,9 +44,11 @@ class _TodayPageState extends State<TodayPage> {
         ],
       ),
       body: _buildBody(),
+      // drawer: DrawerMenu(),
+      // drawerEdgeDragWidth: 0,
       floatingActionButton: NewItemFab(
         color: headerColor,
-        initIsToday: true,
+        initIsToday: false,
       ),
     );
   }
@@ -70,6 +73,7 @@ class _TodayPageState extends State<TodayPage> {
                   CategoryHeader(
                     headerColor: headerColor,
                     headerCount: 0,
+                    //headerContent: Text("Today"),
                   ),
                   CircularProgressIndicator()
                 ],
@@ -88,6 +92,7 @@ class _TodayPageState extends State<TodayPage> {
                       CategoryHeader(
                         headerColor: headerColor,
                         headerCount: items.length,
+                        //headerContent: Text("Today"),
                       ),
                     ],
                   ),
@@ -105,9 +110,9 @@ class _TodayPageState extends State<TodayPage> {
                   delegate: SliverChildListDelegate([
                     Ink(
                       color: Colors.grey,
-                      height: AppConstants.headerHeight,
+                      height: AppConstants.headerHeight + 15,
                       child: ListTile(
-                        title: Text("${backlogCount.toString()} more items in backlog..."),
+                        title: Text("+${backlogCount.toString()} more items in backlog..."),
                       ),
                     ),
                   ]),

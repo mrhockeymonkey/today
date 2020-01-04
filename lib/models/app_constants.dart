@@ -24,7 +24,8 @@ class AppConstants extends InheritedWidget {
   static final double cirleAvatarRadius = 28.0;
   static final double headerHeight = 72.0; //90.0;
 
-  final Category today = Category(name: 'TODAY', color: todayHeaderColor);
+  //final Category today = Category(name: 'TODAY', color: todayHeaderColor);
+  //static final int maxTodayItems = 5;
 
   final RouteObserver<Route> routeObserver = new RouteObserver<Route>();
 

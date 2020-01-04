@@ -28,7 +28,7 @@ class _LaterPageState extends State<LaterPage> {
     print("Build: later page");
     return Scaffold(
         appBar: AppBar(
-          title: Text("Scheduled"),
+          title: Text("5 Things"),
           backgroundColor: headerColor,
           elevation: 0.0,
           actions: <Widget>[

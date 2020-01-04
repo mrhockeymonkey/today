@@ -23,7 +23,8 @@ class NewItemFab extends StatelessWidget {
           MaterialPageRoute(
               builder: (context) => ItemPage(
                     categoryIndex: defaultCategoryIndex,
-                    initIsToday: initIsToday
+                    initIsToday: initIsToday,
+                    focusKeyboard: true,
                   )),
         );
       },

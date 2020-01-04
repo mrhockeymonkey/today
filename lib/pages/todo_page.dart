@@ -29,7 +29,7 @@ class _ToDoPageState extends State<ToDoPage> {
     print("Build: todo page");
     return Scaffold(
       appBar: AppBar(
-        title: Text("Backlog"),
+        title: Text("5 Things"),
         backgroundColor: headerColor,
         elevation: 0.0,
         actions: <Widget>[

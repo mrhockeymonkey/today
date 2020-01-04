@@ -69,6 +69,15 @@ class AppState extends Model {
     return _todayItems;
   }
 
+  int get todayItemCount {
+    List<ToDoItem> items = allTodayItems;
+    return items.length;
+  }
+
+  bool get isTodayFull {
+    return todayItemCount >= 5;
+  }
+
   // getter for all completed items across all categories
   List<ToDoItem> get allCompletedItems {
     List<ToDoItem> _completedItems = [];

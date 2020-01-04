@@ -5,7 +5,7 @@ class ToDoItem {
   String title;
   UniqueKey key = UniqueKey();
   bool isComplete = false;
-  bool isToday = true;
+  bool isToday = false;
   int scheduledDate = 0;
   int repeatNum = 0;
   String repeatLen = 'days';
@@ -158,6 +158,7 @@ class ToDoItem {
 
   void markToday() {
     print("marking $title as today");
+    scheduledDate = 0;
     isToday = true;
     key = UniqueKey();
   }

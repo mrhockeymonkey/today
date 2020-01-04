@@ -142,10 +142,26 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
       setState(() {
         switch (widget.pageType) {
           case PageType.todo:
-            item.markToday();
+            AppState appState = ScopedModel.of<AppState>(context);
+            if (appState.isTodayFull) {
+              _snackBarMsg(
+                "You already have 5 things to focus on",
+                Icon(Icons.error_outline, color: AppConstants.todoColor),
+              );
+            } else {
+              item.markToday();
+            }
             break;
           case PageType.later:
-            item.markToday();
+            AppState appState = ScopedModel.of<AppState>(context);
+            if (appState.isTodayFull) {
+              _snackBarMsg(
+                "You already have 5 things to focus on",
+                Icon(Icons.error_outline, color: AppConstants.todoColor),
+              );
+            } else {
+              item.markToday();
+            }
             break;
           case PageType.today:
             DateTime next;
@@ -166,36 +182,27 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
               }
               int intNext = ToDoItem.toSortableDate(next);
               item.markScheduled(intNext);
-
-              Scaffold.of(context).showSnackBar(
-                SnackBar(
-                  content: Row(
-                    children: <Widget>[
-                      Icon(
-                        Icons.repeat,
-                        color: AppConstants.todoColor,
-                      ),
-                      Text(
-                          " Repeats on " + DateFormat.MMMMEEEEd().format(next)),
-                    ],
-                  ),
-                ),
+              _snackBarMsg(
+                "Repeats on " + DateFormat.MMMMEEEEd().format(next),
+                Icon(Icons.repeat, color: AppConstants.todoColor),
               );
-            } else {
-              item.markCompleted();
+
               // Scaffold.of(context).showSnackBar(
               //   SnackBar(
               //     content: Row(
               //       children: <Widget>[
               //         Icon(
-              //           Icons.done,
-              //           color: AppConstants.completeColor,
+              //           Icons.repeat,
+              //           color: AppConstants.todoColor,
               //         ),
-              //         Text(" Completed"),
+              //         Text(
+              //             " Repeats on " + DateFormat.MMMMEEEEd().format(next)),
               //       ],
               //     ),
               //   ),
               // );
+            } else {
+              item.markCompleted();
             }
             break;
           case PageType.completed:
@@ -239,6 +246,19 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
         ScopedModel.of<AppState>(context).saveToStorage();
       });
     }
+  }
+
+  void _snackBarMsg(String message, Icon icon) {
+    Scaffold.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: <Widget>[
+            icon,
+            Text(" " + message),
+          ],
+        ),
+      ),
+    );
   }
 
   // determines the swipe right action background
@@ -400,6 +420,7 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
             categoryIndex: categoryIndexToPush,
             itemIndex: itemIndexToPush,
             initIsToday: false,
+            focusKeyboard: false,
           );
         },
       ),

@@ -24,7 +24,7 @@ class _CompletedPageState extends State<CompletedPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Done"),
+        title: Text("5 Things"),
         backgroundColor: headerColor,
         elevation: 0.0,
         actions: <Widget>[
