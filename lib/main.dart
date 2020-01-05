@@ -4,7 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'models/app_state.dart';
 //import 'models/app_constants.dart';
-import 'package:today/models/app_constants.dart';
+import './models/app_constants.dart';
 //import 'package:flutter/services.dart';
 import 'pages/home_widget.dart';
 //import 'pages/category_page.dart';
@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
     return ScopedModel<AppState>(
       model: AppState(),
       child: MaterialApp(
-        title: 'Today',
+        title: '5 Things',
         theme: ThemeData(primarySwatch: Colors.blue),
         routes: {
           '/': (BuildContext context) => Home(),

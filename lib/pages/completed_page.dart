@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-import 'package:today/models/app_constants.dart';
-import 'package:today/widgets/category_header.dart';
-import 'package:today/models/app_state.dart';
-import 'package:today/models/todo_item.dart';
-import 'package:today/widgets/todo_list.dart';
+import '../models/app_constants.dart';
+import '../widgets/category_header.dart';
+import '../models/app_state.dart';
+import '../models/todo_item.dart';
+import '../widgets/todo_list.dart';
 import './settings_page.dart';
 
 class CompletedPage extends StatefulWidget {
@@ -17,14 +17,14 @@ class CompletedPage extends StatefulWidget {
 
 class _CompletedPageState extends State<CompletedPage> {
   Color headerColor = AppConstants.completedHeaderColor;
-  
+
   @override
   Widget build(BuildContext context) {
     //AppConstants.changeStatusColor(AppConstants.laterColor);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Completed"),
+        title: Text("5 Things"),
         backgroundColor: headerColor,
         elevation: 0.0,
         actions: <Widget>[
@@ -52,11 +52,6 @@ class _CompletedPageState extends State<CompletedPage> {
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             List<ToDoItem> items;
 
-            // if (snapshot.data == null) {
-            //   return Center(
-            //     child: CircularProgressIndicator(),
-            //   );
-            // }
             if (snapshot.data == null) {
               return Column(
                 children: <Widget>[
@@ -72,11 +67,17 @@ class _CompletedPageState extends State<CompletedPage> {
             appState.initialize();
             items = appState.allCompletedItems;
 
-            return Column(
-              children: <Widget>[
-                CategoryHeader(
-                  headerColor: headerColor,
-                  headerCount: items.length,
+            return CustomScrollView(
+              slivers: <Widget>[
+                SliverList(
+                  delegate: SliverChildListDelegate(
+                    [
+                      CategoryHeader(
+                        headerColor: headerColor,
+                        headerCount: items.length,
+                      ),
+                    ],
+                  ),
                 ),
                 ToDoList(
                   items: items,
@@ -84,6 +85,18 @@ class _CompletedPageState extends State<CompletedPage> {
                 ),
               ],
             );
+            // return Column(
+            //   children: <Widget>[
+            //     CategoryHeader(
+            //       headerColor: headerColor,
+            //       headerCount: items.length,
+            //     ),
+            //     ToDoList(
+            //       items: items,
+            //       pageType: PageType.completed,
+            //     ),
+            //   ],
+            // );
           },
         );
       },

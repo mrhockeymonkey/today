@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'package:today/models/app_constants.dart';
-import 'package:today/pages/later_page.dart';
-import 'package:today/pages/todo_page.dart';
-import 'package:today/pages/today_page.dart';
-import 'package:today/pages/completed_page.dart';
+import '../models/app_constants.dart';
+import '../pages/later_page.dart';
+import '../pages/todo_page.dart';
+import '../pages/today_page.dart';
+import '../pages/completed_page.dart';
 
 class Home extends StatefulWidget {
   @override

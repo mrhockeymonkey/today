@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:today/models/app_constants.dart';
+import '../models/app_constants.dart';
 
 class CategoryHeader extends StatelessWidget {
   final Color headerColor;

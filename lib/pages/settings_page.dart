@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-//import 'package:today/pages/settings_json.dart';
+//import '../pages/settings_json.dart';
 
 import './settings_categories_page.dart';
 import './settings_json_page.dart';

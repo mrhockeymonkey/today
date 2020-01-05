@@ -13,9 +13,11 @@ class ToDoItem {
   ToDoItem({
     @required this.title,
   });
-  // {
-  //   _scheduledDate = 0;
-  // }
+
+  ToDoItem.custom({
+    @required this.title,
+    @required this.isToday
+  });
 
   ToDoItem.fromStorage({
     @required this.title,
@@ -143,13 +145,6 @@ class ToDoItem {
     int day = int.parse(strDate.substring(6, 8));
     return DateTime(year, month, day);
   }
-  // static DateTime toSortableDate(DateTime date) {
-  //   DateTime sortable = DateTime(date.year, date.month, date.day);
-  //   // int sortable = int.parse(date.year.toString() +
-  //   //       date.month.toString() +
-  //   //       date.day.toString());
-  //   return sortable;
-  // }
 
   void update(String newTitle, int newScheduledDate) {
     title = newTitle;
@@ -159,13 +154,13 @@ class ToDoItem {
   void markCompleted() {
     print("marking $title as completed");
     isComplete = true;
-    isToday = false;
     scheduledDate = 0;
-    //key = UniqueKey(); ???
+    isToday = false;
   }
 
   void markToday() {
     print("marking $title as today");
+    scheduledDate = 0;
     isToday = true;
     key = UniqueKey();
   }
@@ -180,8 +175,7 @@ class ToDoItem {
   void markUncompleted() {
     print("marking $title as uncompleted");
     isComplete = false;
-    //isToday = false;
-    //isScheduled = false;
+    isToday = true;
     key = UniqueKey();
   }
 }

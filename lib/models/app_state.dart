@@ -3,7 +3,7 @@ import 'package:scoped_model/scoped_model.dart';
 import 'package:localstorage/localstorage.dart';
 //import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:today/models/todo_item.dart';
+import '../models/todo_item.dart';
 import './category.dart';
 
 class AppState extends Model {
@@ -67,6 +67,15 @@ class AppState extends Model {
     }
     //_todayItems.sort((a, b) => a.isComplete.toString().compareTo(b.isComplete.toString()));
     return _todayItems;
+  }
+
+  int get todayItemCount {
+    List<ToDoItem> items = allTodayItems;
+    return items.length;
+  }
+
+  bool get isTodayFull {
+    return todayItemCount >= 5;
   }
 
   // getter for all completed items across all categories
@@ -213,21 +222,25 @@ class AppState extends Model {
       print("AppState.initialize: No app data found, initializing defaults");
       _categories
         ..add(Category(name: "MUST DO", color: const Color(0xFFEE534F)))
-        ..add(Category(name: "SHOULD DO", color: const Color(0xFF00B8D4)))
-        ..add(Category(name: "COULD DO", color: const Color(0xFFFBAF28)))
-        ..add(Category(name: "SOMEDAY MAYBE", color: const Color(0xFF01BFA5)));
-      _categories[0]
-        ..addItem(ToDoItem(title: 'focus1'))
-        ..addItem(ToDoItem(title: 'focus2'));
-      _categories[1]
-        ..addItem(ToDoItem(title: 'Take out'))
-        ..addItem(ToDoItem(title: 'goals2'));
-      _categories[2]
-        ..addItem(ToDoItem(title: 'fitin1'))
-        ..addItem(ToDoItem(title: 'fitin2'));
-      _categories[3]
-        ..addItem(ToDoItem(title: 'back1'))
-        ..addItem(ToDoItem(title: 'back2'));
+        ..add(Category(name: "WANT TO", color: const Color(0xFF00B8D4)))
+        ..add(Category(name: "SHOULD DO", color: const Color(0xFFFBAF28)))
+        ..add(Category(name: "COULD DO", color: const Color(0xFF01BFA5)))
+        ..add(Category(name: "FYI", color: Colors.grey));
+      _categories[0] // must do
+        ..addItem(ToDoItem(title: 'Prepare For Important Meeting'))
+        ..addItem(ToDoItem(title: 'Back Up Family Photos'));
+      _categories[1] // want to
+        ..addItem(ToDoItem(title: 'Play New PC Game'))
+        ..addItem(ToDoItem(title: 'Relax And Watch Netflix'));
+      _categories[2] // should do
+        ..addItem(ToDoItem.custom(title: 'Move Items Here From The Backlog', isToday: true))
+        ..addItem(ToDoItem(title: 'Water The Plants'));
+      _categories[3] // could do
+        ..addItem(ToDoItem(title: 'Clear Email Inbox'))
+        ..addItem(ToDoItem(title: 'Visit The Popup Market In Town'));
+      _categories[4] // fyi
+        ..addItem(ToDoItem.custom(title: 'You Can Move Up To 5 Things Here', isToday: true))
+        ..addItem(ToDoItem.custom(title: 'Scheduled Items That Are Due Will Always Appear Here', isToday: true));
       saveToStorage();
     } else {
       print("AppState.initialize: App data found, loading from local storage");

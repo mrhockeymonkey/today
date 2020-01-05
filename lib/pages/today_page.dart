@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:intl/intl.dart';
 
-import 'package:today/models/app_constants.dart';
-import 'package:today/models/app_state.dart';
-import 'package:today/models/todo_item.dart';
-import 'package:today/widgets/category_header.dart';
-import 'package:today/widgets/todo_list.dart';
-import 'package:today/widgets/new_item_fab.dart';
+import '../models/app_constants.dart';
+import '../models/app_state.dart';
+import '../models/todo_item.dart';
+import '../widgets/category_header.dart';
+import '../widgets/todo_list.dart';
+import '../widgets/new_item_fab.dart';
+import '../widgets/drawer_menu.dart';
 import './settings_page.dart';
 
 class TodayPage extends StatefulWidget {
@@ -27,7 +28,7 @@ class _TodayPageState extends State<TodayPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Today"),
+        title: Text("5 Things"),
         backgroundColor: headerColor,
         elevation: 0.0,
         actions: <Widget>[
@@ -43,9 +44,11 @@ class _TodayPageState extends State<TodayPage> {
         ],
       ),
       body: _buildBody(),
+      // drawer: DrawerMenu(),
+      // drawerEdgeDragWidth: 0,
       floatingActionButton: NewItemFab(
         color: headerColor,
-        initIsToday: true,
+        initIsToday: false,
       ),
     );
   }
@@ -57,6 +60,7 @@ class _TodayPageState extends State<TodayPage> {
           future: appState.storage.ready,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             List<ToDoItem> items;
+            int backlogCount;
             //var formatter = new DateFormat.MMMMEEEEd();
             // Widget headerText = Text(
             //   DateFormat.MMMMEEEEd().format(DateTime.now()),
@@ -69,6 +73,7 @@ class _TodayPageState extends State<TodayPage> {
                   CategoryHeader(
                     headerColor: headerColor,
                     headerCount: 0,
+                    //headerContent: Text("Today"),
                   ),
                   CircularProgressIndicator()
                 ],
@@ -77,19 +82,62 @@ class _TodayPageState extends State<TodayPage> {
 
             appState.initialize();
             items = appState.allTodayItems;
+            backlogCount = appState.allToDoItems.length;
 
-            return Column(
-              children: <Widget>[
-                CategoryHeader(
-                  headerColor: headerColor,
-                  headerCount: items.length,
+            return CustomScrollView(
+              slivers: <Widget>[
+                                SliverList(
+                  delegate: SliverChildListDelegate(
+                    [
+                      CategoryHeader(
+                        headerColor: headerColor,
+                        headerCount: items.length,
+                        //headerContent: Text("Today"),
+                      ),
+                    ],
+                  ),
                 ),
                 ToDoList(
                   items: items,
                   pageType: PageType.today,
                 ),
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  fillOverscroll: false,
+                  child: Container(),
+                ),
+                SliverList(
+                  delegate: SliverChildListDelegate([
+                    Ink(
+                      color: Colors.grey,
+                      height: AppConstants.headerHeight + 15,
+                      child: ListTile(
+                        title: Text("+${backlogCount.toString()} more items in backlog..."),
+                      ),
+                    ),
+                  ]),
+                )
               ],
             );
+
+            // return Column(
+            //   children: <Widget>[
+            //     CategoryHeader(
+            //       headerColor: headerColor,
+            //       headerCount: items.length,
+            //     ),
+            //     ToDoList(
+            //       items: items,
+            //       pageType: PageType.today,
+            //     ),
+            //     Ink(
+            //       color: Colors.grey,
+            //       child: ListTile(
+            //         title: Text("Plus x more items in backlog..."),
+            //       ),
+            //     )
+            //   ],
+            // );
           },
         );
       },

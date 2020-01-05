@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-import 'package:today/models/app_constants.dart';
-import 'package:today/widgets/category_header.dart';
-import 'package:today/widgets/todo_list.dart';
-import 'package:today/models/app_state.dart';
-import 'package:today/models/todo_item.dart';
+import '../models/app_constants.dart';
+import '../widgets/category_header.dart';
+import '../widgets/todo_list.dart';
+import '../models/app_state.dart';
+import '../models/todo_item.dart';
 import './settings_page.dart';
-// import 'package:today/models/todo_category.dart';
-// import 'package:today/models/todo_item.dart';
-// import 'package:today/pages/item_page.dart';
+// import '../models/todo_category.dart';
+// import '../models/todo_item.dart';
+// import '../pages/item_page.dart';
 
 class LaterPage extends StatefulWidget {
   @override
@@ -28,7 +28,7 @@ class _LaterPageState extends State<LaterPage> {
     print("Build: later page");
     return Scaffold(
         appBar: AppBar(
-          title: Text("Later"),
+          title: Text("5 Things"),
           backgroundColor: headerColor,
           elevation: 0.0,
           actions: <Widget>[
@@ -67,27 +67,38 @@ class _LaterPageState extends State<LaterPage> {
                 ],
               );
             }
-            // if (snapshot.data == null) {
-            //   return Center(
-            //     child: CircularProgressIndicator(),
-            //   );
-            // }
 
             appState.initialize();
             items = appState.allScheduledItems;
 
-            return Column(
-              children: <Widget>[
-                CategoryHeader(
-                  headerColor: headerColor,
-                  headerCount: items.length,
+            return CustomScrollView(slivers: <Widget>[
+              SliverList(
+                delegate: SliverChildListDelegate(
+                  [
+                    CategoryHeader(
+                      headerColor: headerColor,
+                      headerCount: items.length,
+                    ),
+                  ],
                 ),
-                ToDoList(
-                  items: items,
-                  pageType: PageType.later,
-                ),
-              ],
-            );
+              ),
+              ToDoList(
+                items: items,
+                pageType: PageType.later,
+              ),
+            ]);
+            // return Column(
+            //   children: <Widget>[
+            //     CategoryHeader(
+            //       headerColor: headerColor,
+            //       headerCount: items.length,
+            //     ),
+            //     ToDoList(
+            //       items: items,
+            //       pageType: PageType.later,
+            //     ),
+            //   ],
+            // );
           },
         );
       },

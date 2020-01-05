@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:today/pages/categories_page.dart';
-import 'package:today/pages/category_page.dart';
+import '../pages/categories_page.dart';
+import '../pages/category_page.dart';
 
 // returns a new navigator to manage a seperate stack of category pages
 // pages pushed onto this stack will render from within the HomePage 
