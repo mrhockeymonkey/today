@@ -4,10 +4,10 @@ import 'dart:async';
 import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
 
-import 'package:today/models/app_constants.dart';
-import 'package:today/models/todo_item.dart';
-import 'package:today/models/app_state.dart';
-import 'package:today/pages/item_page.dart';
+import '../models/app_constants.dart';
+import '../models/todo_item.dart';
+import '../models/app_state.dart';
+import '../pages/item_page.dart';
 import '../models/category.dart';
 
 // we want different swipe action and backgrounds based on the type of page

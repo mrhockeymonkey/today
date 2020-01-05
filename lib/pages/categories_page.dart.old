@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-import 'package:today/models/app_state.dart';
-import 'package:today/models/todo_category.dart';
+import '../models/app_state.dart';
+import '../models/todo_category.dart';
 import '../models/app_constants.dart';
 
 class CategoriesPage extends StatefulWidget {

@@ -3,10 +3,10 @@ import 'package:scoped_model/scoped_model.dart';
 import 'dart:async';
 import 'package:intl/intl.dart';
 
-import 'package:today/models/todo_item.dart';
-import 'package:today/models/app_state.dart';
-import 'package:today/models/category.dart';
-import 'package:today/models/app_constants.dart';
+import '../models/todo_item.dart';
+import '../models/app_state.dart';
+import '../models/category.dart';
+import '../models/app_constants.dart';
 import '../widgets/repeater_picker.dart';
 
 class ItemPage extends StatefulWidget {

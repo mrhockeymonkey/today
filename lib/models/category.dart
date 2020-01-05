@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:today/models/todo_item.dart';
+import '../models/todo_item.dart';
 
 class Category {
   String name;

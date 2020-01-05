@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:today/pages/item_page.dart';
+import '../pages/item_page.dart';
 
 class NewItemFab extends StatelessWidget {
   final int defaultCategoryIndex = 2;

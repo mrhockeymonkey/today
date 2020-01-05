@@ -13,9 +13,11 @@ class ToDoItem {
   ToDoItem({
     @required this.title,
   });
-  // {
-  //   _scheduledDate = 0;
-  // }
+
+  ToDoItem.custom({
+    @required this.title,
+    @required this.isToday
+  });
 
   ToDoItem.fromStorage({
     @required this.title,
