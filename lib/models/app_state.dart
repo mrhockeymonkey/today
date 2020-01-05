@@ -233,7 +233,7 @@ class AppState extends Model {
         ..addItem(ToDoItem(title: 'Play New PC Game'))
         ..addItem(ToDoItem(title: 'Relax And Watch Netflix'));
       _categories[2] // should do
-        ..addItem(ToDoItem.custom(title: 'Move items here from the backlog', isToday: true))
+        ..addItem(ToDoItem.custom(title: 'Move Items Here From The Backlog', isToday: true))
         ..addItem(ToDoItem(title: 'Water The Plants'));
       _categories[3] // could do
         ..addItem(ToDoItem(title: 'Clear Email Inbox'))
