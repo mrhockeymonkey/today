@@ -3,6 +3,7 @@ import 'package:scoped_model/scoped_model.dart';
 import 'dart:async';
 import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 
 import '../models/app_constants.dart';
 import '../models/todo_item.dart';
@@ -87,7 +88,7 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
           secondaryBackground: _buildSecondaryBackground(widget.pageType),
           child: Column(
             children: <Widget>[
-              _buildListTile(item),
+              _buildListTile(item, index),
             ],
           ),
         );
@@ -427,10 +428,10 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
     );
   }
 
-  Widget _buildListTile(ToDoItem item) {
+  Widget _buildListTile(ToDoItem item, int index) {
     AppState appState = ScopedModel.of<AppState>(context);
-    int itemIndex = appState.categoryIndexOf(item);
-    Category itemCategory = appState.categories[itemIndex];
+    int categoryIndex = appState.categoryIndexOf(item);
+    Category itemCategory = appState.categories[categoryIndex];
     List<Widget> subtitleElements = [];
 
     // first build the subtitle
@@ -456,30 +457,60 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
       );
     }
 
-    Widget completeTile = Ink(
-      color: AppConstants.completedColor,
-      child: ListTile(
-        title: Text(
-          item.title,
-          style: TextStyle(decoration: TextDecoration.lineThrough),
-        ),
-        subtitle: Text("DONE"),
-        trailing: Icon(Icons.done_all),
-      ),
-    );
-
-    Widget normalTile = ListTile(
-      title: Text(item.title),
-      subtitle: Row(
-        children: subtitleElements,
-      ),
-      onTap: () => _pushItemPage(context, item),
-    );
+    List<IconData> fiveIcons = [
+      Entypo.flag, //must do
+      Entypo.game_controller, //want to
+      Entypo.pin, //should do
+      Entypo.pin, //could do
+      Entypo.info //fyi
+    ];
 
     if (item.isComplete) {
-      return completeTile;
+      // return a complete
+      return Ink(
+        color: AppConstants.completedColor,
+        child: ListTile(
+          title: Text(
+            item.title,
+            style: TextStyle(decoration: TextDecoration.lineThrough),
+          ),
+          subtitle: Text("DONE"),
+          trailing: Icon(Icons.done_all),
+        ),
+      );
     } else {
-      return normalTile;
+      if (index > 4) {
+        // return a quiet tile
+        return ListTile(
+          title: Text(
+            item.title,
+            style: TextStyle(color: AppConstants.completedColor),
+          ),
+          trailing: Icon(
+            Entypo.reply,
+            color: itemCategory.color,
+          ),
+          subtitle: Row(
+            children: subtitleElements,
+          ),
+          onTap: () => _pushItemPage(context, item),
+        );
+      } else {
+        // return a normal tile
+        return ListTile(
+          title: Text(item.title),
+          leading: Icon(
+            // Entypo.pin,
+            // Entypo.forward,
+            fiveIcons[categoryIndex],
+            color: itemCategory.color,
+          ),
+          subtitle: Row(
+            children: subtitleElements,
+          ),
+          onTap: () => _pushItemPage(context, item),
+        );
+      }
     }
   }
 }

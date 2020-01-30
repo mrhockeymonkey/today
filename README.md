@@ -35,3 +35,6 @@ keyPassword=<password from previous step>
 keyAlias=key
 storeFile=<location of the key store file, such as /Users/<user name>/key.jks>
 ```
+
+## Thanks To
+* Entypo pictograms by Daniel Bruce — www.entypo.com
