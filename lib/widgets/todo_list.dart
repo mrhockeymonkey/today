@@ -3,6 +3,7 @@ import 'package:scoped_model/scoped_model.dart';
 import 'dart:async';
 import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 
 import '../models/app_constants.dart';
 import '../models/todo_item.dart';
@@ -87,7 +88,7 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
           secondaryBackground: _buildSecondaryBackground(widget.pageType),
           child: Column(
             children: <Widget>[
-              _buildListTile(item),
+              _buildListTile(item, index, widget.pageType),
             ],
           ),
         );
@@ -142,26 +143,24 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
       setState(() {
         switch (widget.pageType) {
           case PageType.todo:
-            AppState appState = ScopedModel.of<AppState>(context);
-            if (appState.isTodayFull) {
-              _snackBarMsg(
-                "You already have 5 things to focus on",
-                Icon(Icons.error_outline, color: AppConstants.todoColor),
-              );
-            } else {
-              item.markToday();
-            }
+            // AppState appState = ScopedModel.of<AppState>(context);
+            // if (appState.isTodayFull) {
+            //   _snackBarMsg(
+            //     "You already have 5 things to focus on",
+            //     Icon(Icons.error_outline, color: AppConstants.todoColor),
+            //   );
+            // }
+            item.markToday();
             break;
           case PageType.later:
-            AppState appState = ScopedModel.of<AppState>(context);
-            if (appState.isTodayFull) {
-              _snackBarMsg(
-                "You already have 5 things to focus on",
-                Icon(Icons.error_outline, color: AppConstants.todoColor),
-              );
-            } else {
-              item.markToday();
-            }
+            // AppState appState = ScopedModel.of<AppState>(context);
+            // if (appState.isTodayFull) {
+            //   _snackBarMsg(
+            //     "You already have 5 things to focus on",
+            //     Icon(Icons.error_outline, color: AppConstants.todoColor),
+            //   );
+            // }
+            item.markToday();
             break;
           case PageType.today:
             DateTime next;
@@ -427,10 +426,83 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
     );
   }
 
-  Widget _buildListTile(ToDoItem item) {
+  Widget _buildFocusTile(ToDoItem item, List<Widget> subtitles, Category category) {
     AppState appState = ScopedModel.of<AppState>(context);
-    int itemIndex = appState.categoryIndexOf(item);
-    Category itemCategory = appState.categories[itemIndex];
+    int categoryIndex = appState.categoryIndexOf(item);
+    List<IconData> fiveIcons = [
+      Entypo.flag, //must do
+      Entypo.game_controller, //want to
+      Entypo.pin, //should do
+      Entypo.pin, //could do
+      Entypo.info //fyi
+    ];
+    return ListTile(
+      title: Text(item.title),
+      leading: Icon(
+        // Entypo.pin,
+        // Entypo.forward,
+        fiveIcons[categoryIndex],
+        color: category.color,
+      ),
+      subtitle: Row(
+        children: subtitles,
+      ),
+      onTap: () => _pushItemPage(context, item),
+    );
+  }
+
+  Widget _buildSwipeLeftTile(ToDoItem item, List<Widget> subtitles, Category category) {
+    return ListTile(
+      title: Text(
+        item.title,
+        style: TextStyle(color: AppConstants.completedColor),
+      ),
+      trailing: Icon(
+        Entypo.reply,
+        color: category.color,
+      ),
+      subtitle: Row(
+        children: subtitles,
+      ),
+      onTap: () => _pushItemPage(context, item),
+    );
+  }
+
+  Widget _buildSwipeRightTile(ToDoItem item, List<Widget> subtitles, Category category) {
+    return ListTile(
+      title: Text(
+        item.title,
+        style: TextStyle(color: AppConstants.completedColor),
+      ),
+      leading: Icon(
+        Entypo.forward,
+        color: category.color,
+      ),
+      subtitle: Row(
+        children: subtitles,
+      ),
+      onTap: () => _pushItemPage(context, item),
+    );
+  }
+
+  Widget _buildCompletedTile(ToDoItem item, List<Widget> subtitles) {
+    return Ink(
+      color: AppConstants.completedColor,
+      child: ListTile(
+        title: Text(
+          item.title,
+          style: TextStyle(decoration: TextDecoration.lineThrough),
+        ),
+        subtitle: Text("DONE"),
+        trailing: Icon(Icons.done_all),
+      ),
+    );
+  }
+
+  Widget _buildListTile(ToDoItem item, int index, PageType pageType) {
+    AppState appState = ScopedModel.of<AppState>(context);
+    int categoryIndex = appState.categoryIndexOf(item);
+    Category itemCategory = appState.categories[categoryIndex];
     List<Widget> subtitleElements = [];
 
     // first build the subtitle
@@ -456,30 +528,20 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
       );
     }
 
-    Widget completeTile = Ink(
-      color: AppConstants.completedColor,
-      child: ListTile(
-        title: Text(
-          item.title,
-          style: TextStyle(decoration: TextDecoration.lineThrough),
-        ),
-        subtitle: Text("DONE"),
-        trailing: Icon(Icons.done_all),
-      ),
-    );
-
-    Widget normalTile = ListTile(
-      title: Text(item.title),
-      subtitle: Row(
-        children: subtitleElements,
-      ),
-      onTap: () => _pushItemPage(context, item),
-    );
-
-    if (item.isComplete) {
-      return completeTile;
-    } else {
-      return normalTile;
+    switch (pageType) {
+      case PageType.todo:
+        return _buildSwipeRightTile(item, subtitleElements, itemCategory);
+      case PageType.later:
+        return _buildSwipeRightTile(item, subtitleElements, itemCategory);
+      case PageType.today:
+        if (index < 5) {
+          return _buildFocusTile(item, subtitleElements, itemCategory);
+        } else {
+          return _buildSwipeLeftTile(item, subtitleElements, itemCategory);
+        }
+        break;
+      case PageType.completed:
+        return _buildCompletedTile(item, subtitleElements);
     }
   }
 }
