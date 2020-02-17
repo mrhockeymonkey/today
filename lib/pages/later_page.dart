@@ -28,7 +28,11 @@ class _LaterPageState extends State<LaterPage> {
     print("Build: later page");
     return Scaffold(
         appBar: AppBar(
-          title: Text("5 Things"),
+          title: Image.asset(
+            'dev_assets/app_title.png',
+            fit: BoxFit.cover,
+            height: 40,
+          ),
           backgroundColor: headerColor,
           elevation: 0.0,
           actions: <Widget>[
@@ -55,6 +59,7 @@ class _LaterPageState extends State<LaterPage> {
           future: appState.storage.ready,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             List<ToDoItem> items;
+            int completedCount;
 
             if (snapshot.data == null) {
               return Column(
@@ -70,6 +75,7 @@ class _LaterPageState extends State<LaterPage> {
 
             appState.initialize();
             items = appState.allScheduledItems;
+            completedCount = appState.allCompletedTodayItems.length;
 
             return CustomScrollView(slivers: <Widget>[
               SliverList(
@@ -77,7 +83,7 @@ class _LaterPageState extends State<LaterPage> {
                   [
                     CategoryHeader(
                       headerColor: headerColor,
-                      headerCount: items.length,
+                      headerCount: completedCount,
                     ),
                   ],
                 ),

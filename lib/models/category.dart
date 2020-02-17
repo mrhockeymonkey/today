@@ -48,6 +48,13 @@ class Category {
     return _itemsCompleted;
   }
 
+  // getter for all completed today items
+  List<ToDoItem> get itemsCompletedToday {
+    int intToday = ToDoItem.toSortableDate(DateTime.now());
+    List<ToDoItem> _itemsCompleted = _items.where((i) => i.isComplete && i.completedDate == intToday).toList();
+    return _itemsCompleted;
+  }
+
   // getter for all today items
   List<ToDoItem> get itemsToday {
     List<ToDoItem> _itemsToday = _items.where((i) => i.isToday).toList();

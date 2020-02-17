@@ -17,7 +17,7 @@ class _SettingsPageState extends State<SettingsPage> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
-        title: Text("Settingssss"),
+        title: Text("Settings"),
       ),
       body: _buildBody(),
     );

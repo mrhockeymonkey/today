@@ -493,7 +493,8 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
           item.title,
           style: TextStyle(decoration: TextDecoration.lineThrough),
         ),
-        subtitle: Text("DONE"),
+        subtitle: Text(        item.completedDate.toString(),),
+        //subtitle: Text("DONE"),
         trailing: Icon(Icons.done_all),
       ),
     );

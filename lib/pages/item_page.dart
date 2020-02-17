@@ -40,7 +40,6 @@ class _ItemPageState extends State<ItemPage> {
   Color _categoryColor;
   int _repeatNum = 1;
   String _repeatLen = 'days';
-  bool _allowSelectTodayForExistingItems = false;
 
   @override
   void initState() {
@@ -59,10 +58,6 @@ class _ItemPageState extends State<ItemPage> {
       var _item = category.items[widget.itemIndex];
       _itemIndex = widget.itemIndex;
       _isNewItem = false;
-      if (_item.isToday) {
-        // if the item was already today then it can freely change on this screen
-        _allowSelectTodayForExistingItems = true;
-      }
 
       _formData = {
         "itemTitle": _item.title,
@@ -87,14 +82,15 @@ class _ItemPageState extends State<ItemPage> {
   @override
   Widget build(BuildContext context) {
     //AppConstants.changeStatusColor(_categoryColor);
+    //AppConstants.changeNavBarColor(_categoryColor);
     print("BUILD - item_page");
+
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        backgroundColor: _categoryColor,
-        elevation: 0.0,
-        title: Text(_categoryTitle),
-      ),
+          backgroundColor: _categoryColor,
+          elevation: 0.0,
+          title: Text(_categoryTitle)),
       body: Column(
         children: <Widget>[
           _buildInputHeader(),
@@ -122,121 +118,62 @@ class _ItemPageState extends State<ItemPage> {
     }
   }
 
-  //---------- today picker
-  void _selectToday1() {
-    setState(() {
-      _formData['itemIsToday'] = !_formData['itemIsToday'];
-    });
-  }
+  //---------- category picker popup
+  Future _selectToday() async {
+    int picked;
 
-  void _showCannotSetTodayWarning() {
-    _scaffoldKey.currentState.showSnackBar(
-      SnackBar(
-        content: Row(
+    picked = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
           children: <Widget>[
-            Icon(Icons.error_outline, color: AppConstants.todoColor),
-            Text(" You already have 5 things to focus on"),
+            SimpleDialogOption(
+              onPressed: () {
+                Navigator.pop(context, 0);
+              },
+              child: Container(
+                child: Row(
+                  children: <Widget>[
+                    Text(
+                      "TODAY",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ],
+                ),
+                color: _categoryColor,
+                height: 80.0,
+                padding: EdgeInsets.symmetric(horizontal: 10.0),
+              ),
+            ),
+            SimpleDialogOption(
+              onPressed: () {
+                Navigator.pop(context, 1);
+              },
+              child: Container(
+                child: Row(
+                  children: <Widget>[
+                    Text(
+                      "BACKLOG",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ],
+                ),
+                color: Colors.grey,
+                height: 80.0,
+                padding: EdgeInsets.symmetric(horizontal: 10.0),
+              ),
+            ),
           ],
-        ),
-      ),
+        );
+      },
     );
+
+    print(picked);
+    if (picked != null)
+      setState(() {
+        _formData['itemIsToday'] = picked == 0 ? true : false;
+      });
   }
-
-  void _selectToday2() {
-    AppState appState = ScopedModel.of<AppState>(context);
-    bool ans = false;
-
-    if (_isNewItem) {
-      if (appState.isTodayFull) {
-        // cannot set today
-        ans = false;
-        _showCannotSetTodayWarning();
-        print("------------------------------- 1");
-      } else {
-        // can set today
-        ans = true;
-        print("------------------------------- 2");
-      }
-    } else {
-      if (_allowSelectTodayForExistingItems) {
-        // can set today
-        ans = !_formData['itemIsToday'];
-        print("------------------------------- 3");
-      } else {
-        if (appState.isTodayFull) {
-          // cannot set today
-          ans = false;
-          _showCannotSetTodayWarning();
-          print("------------------------------- 4");
-        } else {
-          // can set today
-          ans = true;
-          print("------------------------------- 5");
-        }
-      }
-    }
-
-    setState(() {
-      _formData['itemIsToday'] = ans;
-    });
-  }
-
-  // //---------- category picker popup
-  // Future _selectToday() async {
-  //   int picked;
-
-  //   picked = await showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return SimpleDialog(
-  //         children: <Widget>[
-  //           SimpleDialogOption(
-  //             onPressed: () {
-  //               Navigator.pop(context, 0);
-  //             },
-  //             child: Container(
-  //               child: Row(
-  //                 children: <Widget>[
-  //                   Text(
-  //                     "TODAY",
-  //                     style: TextStyle(color: Colors.white),
-  //                   ),
-  //                 ],
-  //               ),
-  //               color: _categoryColor,
-  //               height: 80.0,
-  //               padding: EdgeInsets.symmetric(horizontal: 10.0),
-  //             ),
-  //           ),
-  //           SimpleDialogOption(
-  //             onPressed: () {
-  //               Navigator.pop(context, 1);
-  //             },
-  //             child: Container(
-  //               child: Row(
-  //                 children: <Widget>[
-  //                   Text(
-  //                     "BACKLOG",
-  //                     style: TextStyle(color: Colors.white),
-  //                   ),
-  //                 ],
-  //               ),
-  //               color: Colors.grey,
-  //               height: 80.0,
-  //               padding: EdgeInsets.symmetric(horizontal: 10.0),
-  //             ),
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-
-  //   print(picked);
-  //   if (picked != null)
-  //     setState(() {
-  //       _formData['itemIsToday'] = picked == 0 ? true : false;
-  //     });
-  // }
 
   //---------- repeat picker
   Future _selectRepeat() async {
@@ -278,31 +215,6 @@ class _ItemPageState extends State<ItemPage> {
       _repeatLen = newLen;
     });
   }
-
-  // //---------- days picker popup
-  // Future _displayDialog(BuildContext context) async {
-  //   TextEditingController _textFieldController = TextEditingController();
-
-  //   return showDialog(
-  //       context: context,
-  //       builder: (context) {
-  //         return AlertDialog(
-  //           title: Text('TextField in Dialog'),
-  //           content: TextField(
-  //             controller: _textFieldController,
-  //             decoration: InputDecoration(hintText: "TextField in Dialog"),
-  //           ),
-  //           actions: <Widget>[
-  //             new FlatButton(
-  //               child: new Text('CANCEL'),
-  //               onPressed: () {
-  //                 Navigator.of(context).pop();
-  //               },
-  //             )
-  //           ],
-  //         );
-  //       });
-  // }
 
   //---------- category picker popup
   Future _selectCategory() async {
@@ -397,14 +309,11 @@ class _ItemPageState extends State<ItemPage> {
                   Icons.event,
                   color: Colors.grey,
                 ),
-          title: Text("1 of 5"),
-          // title: _formData['itemIsToday']
-          //   ? Text('Today')
-          //   : Text('Backlog'),
+          title: _formData['itemIsToday'] ? Text("Today") : Text("Backlog"),
           subtitle: _formData['itemIsToday']
-              ? Text("One of today's \"5 Things\"")
-              : Text("Send item to backlog"),
-          onTap: _selectToday2,
+              ? Text('You intend to tackle this today')
+              : Text('You dont need to focus on this right now'),
+          onTap: _selectToday,
         ),
         ListTile(
           leading: Icon(Icons.category, color: _categoryColor),

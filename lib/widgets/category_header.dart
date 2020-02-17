@@ -9,7 +9,7 @@ class CategoryHeader extends StatelessWidget {
 
   CategoryHeader({
     @required this.headerColor,
-    @required this.headerCount, 
+    @required this.headerCount,
     this.headerContent,
   });
 
@@ -22,17 +22,28 @@ class CategoryHeader extends StatelessWidget {
       child: Row(
         children: <Widget>[
           Expanded(
-            child: Container(
-              child: headerContent ?? AppConstants.headerTextDate,
-              padding: EdgeInsets.symmetric(horizontal: 8.0),
-            )
-            
-          ),
-          CircleAvatar(
-            child: Text(headerCount.toString()),
-            radius: AppConstants.cirleAvatarRadius, //sized to match floating action button
-            backgroundColor: Colors.white,
-          ),
+              child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        AppConstants.headerTextDate,
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      SizedBox(height: 5),
+                      Text(
+                        "${headerCount.toString()} Things Done Today",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ],
+                  )
+                  //headerContent ?? AppConstants.headerTextDate,
+                  )),
+          // Icon(
+          //   Icons.search,
+          //   color: Colors.white,
+          // ),
         ],
       ),
     );

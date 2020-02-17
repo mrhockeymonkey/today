@@ -7,6 +7,7 @@ class ToDoItem {
   bool isComplete = false;
   bool isToday = false;
   int scheduledDate = 0;
+  int completedDate = 0;
   int repeatNum = 0;
   String repeatLen = 'days';
 
@@ -24,6 +25,7 @@ class ToDoItem {
     @required this.isComplete,
     @required this.isToday,
     @required this.scheduledDate,
+    @required this.completedDate,
     @required this.repeatNum,
     @required this.repeatLen,
   });
@@ -124,6 +126,7 @@ class ToDoItem {
     m['isComplete'] = isComplete;
     m['isToday'] = isToday;
     m['scheduledDate'] = scheduledDate;
+    m['completedDate'] = completedDate;
     m['repeatNum'] = repeatNum;
     m['repeatLen'] = repeatLen;
 
@@ -154,6 +157,7 @@ class ToDoItem {
   void markCompleted() {
     print("marking $title as completed");
     isComplete = true;
+    completedDate = ToDoItem.toSortableDate(DateTime.now());
     scheduledDate = 0;
     isToday = false;
   }

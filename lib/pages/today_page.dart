@@ -28,7 +28,11 @@ class _TodayPageState extends State<TodayPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("5 Things"),
+        title: Image.asset(
+          'dev_assets/app_title.png',
+          fit: BoxFit.cover,
+          height: 40,
+        ),
         backgroundColor: headerColor,
         elevation: 0.0,
         actions: <Widget>[
@@ -61,6 +65,7 @@ class _TodayPageState extends State<TodayPage> {
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             List<ToDoItem> items;
             int backlogCount;
+            int completedCount;
             //var formatter = new DateFormat.MMMMEEEEd();
             // Widget headerText = Text(
             //   DateFormat.MMMMEEEEd().format(DateTime.now()),
@@ -83,15 +88,16 @@ class _TodayPageState extends State<TodayPage> {
             appState.initialize();
             items = appState.allTodayItems;
             backlogCount = appState.allToDoItems.length;
+            completedCount = appState.allCompletedTodayItems.length;
 
             return CustomScrollView(
               slivers: <Widget>[
-                                SliverList(
+                SliverList(
                   delegate: SliverChildListDelegate(
                     [
                       CategoryHeader(
                         headerColor: headerColor,
-                        headerCount: items.length,
+                        headerCount: completedCount,
                         //headerContent: Text("Today"),
                       ),
                     ],
@@ -117,7 +123,8 @@ class _TodayPageState extends State<TodayPage> {
                       color: Colors.grey,
                       height: AppConstants.headerHeight + 15,
                       child: ListTile(
-                        title: Text("+${backlogCount.toString()} more items in backlog..."),
+                        title: Text(
+                            "+${backlogCount.toString()} more items in backlog..."),
                       ),
                     ),
                   ]),

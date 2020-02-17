@@ -15,10 +15,10 @@ class AppConstants extends InheritedWidget {
 
   
   // page header colors
-  static final Color laterHeaderColor = Color(0xFF23395B);
-  static final Color todoHeaderColor = Color(0xFF214D7A);
+  static final Color laterHeaderColor = Color(0xFFF07618E); //Color(0xFF23395B);
+  static final Color todoHeaderColor = Color(0xFFF07618E); //Color(0xFF214D7A);
   static final Color todayHeaderColor = Color(0xFFF07618E);
-  static final Color completedHeaderColor = Color(0xFF247BA0);
+  static final Color completedHeaderColor = Color(0xFFF07618E); //Color(0xFF247BA0);
   static final Color highlightColor = Color(0xFF37C7CB);
 
   static final double cirleAvatarRadius = 28.0;
@@ -38,7 +38,7 @@ class AppConstants extends InheritedWidget {
       context.inheritFromWidgetOfExactType(AppConstants);
 
   static changeStatusColor(Color color) async {
-    print("changing color to " + color.toString());
+    print("changing status bar color to " + color.toString());
     try {
       await FlutterStatusbarcolor.setStatusBarColor(color);
     } on PlatformException catch (e) {
@@ -46,8 +46,16 @@ class AppConstants extends InheritedWidget {
     }
   }
 
-  static Widget headerTextDate = Text(
-    DateFormat.MMMMEEEEd().format(DateTime.now()),
-    style: TextStyle(color: Colors.white),
-  );
+  static changeNavBarColor(Color color) async {
+    print("changing nav bar color to " + color.toString());
+    try {
+      await FlutterStatusbarcolor.setNavigationBarColor(color);
+      await FlutterStatusbarcolor.setNavigationBarWhiteForeground(true);
+    } on PlatformException catch (e) {
+      print(e.toString());
+    }
+  }
+
+  static String headerTextDate = DateFormat.MMMMEEEEd().format(DateTime.now());
+
 }

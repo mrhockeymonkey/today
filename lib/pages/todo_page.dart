@@ -29,7 +29,11 @@ class _ToDoPageState extends State<ToDoPage> {
     print("Build: todo page");
     return Scaffold(
       appBar: AppBar(
-        title: Text("5 Things"),
+        title: Image.asset(
+          'dev_assets/app_title.png',
+          fit: BoxFit.cover,
+          height: 40,
+        ),
         backgroundColor: headerColor,
         elevation: 0.0,
         actions: <Widget>[
@@ -59,6 +63,7 @@ class _ToDoPageState extends State<ToDoPage> {
           future: appState.storage.ready,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             List<ToDoItem> items;
+            int completedCount;
 
             if (snapshot.data == null) {
               return Column(
@@ -74,6 +79,7 @@ class _ToDoPageState extends State<ToDoPage> {
 
             appState.initialize();
             items = appState.allToDoItems;
+            completedCount = appState.allCompletedTodayItems.length;
 
             return CustomScrollView(slivers: <Widget>[
               SliverList(
@@ -81,7 +87,7 @@ class _ToDoPageState extends State<ToDoPage> {
                   [
                     CategoryHeader(
                       headerColor: headerColor,
-                      headerCount: items.length,
+                      headerCount: completedCount,
                     ),
                   ],
                 ),

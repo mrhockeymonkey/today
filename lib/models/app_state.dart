@@ -87,6 +87,15 @@ class AppState extends Model {
     return _completedItems;
   }
 
+  // getter for all items completed today
+  List<ToDoItem> get allCompletedTodayItems {
+    List<ToDoItem> _completedItems = [];
+    for (var c in _categories) {
+      _completedItems.addAll(c.itemsCompletedToday);
+    }
+    return _completedItems;
+  }
+
   // getter for all scheduled items across all categories
   List<ToDoItem> get allScheduledItems {
     List<ToDoItem> _scheduledItems = [];
@@ -255,6 +264,7 @@ class AppState extends Model {
               isComplete: j['isComplete'],
               isToday: j['isToday'],
               scheduledDate: j['scheduledDate'] ?? 0,
+              completedDate: j['completedDate'] ?? 0,
               repeatNum: j['repeatNum'] ?? 0,
               repeatLen: j['repeatLen'] ?? 'days',
             ),

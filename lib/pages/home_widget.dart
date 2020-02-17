@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../models/app_constants.dart';
 import '../pages/later_page.dart';
@@ -21,8 +22,12 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     print("BUILD - home_widget");
     AppConstants.changeStatusColor(Colors.transparent);
+    //AppConstants.changeNavBarColor(AppConstants.todayHeaderColor);
     // a navigator key to for use with CategoryNavigator
     //final navigatorKey = GlobalKey<NavigatorState>();
+
+    //var mySystemTheme = SystemUiOverlayStyle.light.copyWith(systemNavigationBarColor: AppConstants.todayHeaderColor);
+    //SystemChrome.setSystemUIOverlayStyle(mySystemTheme);
 
     // a list of pages to display per nav bar item
     final _pages = [
@@ -63,7 +68,9 @@ class _HomeState extends State<Home> {
           currentIndex: _currentIndex,
           type: BottomNavigationBarType.fixed,
           items: _bottomNavigationBarItems,
-          fixedColor: AppConstants.highlightColor,
+          fixedColor: AppConstants.todayHeaderColor, //AppConstants.highlightColor,
+          selectedFontSize: 16.0,
+          //backgroundColor: AppConstants.todayHeaderColor,
         ),
       ),
     );
