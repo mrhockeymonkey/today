@@ -7,6 +7,9 @@ import './category.dart';
 
 // inherited widget used in main to propogate and share anywhere in the app
 class AppConstants extends InheritedWidget {
+  // colors
+  static final Color appBarColor = Color(0xFFF07618E);
+  
   // action colors
   static final Color todoColor = Color(0xFFFBAF28);
   static final Color completeColor = Color(0xFF64DD17);
@@ -22,7 +25,7 @@ class AppConstants extends InheritedWidget {
   static final Color highlightColor = Color(0xFF37C7CB);
 
   static final double cirleAvatarRadius = 28.0;
-  static final double headerHeight = 72.0; //90.0;
+  static final double headerHeight = 72.0;
 
   //final Category today = Category(name: 'TODAY', color: todayHeaderColor);
   //static final int maxTodayItems = 5;

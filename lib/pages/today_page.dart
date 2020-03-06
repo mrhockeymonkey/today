@@ -5,7 +5,8 @@ import 'package:intl/intl.dart';
 import '../models/app_constants.dart';
 import '../models/app_state.dart';
 import '../models/todo_item.dart';
-import '../widgets/category_header.dart';
+import '../widgets/date_header.dart';
+import '../widgets/note_header.dart';
 import '../widgets/todo_list.dart';
 import '../widgets/new_item_fab.dart';
 import '../widgets/drawer_menu.dart';
@@ -19,8 +20,6 @@ class TodayPage extends StatefulWidget {
 }
 
 class _TodayPageState extends State<TodayPage> {
-  Color headerColor = AppConstants.todayHeaderColor;
-
   @override
   Widget build(BuildContext context) {
     print("BUILD - today_page");
@@ -33,7 +32,7 @@ class _TodayPageState extends State<TodayPage> {
           fit: BoxFit.cover,
           height: 40,
         ),
-        backgroundColor: headerColor,
+        backgroundColor: AppConstants.appBarColor,
         elevation: 0.0,
         actions: <Widget>[
           IconButton(
@@ -51,10 +50,23 @@ class _TodayPageState extends State<TodayPage> {
       // drawer: DrawerMenu(),
       // drawerEdgeDragWidth: 0,
       floatingActionButton: NewItemFab(
-        color: headerColor,
+        color: AppConstants.appBarColor,
         initIsToday: false,
       ),
     );
+  }
+
+  _buildNote(String text, Color backgroundColor, Color textColor) {
+    return Ink(
+        color: backgroundColor,
+        height: AppConstants.headerHeight / 2,
+        child: Container(
+          alignment: Alignment(0.0, 0.0),
+          child: Text(
+            text,
+            style: TextStyle(color: textColor),
+          ),
+        ));
   }
 
   Widget _buildBody() {
@@ -63,8 +75,8 @@ class _TodayPageState extends State<TodayPage> {
         return FutureBuilder(
           future: appState.storage.ready,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
-            List<ToDoItem> items;
-            int backlogCount;
+            List<ToDoItem> todayItems;
+            List<ToDoItem> backlogItems;
             int completedCount;
             //var formatter = new DateFormat.MMMMEEEEd();
             // Widget headerText = Text(
@@ -74,20 +86,13 @@ class _TodayPageState extends State<TodayPage> {
 
             if (snapshot.data == null) {
               return Column(
-                children: <Widget>[
-                  CategoryHeader(
-                    headerColor: headerColor,
-                    headerCount: 0,
-                    //headerContent: Text("Today"),
-                  ),
-                  CircularProgressIndicator()
-                ],
+                children: <Widget>[DateHeader(), CircularProgressIndicator()],
               );
             }
 
             appState.initialize();
-            items = appState.allTodayItems;
-            backlogCount = appState.allToDoItems.length;
+            todayItems = appState.allTodayItems;
+            backlogItems = appState.allToDoItems;
             completedCount = appState.allCompletedTodayItems.length;
 
             return CustomScrollView(
@@ -95,16 +100,17 @@ class _TodayPageState extends State<TodayPage> {
                 SliverList(
                   delegate: SliverChildListDelegate(
                     [
-                      CategoryHeader(
-                        headerColor: headerColor,
-                        headerCount: completedCount,
-                        //headerContent: Text("Today"),
+                      DateHeader(),
+                      NoteHeader(
+                        text: "${todayItems.length.toString()} things to focus on...",
+                        backgroundColor: Color(0xFF247BA0),
+                        textColor: Colors.white,
                       ),
                     ],
                   ),
                 ),
                 ToDoList(
-                  items: items,
+                  items: todayItems,
                   pageType: PageType.today,
                 ),
                 // SliverToBoxAdapter(
@@ -118,17 +124,19 @@ class _TodayPageState extends State<TodayPage> {
                   child: Container(),
                 ),
                 SliverList(
-                  delegate: SliverChildListDelegate([
-                    Ink(
-                      color: Colors.grey,
-                      height: AppConstants.headerHeight + 15,
-                      child: ListTile(
-                        title: Text(
-                            "+${backlogCount.toString()} more items in backlog..."),
+                  delegate: SliverChildListDelegate(
+                    [
+                      NoteHeader(
+                        text:
+                            "${backlogItems.length.toString()} others left to do...",
                       ),
-                    ),
-                  ]),
-                )
+                    ],
+                  ),
+                ),
+                ToDoList(
+                  items: backlogItems,
+                  pageType: PageType.today,
+                ),
               ],
             );
 

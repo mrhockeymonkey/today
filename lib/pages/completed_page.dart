@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import '../models/app_constants.dart';
-import '../widgets/category_header.dart';
+import '../widgets/date_header.dart';
+import '../widgets/note_header.dart';
 import '../models/app_state.dart';
 import '../models/todo_item.dart';
 import '../widgets/todo_list.dart';
@@ -55,32 +56,24 @@ class _CompletedPageState extends State<CompletedPage> {
           future: appState.storage.ready,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             List<ToDoItem> items;
-            int completedCount;
 
             if (snapshot.data == null) {
               return Column(
-                children: <Widget>[
-                  CategoryHeader(
-                    headerColor: headerColor,
-                    headerCount: 0,
-                  ),
-                  CircularProgressIndicator()
-                ],
+                children: <Widget>[DateHeader(), CircularProgressIndicator()],
               );
             }
 
             appState.initialize();
             items = appState.allCompletedItems;
-            completedCount = appState.allCompletedTodayItems.length;
 
             return CustomScrollView(
               slivers: <Widget>[
                 SliverList(
                   delegate: SliverChildListDelegate(
                     [
-                      CategoryHeader(
-                        headerColor: headerColor,
-                        headerCount: completedCount,
+                      DateHeader(),
+                      NoteHeader(
+                        text: "${items.length.toString()} things completed...",
                       ),
                     ],
                   ),
@@ -91,18 +84,6 @@ class _CompletedPageState extends State<CompletedPage> {
                 ),
               ],
             );
-            // return Column(
-            //   children: <Widget>[
-            //     CategoryHeader(
-            //       headerColor: headerColor,
-            //       headerCount: items.length,
-            //     ),
-            //     ToDoList(
-            //       items: items,
-            //       pageType: PageType.completed,
-            //     ),
-            //   ],
-            // );
           },
         );
       },

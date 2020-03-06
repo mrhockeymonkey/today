@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../models/app_constants.dart';
 import '../pages/later_page.dart';
-import '../pages/todo_page.dart';
+//import '../pages/todo_page.dart';
 import '../pages/today_page.dart';
 import '../pages/completed_page.dart';
 
@@ -16,7 +16,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  int _currentIndex = 2;
+  int _currentIndex = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,7 @@ class _HomeState extends State<Home> {
 
     // a list of pages to display per nav bar item
     final _pages = [
-      ToDoPage(),
+      //ToDoPage(),
       LaterPage(),
       TodayPage(),
       CompletedPage(),
@@ -39,17 +39,17 @@ class _HomeState extends State<Home> {
 
     // a list of nav bar items
     final List<BottomNavigationBarItem> _bottomNavigationBarItems = [
-      BottomNavigationBarItem(
-        icon: Icon(Icons.list),
-        title: Text('Backlog'),
-      ),
+      // BottomNavigationBarItem(
+      //   icon: Icon(Icons.list),
+      //   title: Text('Backlog'),
+      // ),
       BottomNavigationBarItem(
         icon: Icon(Icons.today),
         title: Text('Scheduled'),
       ),
       BottomNavigationBarItem(
         icon: Icon(Icons.event_available),
-        title: Text('Today'),
+        title: Text('To Do'),
       ),
       BottomNavigationBarItem(
         icon: Icon(Icons.done_all),
@@ -69,7 +69,7 @@ class _HomeState extends State<Home> {
           type: BottomNavigationBarType.fixed,
           items: _bottomNavigationBarItems,
           fixedColor: AppConstants.todayHeaderColor, //AppConstants.highlightColor,
-          selectedFontSize: 16.0,
+          selectedFontSize: 18.0,
           //backgroundColor: AppConstants.todayHeaderColor,
         ),
       ),

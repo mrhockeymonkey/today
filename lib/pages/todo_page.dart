@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import '../models/app_constants.dart';
-import '../widgets/category_header.dart';
+import '../widgets/date_header.dart';
 import '../widgets/todo_list.dart';
 import '../models/app_state.dart';
 import '../models/todo_item.dart';
@@ -68,10 +68,7 @@ class _ToDoPageState extends State<ToDoPage> {
             if (snapshot.data == null) {
               return Column(
                 children: <Widget>[
-                  CategoryHeader(
-                    headerColor: headerColor,
-                    headerCount: 0,
-                  ),
+                  DateHeader(),
                   CircularProgressIndicator()
                 ],
               );
@@ -85,10 +82,7 @@ class _ToDoPageState extends State<ToDoPage> {
               SliverList(
                 delegate: SliverChildListDelegate(
                   [
-                    CategoryHeader(
-                      headerColor: headerColor,
-                      headerCount: completedCount,
-                    ),
+                    DateHeader()
                   ],
                 ),
               ),

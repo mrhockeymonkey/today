@@ -118,62 +118,69 @@ class _ItemPageState extends State<ItemPage> {
     }
   }
 
-  //---------- category picker popup
-  Future _selectToday() async {
-    int picked;
-
-    picked = await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return SimpleDialog(
-          children: <Widget>[
-            SimpleDialogOption(
-              onPressed: () {
-                Navigator.pop(context, 0);
-              },
-              child: Container(
-                child: Row(
-                  children: <Widget>[
-                    Text(
-                      "TODAY",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ],
-                ),
-                color: _categoryColor,
-                height: 80.0,
-                padding: EdgeInsets.symmetric(horizontal: 10.0),
-              ),
-            ),
-            SimpleDialogOption(
-              onPressed: () {
-                Navigator.pop(context, 1);
-              },
-              child: Container(
-                child: Row(
-                  children: <Widget>[
-                    Text(
-                      "BACKLOG",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ],
-                ),
-                color: Colors.grey,
-                height: 80.0,
-                padding: EdgeInsets.symmetric(horizontal: 10.0),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-
-    print(picked);
-    if (picked != null)
-      setState(() {
-        _formData['itemIsToday'] = picked == 0 ? true : false;
-      });
+  //---------- today picker
+  void _selectToday() {
+    setState(() {
+      _formData['itemIsToday'] = !_formData['itemIsToday'];
+    });
   }
+
+  //---------- today picker popup
+  // Future _selectToday() async {
+  //   int picked;
+
+  //   picked = await showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return SimpleDialog(
+  //         children: <Widget>[
+  //           SimpleDialogOption(
+  //             onPressed: () {
+  //               Navigator.pop(context, 0);
+  //             },
+  //             child: Container(
+  //               child: Row(
+  //                 children: <Widget>[
+  //                   Text(
+  //                     "TODAY",
+  //                     style: TextStyle(color: Colors.white),
+  //                   ),
+  //                 ],
+  //               ),
+  //               color: _categoryColor,
+  //               height: 80.0,
+  //               padding: EdgeInsets.symmetric(horizontal: 10.0),
+  //             ),
+  //           ),
+  //           SimpleDialogOption(
+  //             onPressed: () {
+  //               Navigator.pop(context, 1);
+  //             },
+  //             child: Container(
+  //               child: Row(
+  //                 children: <Widget>[
+  //                   Text(
+  //                     "BACKLOG",
+  //                     style: TextStyle(color: Colors.white),
+  //                   ),
+  //                 ],
+  //               ),
+  //               color: Colors.grey,
+  //               height: 80.0,
+  //               padding: EdgeInsets.symmetric(horizontal: 10.0),
+  //             ),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+
+  //   print(picked);
+  //   if (picked != null)
+  //     setState(() {
+  //       _formData['itemIsToday'] = picked == 0 ? true : false;
+  //     });
+  // }
 
   //---------- repeat picker
   Future _selectRepeat() async {
@@ -309,10 +316,10 @@ class _ItemPageState extends State<ItemPage> {
                   Icons.event,
                   color: Colors.grey,
                 ),
-          title: _formData['itemIsToday'] ? Text("Today") : Text("Backlog"),
+          title: Text("Focus"), //_formData['itemIsToday'] ? Text("Focus") : Text("Backlog"),
           subtitle: _formData['itemIsToday']
-              ? Text('You intend to tackle this today')
-              : Text('You dont need to focus on this right now'),
+              ? Text('You are focussed on this task')
+              : Text('You are not focused on this task'),
           onTap: _selectToday,
         ),
         ListTile(
