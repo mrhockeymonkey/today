@@ -51,7 +51,7 @@ class _TodayPageState extends State<TodayPage> {
       // drawerEdgeDragWidth: 0,
       floatingActionButton: NewItemFab(
         color: AppConstants.appBarColor,
-        initIsToday: false,
+        initIsToday: true,
       ),
     );
   }
@@ -135,7 +135,7 @@ class _TodayPageState extends State<TodayPage> {
                 ),
                 ToDoList(
                   items: backlogItems,
-                  pageType: PageType.today,
+                  pageType: PageType.todo,
                 ),
               ],
             );

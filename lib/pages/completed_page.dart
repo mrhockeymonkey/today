@@ -74,6 +74,7 @@ class _CompletedPageState extends State<CompletedPage> {
                       DateHeader(),
                       NoteHeader(
                         text: "${items.length.toString()} things completed...",
+                        textColor: Colors.white,
                       ),
                     ],
                   ),

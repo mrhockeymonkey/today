@@ -6,6 +6,7 @@ import '../pages/later_page.dart';
 //import '../pages/todo_page.dart';
 import '../pages/today_page.dart';
 import '../pages/completed_page.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -48,11 +49,11 @@ class _HomeState extends State<Home> {
         title: Text('Scheduled'),
       ),
       BottomNavigationBarItem(
-        icon: Icon(Icons.event_available),
+        icon: Icon(Icons.format_list_numbered),
         title: Text('To Do'),
       ),
       BottomNavigationBarItem(
-        icon: Icon(Icons.done_all),
+        icon: Icon(Icons.done),
         title: Text('Done'),
       ),
     ];

@@ -64,7 +64,8 @@ class _ItemPageState extends State<ItemPage> {
         "itemScheduledDate": _item.scheduledDate,
         "itemIsToday": _item.isToday,
         "itemRepeatNum": _item.repeatNum,
-        "itemRepeatLen": _item.repeatLen
+        "itemRepeatLen": _item.repeatLen,
+        "itemSeriesLen": _item.seriesLen
       };
     } else {
       // form data for a new item
@@ -73,7 +74,8 @@ class _ItemPageState extends State<ItemPage> {
         "itemScheduledDate": 0,
         "itemIsToday": widget.initIsToday,
         "itemRepeatNum": 0,
-        "itemRepeatLun": "days"
+        "itemRepeatLen": "days",
+        "itemSeriesLen": 0
       };
     }
   }
@@ -223,6 +225,59 @@ class _ItemPageState extends State<ItemPage> {
     });
   }
 
+  //---------- series picker popup
+  Future _selectSeries() async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Row(
+            children: <Widget>[
+              Expanded(
+                child: TextField(
+                  style: TextStyle(decoration: TextDecoration.none, ),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  maxLengthEnforced: false,
+                  keyboardType: TextInputType.number,
+                  autofocus: false,
+                  enabled: true,
+                  onSubmitted: (String text) {
+                    int numberInput = int.parse(text);
+                    setState(() {
+                      _formData['itemSeriesLen'] = numberInput;
+                    });
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ),
+              Expanded(
+                child: Text(" occurrences left"),
+              )
+            ],
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('CANCEL'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            // FlatButton(
+            //   child: Text('OK'),
+            //   onPressed: () {
+            //     setState(() {
+            //       _formData['itemSeriesLen'] = 1;
+            //     });
+            //     Navigator.of(context).pop();
+            //   },
+            // )
+          ],
+        );
+      },
+    );
+  }
+
   //---------- category picker popup
   Future _selectCategory() async {
     AppState appState = ScopedModel.of<AppState>(context);
@@ -309,17 +364,18 @@ class _ItemPageState extends State<ItemPage> {
         ListTile(
           leading: _formData['itemIsToday']
               ? Icon(
-                  Icons.event_available,
+                  AppConstants.categoryIcons[_categoryIndex],
                   color: _categoryColor,
                 )
               : Icon(
-                  Icons.event,
+                  AppConstants.categoryIcons[_categoryIndex],
                   color: Colors.grey,
                 ),
-          title: Text("Focus"), //_formData['itemIsToday'] ? Text("Focus") : Text("Backlog"),
+          title: Text(
+              "Focus"), //_formData['itemIsToday'] ? Text("Focus") : Text("Backlog"),
           subtitle: _formData['itemIsToday']
-              ? Text('You are focussed on this task')
-              : Text('You are not focused on this task'),
+              ? Text('You are focused on this task')
+              : Text('You are not focusing on this task'),
           onTap: _selectToday,
         ),
         ListTile(
@@ -371,6 +427,28 @@ class _ItemPageState extends State<ItemPage> {
                   " " +
                   _formData['itemRepeatLen']),
           onTap: _selectRepeat,
+        ),
+
+        //---------- series tile
+        ListTile(
+          trailing: _formData['itemSeriesLen'] == 0
+              ? null
+              : IconButton(
+                  icon: Icon(Icons.cancel),
+                  onPressed: () {
+                    setState(() {
+                      _formData['itemSeriesLen'] = 0;
+                    });
+                  },
+                ),
+          leading: _formData['itemSeriesLen'] == 0
+              ? Icon(Icons.slideshow, color: Colors.grey)
+              : Icon(Icons.slideshow, color: _categoryColor),
+          title: Text("Series"),
+          subtitle: _formData['itemSeriesLen'] == 0
+              ? Text("Set number occurences (or episodes)")
+              : Text("${_formData['itemSeriesLen']} occurences left"),
+          onTap: _selectSeries,
         )
       ],
     );
@@ -403,6 +481,9 @@ class _ItemPageState extends State<ItemPage> {
                 _newItem.repeatNum = _formData['itemRepeatNum'];
                 _newItem.repeatLen = _formData['itemRepeatLen'];
               }
+              if (_formData['itemSeriesLen'] > 0) {
+                _newItem.seriesLen = _formData['itemSeriesLen'];
+              }
               appState.addItemToCategory(_categoryIndex, _newItem);
             }
             //---------- handle updating an existing item + category change
@@ -416,6 +497,7 @@ class _ItemPageState extends State<ItemPage> {
                 newScheduledDate: _formData['itemScheduledDate'],
                 newRepeatNum: _formData['itemRepeatNum'],
                 newRepeatLen: _formData['itemRepeatLen'],
+                newSeriesLen: _formData['itemSeriesLen'],
               );
             }
             //---------- handle updating an existing item
@@ -428,6 +510,7 @@ class _ItemPageState extends State<ItemPage> {
                 newScheduledDate: _formData['itemScheduledDate'],
                 newRepeatNum: _formData['itemRepeatNum'],
                 newRepeatLen: _formData['itemRepeatLen'],
+                newSeriesLen: _formData['itemSeriesLen'],
               );
             }
 

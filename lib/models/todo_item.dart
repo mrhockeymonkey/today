@@ -10,15 +10,13 @@ class ToDoItem {
   int completedDate = 0;
   int repeatNum = 0;
   String repeatLen = 'days';
+  int seriesLen = 0;
 
   ToDoItem({
     @required this.title,
   });
 
-  ToDoItem.custom({
-    @required this.title,
-    @required this.isToday
-  });
+  ToDoItem.custom({@required this.title, @required this.isToday});
 
   ToDoItem.fromStorage({
     @required this.title,
@@ -28,6 +26,7 @@ class ToDoItem {
     @required this.completedDate,
     @required this.repeatNum,
     @required this.repeatLen,
+    @required this.seriesLen,
   });
   // {
   //   _scheduledDate =
@@ -57,6 +56,14 @@ class ToDoItem {
 
   bool get isRecurring {
     if (repeatNum > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  bool get isSeries {
+    if (seriesLen > 0) {
       return true;
     } else {
       return false;
@@ -112,11 +119,23 @@ class ToDoItem {
     return diff.inDays;
   }
 
-  String get dateFormattedStr {
+  String get scheduledDateFormattedStr {
     DateFormat formatter = new DateFormat('d MMM');
     DateTime date = ToDoItem.toDateTime(scheduledDate);
     String formatted = formatter.format(date);
     return formatted;
+  }
+
+  String get completedDateFormattedStr {
+    try {
+      DateFormat formatter = new DateFormat('d MMM');
+      DateTime date = ToDoItem.toDateTime(completedDate);
+      String formatted = formatter.format(date);
+      return formatted;
+    } on Error catch (e) {
+      print(e);
+      return "";
+    }
   }
 
   Map<String, dynamic> toJsonEncodable() {
@@ -129,6 +148,7 @@ class ToDoItem {
     m['completedDate'] = completedDate;
     m['repeatNum'] = repeatNum;
     m['repeatLen'] = repeatLen;
+    m['seriesLen'] = seriesLen;
 
     return m;
   }

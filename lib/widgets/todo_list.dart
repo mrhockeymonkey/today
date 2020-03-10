@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'dart:async';
+import 'dart:math' as math;
 import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:flutter_icons/flutter_icons.dart';
@@ -426,22 +427,18 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
     );
   }
 
-  Widget _buildFocusTile(ToDoItem item, List<Widget> subtitles, Category category) {
+  Widget _buildFocusTile(
+    ToDoItem item,
+    List<Widget> subtitles,
+    Category category,
+  ) {
     AppState appState = ScopedModel.of<AppState>(context);
     int categoryIndex = appState.categoryIndexOf(item);
-    List<IconData> fiveIcons = [
-      Entypo.flag, //must do
-      Entypo.game_controller, //want to
-      Entypo.pin, //should do
-      Entypo.pin, //could do
-      Entypo.info //fyi
-    ];
+
     return ListTile(
       title: Text(item.title),
       leading: Icon(
-        // Entypo.pin,
-        // Entypo.forward,
-        fiveIcons[categoryIndex],
+        AppConstants.categoryIcons[categoryIndex],
         color: category.color,
       ),
       subtitle: Row(
@@ -451,14 +448,43 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
     );
   }
 
-  Widget _buildSwipeLeftTile(ToDoItem item, List<Widget> subtitles, Category category) {
+  Widget _buildUnfocusedTile(
+    ToDoItem item,
+    List<Widget> subtitles,
+    Category category,
+  ) {
+    AppState appState = ScopedModel.of<AppState>(context);
+    int categoryIndex = appState.categoryIndexOf(item);
+
     return ListTile(
-      title: Text(
-        item.title,
-        style: TextStyle(color: AppConstants.completedColor),
+      title: Text(item.title),
+      leading: Icon(
+        AppConstants.categoryIcons[categoryIndex],
+        color: Colors.grey,
       ),
-      trailing: Icon(
-        Entypo.reply,
+      subtitle: Row(
+        children: subtitles,
+      ),
+      // trailing: IconButton(
+      //   icon: Transform.rotate(
+      //     angle: 90 * math.pi / 180,
+      //     child: Icon(
+      //       Entypo.reply,
+      //       color: category.color,
+      //     ),
+      //   ),
+      //   onPressed: () {},
+      // ),
+      onTap: () => _pushItemPage(context, item),
+    );
+  }
+
+  Widget _buildScheduledTile(
+      ToDoItem item, List<Widget> subtitles, Category category) {
+    return ListTile(
+      title: Text(item.title),
+      leading: Icon(
+        Entypo.hour_glass,
         color: category.color,
       ),
       subtitle: Row(
@@ -468,34 +494,30 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
     );
   }
 
-  Widget _buildSwipeRightTile(ToDoItem item, List<Widget> subtitles, Category category) {
+  Widget _buildCompletedTile(ToDoItem item, Category category) {
     return ListTile(
       title: Text(
         item.title,
-        style: TextStyle(color: AppConstants.completedColor),
+        style: TextStyle(decoration: TextDecoration.lineThrough),
+      ),
+      subtitle: Row(
+        children: <Widget>[
+          Text(
+            "DONE",
+            style: TextStyle(color: category.color),
+          ),
+          Text(" - "),
+          Icon(
+            Icons.done,
+            color: category.color,
+            size: 15,
+          ),
+          Text(" ${item.completedDateFormattedStr}"),
+        ],
       ),
       leading: Icon(
-        Entypo.forward,
+        Icons.done,
         color: category.color,
-      ),
-      subtitle: Row(
-        children: subtitles,
-      ),
-      onTap: () => _pushItemPage(context, item),
-    );
-  }
-
-  Widget _buildCompletedTile(ToDoItem item, List<Widget> subtitles) {
-    return Ink(
-      color: AppConstants.completedColor,
-      child: ListTile(
-        title: Text(
-          item.title,
-          style: TextStyle(decoration: TextDecoration.lineThrough),
-        ),
-        subtitle: Text(        item.completedDate.toString(),),
-        //subtitle: Text("DONE"),
-        trailing: Icon(Icons.done_all),
       ),
     );
   }
@@ -505,44 +527,94 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
     int categoryIndex = appState.categoryIndexOf(item);
     Category itemCategory = appState.categories[categoryIndex];
     List<Widget> subtitleElements = [];
+    List<Widget> subtitleIndicators = [];
+    Widget listTile;
 
     // first build the subtitle
     subtitleElements.add(
       Text(
-        itemCategory.name.toUpperCase(),
+        "${itemCategory.name.toUpperCase()}",
         style: TextStyle(
           color: itemCategory.color,
         ),
       ),
     );
 
-    if (item.isOverDue) {
-      subtitleElements.add(
-        Text(
-          " - ${item.daysOverdue} days ago",
-          //style: TextStyle(background: Paint()),
+    // add any indicators needed
+    if (item.isOverDue || item.isScheduled) {
+      subtitleIndicators.add(
+        Icon(
+          Icons.today,
+          color: itemCategory.color,
+          //color: Colors.grey,
+          size: 15.0,
         ),
       );
-    } else if (item.isScheduled) {
-      subtitleElements.add(
-        Text(" - " + item.dateFormattedStr),
+      if (item.isOverDue) {
+        subtitleIndicators.add(
+          Text(
+            " ${item.daysOverdue} days ago ",
+            //style: TextStyle(background: Paint()),
+          ),
+        );
+      } else if (item.isScheduled) {
+        subtitleIndicators.add(
+          Text(" ${item.scheduledDateFormattedStr} "),
+        );
+      }
+    }
+
+    if (item.isRecurring) {
+      subtitleIndicators.add(
+        Icon(
+          Icons.repeat,
+          color: itemCategory.color,
+          //color: Colors.grey,
+          size: 15.0,
+        ),
       );
+      subtitleIndicators.add(
+        Text(" ${item.repeatNum}${item.repeatLen[0]} "),
+      );
+    }
+
+    if (item.isSeries) {
+      subtitleIndicators.add(
+        Icon(
+          Icons.slideshow,
+          color: itemCategory.color,
+          //color: Colors.grey,
+          size: 15.0,
+        ),
+      );
+      subtitleIndicators.add(
+        Text(" ${item.seriesLen} left"),
+      );
+    }
+
+    // join indicators to subtitle
+    if (subtitleIndicators.length > 0) {
+      subtitleElements.add(
+        Text(" - "),
+      );
+      subtitleElements.addAll(subtitleIndicators);
     }
 
     switch (pageType) {
       case PageType.todo:
-        return _buildSwipeRightTile(item, subtitleElements, itemCategory);
+        listTile = _buildUnfocusedTile(item, subtitleElements, itemCategory);
+        break;
       case PageType.later:
-        return _buildSwipeRightTile(item, subtitleElements, itemCategory);
+        listTile = _buildScheduledTile(item, subtitleElements, itemCategory);
+        break;
       case PageType.today:
-        if (index < 5) {
-          return _buildFocusTile(item, subtitleElements, itemCategory);
-        } else {
-          return _buildSwipeLeftTile(item, subtitleElements, itemCategory);
-        }
+        listTile = _buildFocusTile(item, subtitleElements, itemCategory);
         break;
       case PageType.completed:
-        return _buildCompletedTile(item, subtitleElements);
+        listTile = _buildCompletedTile(item, itemCategory);
+        break;
     }
+
+    return listTile;
   }
 }

@@ -79,6 +79,7 @@ class _LaterPageState extends State<LaterPage> {
                       DateHeader(),
                       NoteHeader(
                         text: "${items.length.toString()} things coming up...",
+                        textColor: Colors.white,
                       ),
                     ],
                   ),

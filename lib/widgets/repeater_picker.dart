@@ -32,6 +32,7 @@ class _RepeatPickerState extends State<RepeatPicker> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
+        Text("Every "),
         DropdownButton<String>(
           value: repeatAmmountValue,
           items: repeatAmmountChoice.map((String value) {

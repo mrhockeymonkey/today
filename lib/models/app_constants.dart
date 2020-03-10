@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:intl/intl.dart';
 
 import './category.dart';
@@ -29,6 +30,15 @@ class AppConstants extends InheritedWidget {
 
   //final Category today = Category(name: 'TODAY', color: todayHeaderColor);
   //static final int maxTodayItems = 5;
+
+  // icons
+  static final List<IconData> categoryIcons = [
+      Entypo.flag, //must do
+      Entypo.game_controller, //want to
+      Entypo.pin, //should do
+      Entypo.pin, //could do
+      Entypo.info //fyi
+  ];
 
   final RouteObserver<Route> routeObserver = new RouteObserver<Route>();
 

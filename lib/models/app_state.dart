@@ -141,6 +141,7 @@ class AppState extends Model {
     int newScheduledDate,
     int newRepeatNum,
     String newRepeatLen,
+    int newSeriesLen,
   }) {
     _categories[categoryIndex].updateItem(
       itemIndex,
@@ -149,6 +150,7 @@ class AppState extends Model {
       newScheduledDate,
       newRepeatNum,
       newRepeatLen,
+      newSeriesLen,
     );
     saveToStorage();
   }
@@ -171,6 +173,7 @@ class AppState extends Model {
     int newScheduledDate,
     int newRepeatNum,
     String newRepeatLen,
+    int newSeriesLen,
   }) {
     var originalCategory = _categories[originalCategoryIndex];
     var newCategory = _categories[newCategoryIndex];
@@ -185,6 +188,7 @@ class AppState extends Model {
       newScheduledDate,
       newRepeatNum,
       newRepeatLen,
+      newSeriesLen,
     );
 
     saveToStorage();
@@ -267,6 +271,7 @@ class AppState extends Model {
               completedDate: j['completedDate'] ?? 0,
               repeatNum: j['repeatNum'] ?? 0,
               repeatLen: j['repeatLen'] ?? 'days',
+              seriesLen: j['seriesLen'] ?? 0,
             ),
           );
         });

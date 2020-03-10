@@ -85,7 +85,8 @@ class Category {
     bool newIsToday,
     int newScheduledDate,
     int newRepeatNum,
-    String newRepeatLen
+    String newRepeatLen,
+    int newSeriesLen,
   ) {
     //_items[itemIndex].update(newTitle, newScheduledDate);
     _items[itemIndex].isToday = newIsToday;
@@ -98,6 +99,9 @@ class Category {
     if (newRepeatNum != null) {
       _items[itemIndex].repeatNum = newRepeatNum;
       _items[itemIndex].repeatLen = newRepeatLen;
+    }
+    if (newSeriesLen != null) {
+      _items[itemIndex].seriesLen = newSeriesLen;
     }
   }
 
