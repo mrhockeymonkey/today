@@ -4,43 +4,14 @@ import 'package:localstorage/localstorage.dart';
 //import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/todo_item.dart';
+import '../models/app_constants.dart';
 import './category.dart';
+import 'package:jiffy/jiffy.dart';
 
 class AppState extends Model {
   // for now we just declare categories here until we can save data to phone
   List<Category> _categories = [];
-  // final List<String> _categoryKeys = [
-  //   "categoryName0",
-  //   "categoryName1",
-  //   "categoryName2",
-  //   "categoryName3"
-  // ];
-  // final List<String> _categoryDefaultNames = [
-  //   "Default1",
-  //   "Default2",
-  //   "Default3",
-  //   "Default4"
-  // ];
 
-  // Future<String> getCategoryName(int categoryId) async {
-  //   final SharedPreferences prefs = await SharedPreferences.getInstance();
-  // 	String key = _categoryKeys[categoryId];
-  //   String defaultName = _categoryDefaultNames[categoryId];
-  //   return prefs.getString(key) ?? defaultName;
-  // }
-  // Future<String> getCategoryName(int categoryId) async {
-  //   await settings.ready;
-  //   String key = _categoryKeys[categoryId];
-  //   String defaultName = _categoryDefaultNames[categoryId];
-  //   return settings.getItem(key) ?? defaultName;
-  // }
-
-  // List<String> categoryNames = [
-  //   "FOCUS",
-  //   "SCHMOALS",
-  //   "FIT IN",
-  //   "MEH"
-  // ];
 
   final LocalStorage storage = new LocalStorage('today_app');
   //final LocalStorage settings = new LocalStorage('today_settings');
@@ -233,27 +204,30 @@ class AppState extends Model {
 
     if (appData == null || appData.isEmpty) {
       print("AppState.initialize: No app data found, initializing defaults");
+      Jiffy now = Jiffy();
+      DateTime tomorrow = now.add(days: 1);
+      int intTomorrow = ToDoItem.toSortableDate(tomorrow);
+
       _categories
-        ..add(Category(name: "MUST DO", color: const Color(0xFFEE534F)))
-        ..add(Category(name: "WANT TO", color: const Color(0xFF00B8D4)))
-        ..add(Category(name: "SHOULD DO", color: const Color(0xFFFBAF28)))
-        ..add(Category(name: "COULD DO", color: const Color(0xFF01BFA5)))
-        ..add(Category(name: "FYI", color: Colors.grey));
-      _categories[0] // must do
-        ..addItem(ToDoItem(title: 'Prepare For Important Meeting'))
-        ..addItem(ToDoItem(title: 'Back Up Family Photos'));
-      _categories[1] // want to
-        ..addItem(ToDoItem(title: 'Play New PC Game'))
-        ..addItem(ToDoItem(title: 'Relax And Watch Netflix'));
-      _categories[2] // should do
-        ..addItem(ToDoItem.custom(title: 'Move Items Here From The Backlog', isToday: true))
-        ..addItem(ToDoItem(title: 'Water The Plants'));
-      _categories[3] // could do
-        ..addItem(ToDoItem(title: 'Clear Email Inbox'))
-        ..addItem(ToDoItem(title: 'Visit The Popup Market In Town'));
-      _categories[4] // fyi
-        ..addItem(ToDoItem.custom(title: 'You Can Move Up To 5 Things Here', isToday: true))
-        ..addItem(ToDoItem.custom(title: 'Scheduled Items That Are Due Will Always Appear Here', isToday: true));
+        ..add(Category(name: "MUST DO", color: AppConstants.categoryColors[0]))
+        ..add(Category(name: "WANT TO", color: AppConstants.categoryColors[1]))
+        ..add(Category(name: "SHOULD DO", color: AppConstants.categoryColors[2]))
+        ..add(Category(name: "COULD DO", color: AppConstants.categoryColors[3]))
+        ..add(Category(name: "FYI", color: AppConstants.categoryColors[4]));
+      _categories[0]
+        ..addItem(ToDoItem.custom(title: 'Focus On Up To Five Tasks Each Day', isToday: true));
+      _categories[1]
+        ..addItem(ToDoItem.custom(title: 'Swipe Right To Complete', isToday: true));
+      _categories[2]
+        ..addItem(ToDoItem.custom(title: 'Swipe Left To Snooze Until Tomorrow', isToday: true))
+        ..addItem(ToDoItem.custom(title: 'Tap For Menu', isToday: true));
+      _categories[3]
+        ..addItem(ToDoItem.custom(title: 'These Are Tasks You Are Not Focused On', isToday: false))
+        ..addItem(ToDoItem.custom(title: 'Add New Tasks By Taping ( + )', isToday: false));
+      _categories[4]
+        ..addItem(ToDoItem.custom(title: 'Scheduled Tasks Appear Here', isToday: false, scheduledDate: intTomorrow))
+        ..addItem(ToDoItem.custom(title: 'Tasks Become Focused When Due', isToday: false, scheduledDate: intTomorrow));
+
       saveToStorage();
     } else {
       print("AppState.initialize: App data found, loading from local storage");

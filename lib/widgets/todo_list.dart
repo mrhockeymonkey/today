@@ -71,7 +71,7 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
               widget.pageType == PageType.completed) {
             return false;
           } else if (direction == DismissDirection.endToStart &&
-              widget.pageType == PageType.todo) {
+              widget.pageType == PageType.later) {
             return false;
           } else {
             return true;
@@ -96,152 +96,85 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
       }, childCount: widget.items.length),
     );
   }
-  // //---------- build method
-  // @override
-  // Widget build(BuildContext context) {
-  //   print("BUILD - todo_list");
-  //   return Expanded(
-  //     child: ListView.builder(
-  //       itemCount: widget.items.length,
-  //       itemBuilder: (BuildContext context, int index) {
-  //         ToDoItem item = widget.items[index];
-  //         Future<bool> _confirmDismiss(DismissDirection direction) async {
-  //           if (direction == DismissDirection.startToEnd &&
-  //               widget.pageType == PageType.completed) {
-  //             return false;
-  //           } else if (direction == DismissDirection.endToStart &&
-  //               widget.pageType == PageType.todo) {
-  //             return false;
-  //           } else {
-  //             return true;
-  //           }
-  //         }
-
-  //         return Dismissible(
-  //           key: item.key,
-  //           direction: DismissDirection.horizontal,
-  //           confirmDismiss: (DismissDirection direction) =>
-  //               _confirmDismiss(direction),
-  //           onDismissed: (DismissDirection direction) =>
-  //               _handleOnDismissed(direction, item),
-  //           background: _buildBackground(widget.pageType, item),
-  //           secondaryBackground: _buildSecondaryBackground(widget.pageType),
-  //           child: Column(
-  //             children: <Widget>[
-  //               _buildListTile(item),
-  //             ],
-  //           ),
-  //         );
-  //       },
-  //     ),
-  //   );
-  // }
 
   //---------- helper methods
   void _handleOnDismissed(DismissDirection direction, ToDoItem item) {
     // handle onDismiss >>
     if (direction == DismissDirection.startToEnd) {
       setState(() {
-        switch (widget.pageType) {
-          case PageType.todo:
-            // AppState appState = ScopedModel.of<AppState>(context);
-            // if (appState.isTodayFull) {
-            //   _snackBarMsg(
-            //     "You already have 5 things to focus on",
-            //     Icon(Icons.error_outline, color: AppConstants.todoColor),
-            //   );
-            // }
-            item.markToday();
-            break;
-          case PageType.later:
-            // AppState appState = ScopedModel.of<AppState>(context);
-            // if (appState.isTodayFull) {
-            //   _snackBarMsg(
-            //     "You already have 5 things to focus on",
-            //     Icon(Icons.error_outline, color: AppConstants.todoColor),
-            //   );
-            // }
-            item.markToday();
-            break;
-          case PageType.today:
-            DateTime next;
+        bool shouldMarkComplete = true;
 
-            if (item.isRecurring) {
-              Jiffy now = Jiffy();
-
-              switch (item.repeatLen) {
-                case 'days':
-                  next = now.add(days: item.repeatNum);
-                  break;
-                case 'weeks':
-                  next = now.add(weeks: item.repeatNum);
-                  break;
-                case 'months':
-                  next = now.add(months: item.repeatNum);
-                  break;
-              }
-              int intNext = ToDoItem.toSortableDate(next);
-              item.markScheduled(intNext);
+        if (widget.pageType == PageType.todo ||
+            widget.pageType == PageType.today) {
+          // if the item is a series decrement the occurences left
+          if (item.isSeries) {
+            shouldMarkComplete = false;
+            if (item.seriesLen == 1) {
+              shouldMarkComplete = true;
+              item.seriesLen = 0;
               _snackBarMsg(
-                "Repeats on " + DateFormat.MMMMEEEEd().format(next),
-                Icon(Icons.repeat, color: AppConstants.todoColor),
+                "Series completed",
+                Icon(Icons.slideshow, color: AppConstants.todoColor),
               );
-
-              // Scaffold.of(context).showSnackBar(
-              //   SnackBar(
-              //     content: Row(
-              //       children: <Widget>[
-              //         Icon(
-              //           Icons.repeat,
-              //           color: AppConstants.todoColor,
-              //         ),
-              //         Text(
-              //             " Repeats on " + DateFormat.MMMMEEEEd().format(next)),
-              //       ],
-              //     ),
-              //   ),
-              // );
             } else {
-              item.markCompleted();
+              item.seriesLen = item.seriesLen - 1;
+              _snackBarMsg(
+                "${item.seriesLen} occurrences left in series",
+                Icon(Icons.slideshow, color: AppConstants.todoColor),
+              );
             }
-            break;
-          case PageType.completed:
-            break; //nothing to do
+          }
+
+          // if item is recurring calculate and set next scheduled date
+          if (item.isRecurring) {
+            shouldMarkComplete = false;
+            Jiffy now = Jiffy();
+            DateTime next;
+            switch (item.repeatLen) {
+              case 'days':
+                next = now.add(days: item.repeatNum);
+                break;
+              case 'weeks':
+                next = now.add(weeks: item.repeatNum);
+                break;
+              case 'months':
+                next = now.add(months: item.repeatNum);
+                break;
+            }
+            int intNext = ToDoItem.toSortableDate(next);
+            item.markScheduled(intNext);
+            _snackBarMsg(
+              "Repeats in ${item.repeatNum} ${item.repeatLen}",
+              Icon(Icons.repeat, color: AppConstants.todoColor),
+            );
+          }
+
+          if (shouldMarkComplete) {
+            item.markCompleted();
+          }
+        } else if (widget.pageType == PageType.later) {
+          item.markToday();
         }
+
         ScopedModel.of<AppState>(context).saveToStorage();
       });
     }
     // handle onDismiss <<
     else {
       setState(() {
-        switch (widget.pageType) {
-          case PageType.todo:
-            break; // nothing to do
-          case PageType.later:
-            item.markScheduled(0); // 0 effectively being unscheduled
-            break;
-          case PageType.today:
-            DateTime tomorrow = DateTime.now().add(Duration(days: 1));
-            int intTomorrow = ToDoItem.toSortableDate(tomorrow);
-            item.markScheduled(intTomorrow);
-            Scaffold.of(context).showSnackBar(
-              SnackBar(
-                content: Row(
-                  children: <Widget>[
-                    Icon(
-                      Icons.done,
-                      color: AppConstants.completeColor,
-                    ),
-                    Text(" Scheduled " +
-                        DateFormat.MMMMEEEEd().format(tomorrow)),
-                  ],
-                ),
-              ),
-            );
-            break;
-          case PageType.completed:
-            item.markUncompleted();
-            break;
+        if (widget.pageType == PageType.todo ||
+            widget.pageType == PageType.today) {
+          // snooze for 1 day
+          DateTime tomorrow = DateTime.now().add(Duration(days: 1));
+          int intTomorrow = ToDoItem.toSortableDate(tomorrow);
+          item.markScheduled(intTomorrow);
+          _snackBarMsg(
+            "Scheduled for tomorrow",
+            Icon(Icons.today, color: AppConstants.todoColor),
+          );
+        } else if (widget.pageType == PageType.completed) {
+          // return to to do list
+          item.markUncompleted();
         }
         ScopedModel.of<AppState>(context).saveToStorage();
       });
@@ -264,31 +197,45 @@ class _ToDoListState extends State<ToDoList> with WidgetsBindingObserver {
   // determines the swipe right action background
   Widget _buildBackground(PageType type, ToDoItem item) {
     var align = MainAxisAlignment.start;
+    Widget background;
+
     switch (type) {
       case PageType.todo:
-        return _buildTodayBackground(align);
+        background = _buildCompleteBackground(align);
+        break;
       case PageType.later:
-        return _buildTodayBackground(align);
+        background = _buildTodayBackground(align);
+        break;
       case PageType.today:
-        return _buildCompleteBackground(align);
+        background = _buildCompleteBackground(align);
+        break;
       case PageType.completed:
-        return _buildDeleteBackground(align);
+        background = _buildDeleteBackground(align);
+        break;
     }
+    return background;
   }
 
   // determines the swipe left action background
   Widget _buildSecondaryBackground(PageType type) {
     var align = MainAxisAlignment.end;
+    Widget background;
+
     switch (type) {
       case PageType.todo:
-        return Container();
+        background = _buildLaterBackground(align);
+        break;
       case PageType.later:
-        return _buildToDoBackground(align);
+        background = Container();
+        break;
       case PageType.today:
-        return _buildLaterBackground(align);
+        background = _buildLaterBackground(align);
+        break;
       case PageType.completed:
-        return _buildUncompleteBackground(align);
+        background = _buildUncompleteBackground(align);
+        break;
     }
+    return background;
   }
 
   Widget _buildTodayBackground(MainAxisAlignment align) {

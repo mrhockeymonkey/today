@@ -3,6 +3,7 @@ import 'package:scoped_model/scoped_model.dart';
 
 import '../models/app_state.dart';
 import '../models/category.dart';
+import '../models/app_constants.dart';
 
 class SettingsCategoriesPage extends StatefulWidget {
   @override
@@ -13,12 +14,20 @@ class SettingsCategoriesPage extends StatefulWidget {
 
 class _SettingsCategoriesPageState extends State<SettingsCategoriesPage> {
   TextEditingController _textFieldController = TextEditingController();
-  
+  final List<String> nameHints = [
+    "MUST DO",
+    "WANT TO",
+    "SHOULD DO",
+    "COULD DO",
+    "FYI"
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Edit Categories"),
+        backgroundColor: AppConstants.appBarColor,
+        title: Text("Categories"),
         elevation: 0.0,
       ),
       body: _buildBody(),
@@ -35,10 +44,12 @@ class _SettingsCategoriesPageState extends State<SettingsCategoriesPage> {
         itemBuilder: (BuildContext context, int index) {
           Category category = categories[index];
           int categoryIndex = appState.categories.indexOf(category);
+
           return Card(
             color: category.color,
             elevation: 0.0,
             child: ListTile(
+              leading: Icon(AppConstants.categoryIcons[categoryIndex]),
               title: Text(category.name),
               trailing: IconButton(
                 icon: Icon(Icons.edit),
@@ -51,10 +62,10 @@ class _SettingsCategoriesPageState extends State<SettingsCategoriesPage> {
     );
   }
 
-  _displayDialog(BuildContext context, int categoryId) async {
+  _displayDialog(BuildContext context, int categoryIndex) async {
     AppState appState = ScopedModel.of<AppState>(context);
     _textFieldController.clear();
-    Category thisCategory = appState.categories[categoryId];
+    Category thisCategory = appState.categories[categoryIndex];
 
     return showDialog(
         context: context,
@@ -63,14 +74,18 @@ class _SettingsCategoriesPageState extends State<SettingsCategoriesPage> {
             title: Text('Category Name'),
             content: TextField(
               controller: _textFieldController,
-              decoration: InputDecoration(hintText: thisCategory.name),
+              decoration: InputDecoration(hintText: nameHints[categoryIndex]),
             ),
             actions: <Widget>[
               new FlatButton(
                 child: new Text('OK'),
                 onPressed: () {
-                  appState.updateCategoryName(categoryIndex: categoryId, newName: _textFieldController.text.toUpperCase());
-                  Navigator.of(context).pop();
+                  setState(() {
+                    appState.updateCategoryName(
+                        categoryIndex: categoryIndex,
+                        newName: _textFieldController.text.toUpperCase());
+                    Navigator.of(context).pop();
+                  });
                 },
               ),
               new FlatButton(

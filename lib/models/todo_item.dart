@@ -16,7 +16,7 @@ class ToDoItem {
     @required this.title,
   });
 
-  ToDoItem.custom({@required this.title, @required this.isToday});
+  ToDoItem.custom({@required this.title, @required this.isToday, this.scheduledDate});
 
   ToDoItem.fromStorage({
     @required this.title,
@@ -28,20 +28,6 @@ class ToDoItem {
     @required this.repeatLen,
     @required this.seriesLen,
   });
-  // {
-  //   _scheduledDate =
-  //       DateTime.fromMillisecondsSinceEpoch(scheduledMilliseconds ?? 0);
-  // }
-
-  //---------- getter/setter for scheduledDate
-  // DateTime get scheduledDate {
-  //   return _scheduledDate;
-  // }
-
-  // set scheduledDate(DateTime date) {
-  //   //_scheduledDate = DateTime(date.year, date.month, date.day);
-  //   _scheduledDate = date;
-  // }
 
   //--------- helper methods for conditionals
   bool get isScheduled {

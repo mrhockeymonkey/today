@@ -4,12 +4,10 @@ import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:intl/intl.dart';
 
-import './category.dart';
-
 // inherited widget used in main to propogate and share anywhere in the app
 class AppConstants extends InheritedWidget {
   // colors
-  static final Color appBarColor = Color(0xFFF07618E);
+  static final Color appBarColor = Color(0xFF07618E);
   
   // action colors
   static final Color todoColor = Color(0xFFFBAF28);
@@ -19,10 +17,10 @@ class AppConstants extends InheritedWidget {
 
   
   // page header colors
-  static final Color laterHeaderColor = Color(0xFFF07618E); //Color(0xFF23395B);
-  static final Color todoHeaderColor = Color(0xFFF07618E); //Color(0xFF214D7A);
-  static final Color todayHeaderColor = Color(0xFFF07618E);
-  static final Color completedHeaderColor = Color(0xFFF07618E); //Color(0xFF247BA0);
+  static final Color laterHeaderColor = Color(0xFF07618E); //Color(0xFF23395B);
+  static final Color todoHeaderColor = Color(0xFF07618E); //Color(0xFF214D7A);
+  static final Color todayHeaderColor = Color(0xFF07618E);
+  static final Color completedHeaderColor = Color(0xFF07618E); //Color(0xFF247BA0);
   static final Color highlightColor = Color(0xFF37C7CB);
 
   static final double cirleAvatarRadius = 28.0;
@@ -30,6 +28,15 @@ class AppConstants extends InheritedWidget {
 
   //final Category today = Category(name: 'TODAY', color: todayHeaderColor);
   //static final int maxTodayItems = 5;
+
+  // category colors
+  static final List<Color> categoryColors = [
+    const Color(0xFFEE534F), //must do
+    const Color(0xFF00B8D4), //want to
+    const Color(0xFFFBAF28), // should do
+    const Color(0xFF01BFA5), // could do
+    const Color(0xFF07618E) // fyi
+  ];
 
   // icons
   static final List<IconData> categoryIcons = [

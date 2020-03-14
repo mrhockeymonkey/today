@@ -55,7 +55,8 @@ class _CompletedPageState extends State<CompletedPage> {
         return FutureBuilder(
           future: appState.storage.ready,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
-            List<ToDoItem> items;
+            List<ToDoItem> completedItems;
+            List<ToDoItem> completedTodayItems;
 
             if (snapshot.data == null) {
               return Column(
@@ -64,7 +65,8 @@ class _CompletedPageState extends State<CompletedPage> {
             }
 
             appState.initialize();
-            items = appState.allCompletedItems;
+            completedItems = appState.allCompletedItems;
+            completedTodayItems = appState.allCompletedTodayItems;
 
             return CustomScrollView(
               slivers: <Widget>[
@@ -73,14 +75,28 @@ class _CompletedPageState extends State<CompletedPage> {
                     [
                       DateHeader(),
                       NoteHeader(
-                        text: "${items.length.toString()} things completed...",
+                        text: "${completedItems.length.toString()} things done today...",
                         textColor: Colors.white,
                       ),
                     ],
                   ),
                 ),
                 ToDoList(
-                  items: items,
+                  items: completedItems,
+                  pageType: PageType.completed,
+                ),
+                SliverList(
+                  delegate: SliverChildListDelegate(
+                    [
+                      NoteHeader(
+                        text: "${completedTodayItems.length.toString()} done in total...",
+                        textColor: Colors.white,
+                      ),
+                    ],
+                  ),
+                ),
+                ToDoList(
+                  items: completedTodayItems,
                   pageType: PageType.completed,
                 ),
               ],

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import './settings_categories_page.dart';
 import './settings_json_page.dart';
+import '../models/app_constants.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -16,6 +17,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: AppConstants.appBarColor,
         elevation: 0.0,
         title: Text("Settings"),
       ),
@@ -31,8 +33,11 @@ class _SettingsPageState extends State<SettingsPage> {
             children: <Widget>[
               // Backup
               ListTile(
-                leading: Icon(Icons.code),
-                title: Text("View JSON"),
+                leading: Icon(
+                  Icons.code,
+                  color: AppConstants.appBarColor,
+                ),
+                title: Text("Backup Data"),
                 onTap: () {
                   Navigator.push(
                       context,
@@ -42,7 +47,10 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
               // Categories
               ListTile(
-                leading: Icon(Icons.category),
+                leading: Icon(
+                  Icons.category,
+                  color: AppConstants.appBarColor,
+                ),
                 title: Text("Categories"),
                 onTap: () {
                   Navigator.push(
