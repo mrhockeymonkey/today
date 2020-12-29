@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:today/widgets/goals_header.dart';
 
 import '../models/app_constants.dart';
 import '../models/app_state.dart';
 import '../models/todo_item.dart';
 import '../widgets/date_header.dart';
 import '../widgets/note_header.dart';
-import '../widgets/todo_list.dart';
+import '../widgets/tdl_base.dart';
+import '../widgets/highlighted_today.dart';
+import './goals_page.dart';
+import '../widgets/tdl_primary.dart';
 import '../widgets/new_item_fab.dart';
 import './settings_page.dart';
 
@@ -18,6 +22,8 @@ class TodayPage extends StatefulWidget {
 }
 
 class _TodayPageState extends State<TodayPage> {
+  bool foo = false;
+
   @override
   Widget build(BuildContext context) {
     print("BUILD - today_page");
@@ -57,8 +63,9 @@ class _TodayPageState extends State<TodayPage> {
         return FutureBuilder(
           future: appState.storage.ready,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
-            List<ToDoItem> todayItems;
             List<ToDoItem> backlogItems;
+            List<ToDoItem> goalItems;
+            Map<int, ToDoItem> goals;
 
             if (snapshot.data == null) {
               return Column(
@@ -67,8 +74,9 @@ class _TodayPageState extends State<TodayPage> {
             }
 
             appState.initialize();
-            todayItems = appState.allTodayItems;
-            backlogItems = appState.allToDoItems;
+            goals = appState.goals;
+            goalItems = goals.values.toList();
+            backlogItems = appState.allToDoAndDueItemsExcludingGoals;
 
             return CustomScrollView(
               slivers: <Widget>[
@@ -76,25 +84,44 @@ class _TodayPageState extends State<TodayPage> {
                   delegate: SliverChildListDelegate(
                     [
                       DateHeader(),
-                      todayItems.length > 5
-                          ? NoteHeader(
-                              text: "${todayItems.length.toString()} things to focus on...",
-                              backgroundColor: Color(0xFFFBAF28),
-                              textColor: Colors.black,
-                            )
-                          : NoteHeader(
-                              text:
-                                  "${todayItems.length.toString()} things to focus on...",
-                              backgroundColor: Color(0xFF247BA0),
-                              textColor: Colors.white,
-                            )
+                      NoteHeader(
+                        text: "${goalItems.length} items to focus on...",
+                        backgroundColor: Color(0xFF247BA0),
+                        textColor: Colors.white,
+                      )
                     ],
                   ),
                 ),
-                ToDoList(
-                  items: todayItems,
+                TdlPrimary(
+                  items: goalItems,
                   pageType: PageType.today,
                 ),
+                SliverList(
+                    delegate: SliverChildListDelegate([
+                  Container(
+                    child: FlatButton(
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "Edit Goals...",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(color: AppConstants.appBarColor),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context, rootNavigator: true).push(
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return GoalsPage(
+                                goals: goals,
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  )
+                ])),
                 SliverFillRemaining(
                   hasScrollBody: false,
                   fillOverscroll: false,
@@ -104,13 +131,15 @@ class _TodayPageState extends State<TodayPage> {
                   delegate: SliverChildListDelegate(
                     [
                       NoteHeader(
-                        text: "${backlogItems.length.toString()} left to do...",
+                        text:
+                            "${backlogItems.length.toString()} items on your to do list...",
                         textColor: Colors.white,
+                        backgroundColor: Color(0xFF247BA0),
                       ),
                     ],
                   ),
                 ),
-                ToDoList(
+                TdlPrimary(
                   items: backlogItems,
                   pageType: PageType.todo,
                 ),

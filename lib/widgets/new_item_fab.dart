@@ -7,10 +7,7 @@ class NewItemFab extends StatelessWidget {
   bool initIsToday;
   Color color;
 
-  NewItemFab({
-    @required this.initIsToday,
-    @required this.color
-  });
+  NewItemFab({@required this.initIsToday, @required this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +20,6 @@ class NewItemFab extends StatelessWidget {
           MaterialPageRoute(
               builder: (context) => ItemPage(
                     categoryIndex: defaultCategoryIndex,
-                    initIsToday: initIsToday,
                     focusKeyboard: true,
                   )),
         );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:localstorage/localstorage.dart';
+import 'dart:convert';
 //import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/todo_item.dart';
@@ -11,10 +12,11 @@ import 'package:jiffy/jiffy.dart';
 class AppState extends Model {
   // for now we just declare categories here until we can save data to phone
   List<Category> _categories = [];
-
+  Map<int, ToDoItem> _goals = {};
+  Map<String, dynamic> _goalItemIds = {}; // json serializable
+  Map<int, String> _goalsMap = {};
 
   final LocalStorage storage = new LocalStorage('today_app');
-  //final LocalStorage settings = new LocalStorage('today_settings');
 
   // getter for categories
   List<Category> get categories {
@@ -22,31 +24,30 @@ class AppState extends Model {
   }
 
   // getter for all items across all categories
-  List<ToDoItem> get allToDoItems {
+  List<ToDoItem> get allItems {
     List<ToDoItem> _items = [];
     for (var c in _categories) {
-      _items.addAll(c.itemsToDo);
+      _items.addAll(c.items);
     }
     return _items;
   }
 
-  // getter for all today's items across all categories
-  List<ToDoItem> get allTodayItems {
-    List<ToDoItem> _todayItems = [];
+  //
+  List<ToDoItem> get allToDoAndDueItems {
+    List<ToDoItem> _items = [];
     for (var c in _categories) {
-      _todayItems.addAll(c.itemsTodayAndDue);
+      _items.addAll(c.itemsScheduledNowDue + c.itemsToDo);
     }
-    //_todayItems.sort((a, b) => a.isComplete.toString().compareTo(b.isComplete.toString()));
-    return _todayItems;
+    return _items;
   }
 
-  int get todayItemCount {
-    List<ToDoItem> items = allTodayItems;
-    return items.length;
-  }
-
-  bool get isTodayFull {
-    return todayItemCount >= 5;
+  //
+  List<ToDoItem> get allToDoAndDueItemsExcludingGoals {
+    List<ToDoItem> _items = allToDoAndDueItems;
+    _goals.entries.forEach((element) {
+      _items.remove(element.value);
+    });
+    return _items;
   }
 
   // getter for all completed items across all categories
@@ -77,14 +78,6 @@ class AppState extends Model {
     return _scheduledItems;
   }
 
-  // clear all today items
-  // void clearTodayItems() {
-  //   for (var c in _categories) {
-  //     c.itemsToday.forEach((i) => i.isToday = false);
-  //   }
-  //   saveToStorage();
-  // }
-
   //
   int categoryIndexOf(ToDoItem item) {
     int index;
@@ -100,6 +93,35 @@ class AppState extends Model {
   //
   void addItemToCategory(int index, ToDoItem newItem) {
     _categories[index].addItem(newItem);
+    saveToStorage();
+  }
+
+  //
+  Map<int, ToDoItem> get goals {
+    return _goals;
+  }
+
+  //
+  ToDoItem getGoalItem(int goalIndex) {
+    if (_goals.containsKey(goalIndex)) {
+      var itemId = _goalItemIds[goalIndex];
+      return _goals[goalIndex];
+    } else {
+      return null;
+    }
+  }
+
+  //
+  void setGoalItem(int goalIndex, ToDoItem goalItem) {
+    _goals.removeWhere((key, value) => value.id == goalItem.id);
+    _goals[goalIndex] = goalItem;
+    print("set goal #$goalIndex: ${goalItem.title}");
+    saveToStorage();
+  }
+
+  //
+  void removeGoalItem(int goalIndex) {
+    _goals.remove(goalIndex);
     saveToStorage();
   }
 
@@ -188,19 +210,35 @@ class AppState extends Model {
   }
 
   void saveToStorage() {
-    List jsonEncoded = [];
-    _categories.forEach((i) {
-      jsonEncoded.add(i.toJsonEncodable());
+    Map<String, dynamic> appData = {
+      "version": 2,
+      "goals": {},
+      "categories": [],
+    };
+
+    Map<String, dynamic> jsonEncodedGoals = {};
+    _goals.forEach((key, value) {
+      jsonEncodedGoals[key.toString()] = value.id;
+    });
+    appData["goals"] = jsonEncodedGoals;
+
+    // _goalItemIds.entries.forEach((element) { })
+    // _goalItemIds.forEach((id) {
+    //   appData["goalItemIds"].add(id);
+    // });
+
+    _categories.forEach((item) {
+      appData["categories"].add(item.toJsonEncodable());
     });
 
-    storage.setItem('appdata', jsonEncoded);
+    storage.setItem('data', appData);
     notifyListeners();
     print("saved to local storage, notified listerners");
   }
 
   /// reads from local storage or creates some default appdata if not found
   void initialize() async {
-    List appData = storage.getItem('appdata');
+    Map<String, dynamic> appData = storage.getItem('data');
 
     if (appData == null || appData.isEmpty) {
       print("AppState.initialize: No app data found, initializing defaults");
@@ -211,46 +249,67 @@ class AppState extends Model {
       _categories
         ..add(Category(name: "MUST DO", color: AppConstants.categoryColors[0]))
         ..add(Category(name: "WANT TO", color: AppConstants.categoryColors[1]))
-        ..add(Category(name: "SHOULD DO", color: AppConstants.categoryColors[2]))
+        ..add(
+            Category(name: "SHOULD DO", color: AppConstants.categoryColors[2]))
         ..add(Category(name: "COULD DO", color: AppConstants.categoryColors[3]))
         ..add(Category(name: "FYI", color: AppConstants.categoryColors[4]));
       _categories[0]
-        ..addItem(ToDoItem.custom(title: 'Focus On Up To Five Tasks Each Day', isToday: true));
+        ..addItem(ToDoItem.custom(title: 'Up To 5 Items Can Be Displayed Here'))
+        ..addItem(ToDoItem(title: 'These Are The Rest Of Your Todo Items'));
       _categories[1]
-        ..addItem(ToDoItem.custom(title: 'Swipe Right To Complete', isToday: true));
+        ..addItem(ToDoItem.custom(title: 'Swipe Right To Complete'));
       _categories[2]
-        ..addItem(ToDoItem.custom(title: 'Swipe Left To Snooze Until Tomorrow', isToday: true))
-        ..addItem(ToDoItem.custom(title: 'Tap For Menu', isToday: true));
+        ..addItem(ToDoItem(title: 'Scroll Down To See Your Other Items'))
+        ..addItem(ToDoItem.custom(title: 'Swipe Left To Snooze Until Tomorrow'))
+        ..addItem(ToDoItem.custom(title: 'Tap To Edit Item'));
       _categories[3]
-        ..addItem(ToDoItem.custom(title: 'These Are Tasks You Are Not Focused On', isToday: false))
-        ..addItem(ToDoItem.custom(title: 'Add New Tasks By Taping ( + )', isToday: false));
+        ..addItem(ToDoItem.custom(title: 'Add New Tasks By Taping ( + )'));
       _categories[4]
-        ..addItem(ToDoItem.custom(title: 'Scheduled Tasks Appear Here', isToday: false, scheduledDate: intTomorrow))
-        ..addItem(ToDoItem.custom(title: 'Tasks Become Focused When Due', isToday: false, scheduledDate: intTomorrow));
+        ..addItem(ToDoItem.custom(
+            title: 'Scheduled Tasks Appear Here', scheduledDate: intTomorrow))
+        ..addItem(ToDoItem.custom(
+            title: 'Scheduled Tasks Move Back To Your List When Due',
+            scheduledDate: intTomorrow));
+
+      _goals[0] = _categories[0].items[0];
+      _goals[1] = _categories[1].items[0];
+      _goals[2] = _categories[2].items[0];
 
       saveToStorage();
     } else {
       print("AppState.initialize: App data found, loading from local storage");
       _categories.clear();
-      appData.forEach((i) {
+
+      // loads items into categories
+      appData["categories"].forEach((i) {
         Category c = Category(name: i['name'], color: Color(i['color']));
         List l = i['items'];
         l.forEach((j) {
-          c.addItem(
-            ToDoItem.fromStorage(
-              title: j['title'],
-              isComplete: j['isComplete'],
-              isToday: j['isToday'],
-              scheduledDate: j['scheduledDate'] ?? 0,
-              completedDate: j['completedDate'] ?? 0,
-              repeatNum: j['repeatNum'] ?? 0,
-              repeatLen: j['repeatLen'] ?? 'days',
-              seriesLen: j['seriesLen'] ?? 0,
-            ),
+          ToDoItem item = ToDoItem.fromStorage(
+            id: j['id'],
+            title: j['title'],
+            isComplete: j['isComplete'],
+            scheduledDate: j['scheduledDate'] ?? 0,
+            completedDate: j['completedDate'] ?? 0,
+            repeatNum: j['repeatNum'] ?? 0,
+            repeatLen: j['repeatLen'] ?? 'days',
+            seriesLen: j['seriesLen'] ?? 0,
           );
+          c.addItem(item);
         });
         _categories.add(c);
       });
+
+      // load goals
+      List<ToDoItem> all = allItems;
+      if (appData["goals"] != null) {
+        appData["goals"].forEach((key, value) {
+          print(key.toString() + "-" + value.toString());
+          int goalIndex = int.parse(key);
+          ToDoItem goalItem = all.firstWhere((element) => element.id == value);
+          _goals[goalIndex] = goalItem;
+        });
+      }
     }
   }
 }

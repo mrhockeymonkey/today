@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/todo_item.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 
 class Category {
   String name;
@@ -21,24 +22,21 @@ class Category {
   }
 
   // getter for all items sorted by today,todo,done
-  List<ToDoItem> get itemsSorted {
-    List<ToDoItem> _itemsTodoToday = _items
-        .where((i) => (i.isComplete == false) & (i.isToday == true))
-        .toList();
-    List<ToDoItem> _itemsTodo = _items
-        .where((i) => (i.isComplete == false) & (i.isToday == false))
-        .toList();
-    List<ToDoItem> _itemsDone =
-        _items.where((i) => i.isComplete == true).toList();
-    List<ToDoItem> _itemsSorted =
-        [_itemsTodoToday, _itemsTodo, _itemsDone].expand((x) => x).toList();
-    return _itemsSorted;
-  }
+  // List<ToDoItem> get itemsSorted {
+  //   List<ToDoItem> _itemsTodo = _items
+  //       .where((i) => (i.isComplete == false))
+  //       .toList();
+  //   List<ToDoItem> _itemsDone =
+  //       _items.where((i) => i.isComplete == true).toList();
+  //   List<ToDoItem> _itemsSorted =
+  //       [_itemsTodoToday, _itemsTodo, _itemsDone].expand((x) => x).toList();
+  //   return _itemsSorted;
+  // }
 
   // getter for all todo items
   List<ToDoItem> get itemsToDo {
     List<ToDoItem> _itemsCompleted =
-        _items.where((i) => !i.isComplete && !i.isScheduled && !i.isToday).toList();
+        _items.where((i) => !i.isComplete && !i.isScheduled).toList();
     return _itemsCompleted;
   }
 
@@ -51,14 +49,10 @@ class Category {
   // getter for all completed today items
   List<ToDoItem> get itemsCompletedToday {
     int intToday = ToDoItem.toSortableDate(DateTime.now());
-    List<ToDoItem> _itemsCompleted = _items.where((i) => i.isComplete && i.completedDate == intToday).toList();
+    List<ToDoItem> _itemsCompleted = _items
+        .where((i) => i.isComplete && i.completedDate == intToday)
+        .toList();
     return _itemsCompleted;
-  }
-
-  // getter for all today items
-  List<ToDoItem> get itemsToday {
-    List<ToDoItem> _itemsToday = _items.where((i) => i.isToday).toList();
-    return _itemsToday;
   }
 
   // getter for all scheduled items
@@ -69,9 +63,8 @@ class Category {
   }
 
   // getter for all due or overdue items
-  List<ToDoItem> get itemsTodayAndDue {
-    List<ToDoItem> _filteredItems =
-        _items.where((i) => i.isDue || i.isToday).toList();
+  List<ToDoItem> get itemsScheduledNowDue {
+    List<ToDoItem> _filteredItems = _items.where((i) => i.isDue).toList();
     return _filteredItems;
   }
 
@@ -88,8 +81,6 @@ class Category {
     String newRepeatLen,
     int newSeriesLen,
   ) {
-    //_items[itemIndex].update(newTitle, newScheduledDate);
-    _items[itemIndex].isToday = newIsToday;
     if (newTitle != null) {
       _items[itemIndex].title = newTitle;
     }

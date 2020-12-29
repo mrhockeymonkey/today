@@ -8,26 +8,23 @@ import 'package:intl/intl.dart';
 class AppConstants extends InheritedWidget {
   // colors
   static final Color appBarColor = Color(0xFF07618E);
-  
+
   // action colors
   static final Color todoColor = Color(0xFFFBAF28);
   static final Color completeColor = Color(0xFF64DD17);
   static final Color completedColor = Colors.grey;
   static final Color laterColor = Colors.grey;
 
-  
   // page header colors
   static final Color laterHeaderColor = Color(0xFF07618E); //Color(0xFF23395B);
   static final Color todoHeaderColor = Color(0xFF07618E); //Color(0xFF214D7A);
   static final Color todayHeaderColor = Color(0xFF07618E);
-  static final Color completedHeaderColor = Color(0xFF07618E); //Color(0xFF247BA0);
+  static final Color completedHeaderColor =
+      Color(0xFF07618E); //Color(0xFF247BA0);
   static final Color highlightColor = Color(0xFF37C7CB);
 
   static final double cirleAvatarRadius = 28.0;
   static final double headerHeight = 72.0;
-
-  //final Category today = Category(name: 'TODAY', color: todayHeaderColor);
-  //static final int maxTodayItems = 5;
 
   // category colors
   static final List<Color> categoryColors = [
@@ -35,16 +32,15 @@ class AppConstants extends InheritedWidget {
     const Color(0xFF00B8D4), //want to
     const Color(0xFFFBAF28), // should do
     const Color(0xFF01BFA5), // could do
-    const Color(0xFF07618E) // fyi
+    const Color(0xFF9E9E9E) // fyi
   ];
 
-  // icons
   static final List<IconData> categoryIcons = [
-      Entypo.flag, //must do
-      Entypo.game_controller, //want to
-      Entypo.pin, //should do
-      Entypo.pin, //could do
-      Entypo.info //fyi
+    Entypo.flag, //must do
+    Entypo.game_controller, //want to
+    Entypo.pin, //should do
+    Entypo.pin, //could do
+    Entypo.pin //fyi
   ];
 
   final RouteObserver<Route> routeObserver = new RouteObserver<Route>();
@@ -77,5 +73,4 @@ class AppConstants extends InheritedWidget {
   }
 
   static String headerTextDate = DateFormat.MMMMEEEEd().format(DateTime.now());
-
 }

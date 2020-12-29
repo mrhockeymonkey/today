@@ -3,9 +3,9 @@ import 'package:intl/intl.dart';
 
 class ToDoItem {
   String title;
+  int id;
   UniqueKey key = UniqueKey();
   bool isComplete = false;
-  bool isToday = false;
   int scheduledDate = 0;
   int completedDate = 0;
   int repeatNum = 0;
@@ -14,14 +14,21 @@ class ToDoItem {
 
   ToDoItem({
     @required this.title,
-  });
+  }) {
+    this.id = UniqueKey().hashCode;
+  }
 
-  ToDoItem.custom({@required this.title, @required this.isToday, this.scheduledDate});
+  ToDoItem.custom({
+    @required this.title,
+    this.scheduledDate,
+  }) {
+    this.id = UniqueKey().hashCode;
+  }
 
   ToDoItem.fromStorage({
+    @required this.id,
     @required this.title,
     @required this.isComplete,
-    @required this.isToday,
     @required this.scheduledDate,
     @required this.completedDate,
     @required this.repeatNum,
@@ -70,36 +77,27 @@ class ToDoItem {
     }
   }
 
-  // REMOVE?
-  bool get isOverDue {
-    // calculate the difference in time from now
-    // done using sortable integer of format yyyymmdd
-    if (!isScheduled) {
-      return false;
-    } else {
-      //var now = DateTime.now();
-      //var todaySortable = ToDoItem.toSortableDate(now);
-      // now.toint.parse(
-      //    now.year.toString() + now.month.toString() + now.day.toString());
-      //var scheduledSortable = ToDoItem.toSortableDate(_scheduledDate);
-      // int.parse(_scheduledDate.year.toString() +
-      //   _scheduledDate.month.toString() +
-      //   _scheduledDate.day.toString());
-      var todaysDate = ToDoItem.toSortableDate(DateTime.now());
+  // Overdue is too aggressive a concept
+  // bool get isOverDue {
+  //   // calculate the difference in time from now
+  //   // done using sortable integer of format yyyymmdd
+  //   if (!isScheduled) {
+  //     return false;
+  //   } else {
+  //     var todaysDate = ToDoItem.toSortableDate(DateTime.now());
 
-      if (scheduledDate < todaysDate) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-  }
+  //     if (scheduledDate < todaysDate) {
+  //       return true;
+  //     } else {
+  //       return false;
+  //     }
+  //   }
+  // }
 
   int get daysOverdue {
     DateTime now = DateTime.now();
     DateTime then = ToDoItem.toDateTime(scheduledDate);
 
-    // var then = DateTime()
     var diff = now.difference(then);
 
     return diff.inDays;
@@ -127,9 +125,9 @@ class ToDoItem {
   Map<String, dynamic> toJsonEncodable() {
     Map<String, dynamic> m = new Map();
 
+    m['id'] = id;
     m['title'] = title;
     m['isComplete'] = isComplete;
-    m['isToday'] = isToday;
     m['scheduledDate'] = scheduledDate;
     m['completedDate'] = completedDate;
     m['repeatNum'] = repeatNum;
@@ -142,7 +140,6 @@ class ToDoItem {
   static int toSortableDate(DateTime date) {
     DateFormat formatter = new DateFormat('yyyyMMdd');
     String sortableStr = formatter.format(date);
-    //String sortableStr = date.year.toString() + date.month.toString() + date.day.toString();
     int sortableInt = int.parse(sortableStr);
     return sortableInt;
   }
@@ -165,27 +162,23 @@ class ToDoItem {
     isComplete = true;
     completedDate = ToDoItem.toSortableDate(DateTime.now());
     scheduledDate = 0;
-    isToday = false;
   }
 
   void markToday() {
     print("marking $title as today");
     scheduledDate = 0;
-    isToday = true;
     key = UniqueKey();
   }
 
   void markScheduled(int newScheduledDate) {
     print("marking $title as scheduled");
     scheduledDate = newScheduledDate;
-    isToday = false;
     key = UniqueKey();
   }
 
   void markUncompleted() {
     print("marking $title as uncompleted");
     isComplete = false;
-    isToday = true;
     key = UniqueKey();
   }
 }

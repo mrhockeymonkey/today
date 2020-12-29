@@ -12,13 +12,11 @@ import '../widgets/repeater_picker.dart';
 class ItemPage extends StatefulWidget {
   final int categoryIndex;
   final int itemIndex;
-  final bool initIsToday;
   final bool focusKeyboard;
 
   ItemPage({
     @required this.categoryIndex,
     this.itemIndex,
-    @required this.initIsToday,
     @required this.focusKeyboard,
   });
 
@@ -62,7 +60,6 @@ class _ItemPageState extends State<ItemPage> {
       _formData = {
         "itemTitle": _item.title,
         "itemScheduledDate": _item.scheduledDate,
-        "itemIsToday": _item.isToday,
         "itemRepeatNum": _item.repeatNum,
         "itemRepeatLen": _item.repeatLen,
         "itemSeriesLen": _item.seriesLen
@@ -72,7 +69,6 @@ class _ItemPageState extends State<ItemPage> {
       _formData = {
         "itemTitle": null,
         "itemScheduledDate": 0,
-        "itemIsToday": widget.initIsToday,
         "itemRepeatNum": 0,
         "itemRepeatLen": "days",
         "itemSeriesLen": 0
@@ -83,8 +79,6 @@ class _ItemPageState extends State<ItemPage> {
   //---------- build method
   @override
   Widget build(BuildContext context) {
-    //AppConstants.changeStatusColor(_categoryColor);
-    //AppConstants.changeNavBarColor(_categoryColor);
     print("BUILD - item_page");
 
     return Scaffold(
@@ -115,74 +109,9 @@ class _ItemPageState extends State<ItemPage> {
       setState(() {
         int intPicked = ToDoItem.toSortableDate(picked);
         _formData['itemScheduledDate'] = intPicked;
-        _formData['itemIsToday'] = false;
       });
     }
   }
-
-  //---------- today picker
-  void _selectToday() {
-    setState(() {
-      _formData['itemIsToday'] = !_formData['itemIsToday'];
-    });
-  }
-
-  //---------- today picker popup
-  // Future _selectToday() async {
-  //   int picked;
-
-  //   picked = await showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return SimpleDialog(
-  //         children: <Widget>[
-  //           SimpleDialogOption(
-  //             onPressed: () {
-  //               Navigator.pop(context, 0);
-  //             },
-  //             child: Container(
-  //               child: Row(
-  //                 children: <Widget>[
-  //                   Text(
-  //                     "TODAY",
-  //                     style: TextStyle(color: Colors.white),
-  //                   ),
-  //                 ],
-  //               ),
-  //               color: _categoryColor,
-  //               height: 80.0,
-  //               padding: EdgeInsets.symmetric(horizontal: 10.0),
-  //             ),
-  //           ),
-  //           SimpleDialogOption(
-  //             onPressed: () {
-  //               Navigator.pop(context, 1);
-  //             },
-  //             child: Container(
-  //               child: Row(
-  //                 children: <Widget>[
-  //                   Text(
-  //                     "BACKLOG",
-  //                     style: TextStyle(color: Colors.white),
-  //                   ),
-  //                 ],
-  //               ),
-  //               color: Colors.grey,
-  //               height: 80.0,
-  //               padding: EdgeInsets.symmetric(horizontal: 10.0),
-  //             ),
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-
-  //   print(picked);
-  //   if (picked != null)
-  //     setState(() {
-  //       _formData['itemIsToday'] = picked == 0 ? true : false;
-  //     });
-  // }
 
   //---------- repeat picker
   Future _selectRepeat() async {
@@ -235,20 +164,28 @@ class _ItemPageState extends State<ItemPage> {
             children: <Widget>[
               Expanded(
                 child: TextField(
-                  style: TextStyle(decoration: TextDecoration.none, ),
+                  style: TextStyle(
+                    decoration: TextDecoration.none,
+                  ),
                   textAlign: TextAlign.center,
                   maxLines: 1,
                   maxLengthEnforced: false,
                   keyboardType: TextInputType.number,
                   autofocus: false,
                   enabled: true,
-                  onSubmitted: (String text) {
-                    int numberInput = int.parse(text);
+                  onChanged: (String input) {
+                    int inputParsed = int.parse(input);
                     setState(() {
-                      _formData['itemSeriesLen'] = numberInput;
+                      _formData['itemSeriesLen'] = inputParsed;
                     });
-                    Navigator.of(context).pop();
                   },
+                  // onSubmitted: (String text) {
+                  //   int numberInput = int.parse(text);
+                  //   setState(() {
+                  //     _formData['itemSeriesLen'] = numberInput;
+                  //   });
+                  //   Navigator.of(context).pop();
+                  // },
                 ),
               ),
               Expanded(
@@ -258,20 +195,11 @@ class _ItemPageState extends State<ItemPage> {
           ),
           actions: <Widget>[
             FlatButton(
-              child: Text('CANCEL'),
+              child: Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
-            // FlatButton(
-            //   child: Text('OK'),
-            //   onPressed: () {
-            //     setState(() {
-            //       _formData['itemSeriesLen'] = 1;
-            //     });
-            //     Navigator.of(context).pop();
-            //   },
-            // )
           ],
         );
       },
@@ -356,28 +284,9 @@ class _ItemPageState extends State<ItemPage> {
 
   //---------- item options (main body)
   Widget _buildListView() {
-    print("isToday: " + _formData['itemIsToday'].toString());
-
     return ListView(
       shrinkWrap: true,
       children: <Widget>[
-        ListTile(
-          leading: _formData['itemIsToday']
-              ? Icon(
-                  AppConstants.categoryIcons[_categoryIndex],
-                  color: _categoryColor,
-                )
-              : Icon(
-                  AppConstants.categoryIcons[_categoryIndex],
-                  color: Colors.grey,
-                ),
-          title: Text(
-              "Focus"), //_formData['itemIsToday'] ? Text("Focus") : Text("Backlog"),
-          subtitle: _formData['itemIsToday']
-              ? Text('You are focused on this task')
-              : Text('You are not focusing on this task'),
-          onTap: _selectToday,
-        ),
         ListTile(
           leading: Icon(Icons.category, color: _categoryColor),
           title: Text('Category'),
@@ -388,7 +297,7 @@ class _ItemPageState extends State<ItemPage> {
           trailing: _formData['itemScheduledDate'] == 0
               ? null
               : IconButton(
-                  icon: Icon(Icons.cancel),
+                  icon: Icon(Icons.clear),
                   onPressed: () {
                     setState(() {
                       _formData['itemScheduledDate'] = 0;
@@ -409,7 +318,7 @@ class _ItemPageState extends State<ItemPage> {
           trailing: _formData['itemRepeatNum'] == 0
               ? null
               : IconButton(
-                  icon: Icon(Icons.cancel),
+                  icon: Icon(Icons.clear),
                   onPressed: () {
                     setState(() {
                       _formData['itemRepeatNum'] = 0;
@@ -434,7 +343,7 @@ class _ItemPageState extends State<ItemPage> {
           trailing: _formData['itemSeriesLen'] == 0
               ? null
               : IconButton(
-                  icon: Icon(Icons.cancel),
+                  icon: Icon(Icons.clear),
                   onPressed: () {
                     setState(() {
                       _formData['itemSeriesLen'] = 0;
@@ -474,9 +383,6 @@ class _ItemPageState extends State<ItemPage> {
               if (_formData['itemScheduledDate'] != 0) {
                 _newItem.scheduledDate = _formData['itemScheduledDate'];
               }
-              if (_formData['itemIsToday']) {
-                _newItem.isToday = true;
-              }
               if (_formData['itemRepeatNum'] != 0) {
                 _newItem.repeatNum = _formData['itemRepeatNum'];
                 _newItem.repeatLen = _formData['itemRepeatLen'];
@@ -493,7 +399,6 @@ class _ItemPageState extends State<ItemPage> {
                 newCategoryIndex: _categoryIndex,
                 itemIndex: _itemIndex,
                 newTitle: _formData['itemTitle'],
-                newIsToday: _formData['itemIsToday'],
                 newScheduledDate: _formData['itemScheduledDate'],
                 newRepeatNum: _formData['itemRepeatNum'],
                 newRepeatLen: _formData['itemRepeatLen'],
@@ -506,7 +411,6 @@ class _ItemPageState extends State<ItemPage> {
                 categoryIndex: _categoryIndex,
                 itemIndex: _itemIndex,
                 newTitle: _formData['itemTitle'],
-                newIsToday: _formData['itemIsToday'],
                 newScheduledDate: _formData['itemScheduledDate'],
                 newRepeatNum: _formData['itemRepeatNum'],
                 newRepeatLen: _formData['itemRepeatLen'],

@@ -6,7 +6,9 @@ import '../widgets/date_header.dart';
 import '../widgets/note_header.dart';
 import '../models/app_state.dart';
 import '../models/todo_item.dart';
-import '../widgets/todo_list.dart';
+import '../widgets/tdl_base.dart';
+import '../widgets/highlighted_today.dart';
+import '../widgets/tdl_done.dart';
 import './settings_page.dart';
 
 class CompletedPage extends StatefulWidget {
@@ -75,13 +77,14 @@ class _CompletedPageState extends State<CompletedPage> {
                     [
                       DateHeader(),
                       NoteHeader(
-                        text: "${completedItems.length.toString()} things done today...",
+                        text:
+                            "${completedTodayItems.length.toString()} things done today...",
                         textColor: Colors.white,
                       ),
                     ],
                   ),
                 ),
-                ToDoList(
+                TdlDone(
                   items: completedItems,
                   pageType: PageType.completed,
                 ),
@@ -89,13 +92,14 @@ class _CompletedPageState extends State<CompletedPage> {
                   delegate: SliverChildListDelegate(
                     [
                       NoteHeader(
-                        text: "${completedTodayItems.length.toString()} done in total...",
+                        text:
+                            "${completedItems.length.toString()} done in total...",
                         textColor: Colors.white,
                       ),
                     ],
                   ),
                 ),
-                ToDoList(
+                TdlDone(
                   items: completedTodayItems,
                   pageType: PageType.completed,
                 ),

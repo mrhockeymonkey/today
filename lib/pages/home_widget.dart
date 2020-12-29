@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 
 import '../models/app_constants.dart';
 import '../pages/later_page.dart';
-//import '../pages/todo_page.dart';
 import '../pages/today_page.dart';
 import '../pages/completed_page.dart';
 import 'package:flutter_icons/flutter_icons.dart';
@@ -46,15 +45,15 @@ class _HomeState extends State<Home> {
       // ),
       BottomNavigationBarItem(
         icon: Icon(Icons.today),
-        title: Text('Scheduled'),
+        label: 'Scheduled',
       ),
       BottomNavigationBarItem(
         icon: Icon(Icons.format_list_numbered),
-        title: Text('To Do'),
+        label: 'To Do',
       ),
       BottomNavigationBarItem(
         icon: Icon(Icons.done),
-        title: Text('Done'),
+        label: 'Done',
       ),
     ];
 
@@ -69,7 +68,8 @@ class _HomeState extends State<Home> {
           currentIndex: _currentIndex,
           type: BottomNavigationBarType.fixed,
           items: _bottomNavigationBarItems,
-          fixedColor: AppConstants.todayHeaderColor, //AppConstants.highlightColor,
+          fixedColor:
+              AppConstants.todayHeaderColor, //AppConstants.highlightColor,
           selectedFontSize: 18.0,
           //backgroundColor: AppConstants.todayHeaderColor,
         ),

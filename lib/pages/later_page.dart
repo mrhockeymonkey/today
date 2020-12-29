@@ -5,7 +5,8 @@ import 'package:today/widgets/note_header.dart';
 import '../models/app_constants.dart';
 import '../widgets/date_header.dart';
 //import '../widgets/note_header.dart';
-import '../widgets/todo_list.dart';
+import '../widgets/tdl_base.dart';
+import '../widgets/tdl_scheduled.dart';
 import '../models/app_state.dart';
 import '../models/todo_item.dart';
 import './settings_page.dart';
@@ -84,7 +85,7 @@ class _LaterPageState extends State<LaterPage> {
                     ],
                   ),
                 ),
-                ToDoList(
+                TdlScheduled(
                   items: items,
                   pageType: PageType.later,
                 ),

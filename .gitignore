@@ -1,3 +1,6 @@
+# Custom
+*.jks
+
 # Miscellaneous
 *.class
 *.lock
