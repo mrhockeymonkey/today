@@ -6,11 +6,11 @@ import '../models/todo_item.dart';
 import '../models/category.dart';
 
 class TdlTile extends StatelessWidget {
-  ToDoItem item;
-  Category category;
-  int categoryIndex;
-  Function onTap;
-  Widget trailing;
+  final ToDoItem item;
+  final Category category;
+  final int categoryIndex;
+  final Function onTap;
+  final Widget trailing;
 
   TdlTile({
     @required this.item,
@@ -82,7 +82,7 @@ class TdlTile extends StatelessWidget {
     return ListTile(
       title: Text(item.title),
       leading: Icon(
-        AppConstants.categoryIcons[categoryIndex],
+        AppConstants.icons[category.iconName],
         color: category.color,
       ),
       subtitle: Row(
@@ -131,7 +131,7 @@ class TdlTile extends StatelessWidget {
         Icon(Icons.slideshow, color: category.color, size: 15.0),
       );
       subtitleIndicators.add(
-        Text(" ${item.seriesLen} left"),
+        Text(" ${item.seriesProgress}/${item.seriesLen}"),
       );
     }
 

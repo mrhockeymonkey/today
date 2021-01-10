@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
-import 'package:today/widgets/goals_header.dart';
 
+import './goals_page.dart';
+import './settings_page.dart';
 import '../models/app_constants.dart';
 import '../models/app_state.dart';
 import '../models/todo_item.dart';
 import '../widgets/date_header.dart';
 import '../widgets/note_header.dart';
 import '../widgets/tdl_base.dart';
-import '../widgets/highlighted_today.dart';
-import './goals_page.dart';
 import '../widgets/tdl_primary.dart';
 import '../widgets/new_item_fab.dart';
-import './settings_page.dart';
 
 class TodayPage extends StatefulWidget {
   @override
@@ -63,6 +61,7 @@ class _TodayPageState extends State<TodayPage> {
         return FutureBuilder(
           future: appState.storage.ready,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
+            List<ToDoItem> dueItems;
             List<ToDoItem> backlogItems;
             List<ToDoItem> goalItems;
             Map<int, ToDoItem> goals;
@@ -76,7 +75,8 @@ class _TodayPageState extends State<TodayPage> {
             appState.initialize();
             goals = appState.goals;
             goalItems = goals.values.toList();
-            backlogItems = appState.allToDoAndDueItemsExcludingGoals;
+            dueItems = appState.allDueItemsExcludingGoals;
+            backlogItems = appState.allToDoItemsExcludingGoals;
 
             return CustomScrollView(
               slivers: <Widget>[
@@ -122,6 +122,8 @@ class _TodayPageState extends State<TodayPage> {
                     ),
                   )
                 ])),
+                _buildDueItemsHeader(dueItems),
+                _buildDueItemsList(dueItems),
                 SliverFillRemaining(
                   hasScrollBody: false,
                   fillOverscroll: false,
@@ -132,7 +134,7 @@ class _TodayPageState extends State<TodayPage> {
                     [
                       NoteHeader(
                         text:
-                            "${backlogItems.length.toString()} items on your to do list...",
+                            "${backlogItems.length.toString()} thing to do...",
                         textColor: Colors.white,
                         backgroundColor: Color(0xFF247BA0),
                       ),
@@ -149,5 +151,31 @@ class _TodayPageState extends State<TodayPage> {
         );
       },
     );
+  }
+
+  Widget _buildDueItemsHeader(List<ToDoItem> dueItems) {
+    return SliverList(
+        delegate: dueItems.length > 0
+            ? SliverChildListDelegate(
+                [
+                  NoteHeader(
+                    text: "${dueItems.length.toString()} new things due...",
+                    textColor: Colors.white,
+                    backgroundColor: Color(0xFF247BA0),
+                  ),
+                ],
+              )
+            : SliverChildListDelegate([]));
+  }
+
+  Widget _buildDueItemsList(List<ToDoItem> dueItems) {
+    return dueItems.length <= 0
+        ? SliverList(
+            delegate: SliverChildListDelegate([]),
+          )
+        : TdlPrimary(
+            items: dueItems,
+            pageType: PageType.todo,
+          );
   }
 }

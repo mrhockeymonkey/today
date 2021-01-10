@@ -1,10 +1,7 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
-import 'dart:async';
-import 'dart:math' as math;
-import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 
 import '../models/app_constants.dart';
 import '../models/todo_item.dart';
@@ -103,20 +100,18 @@ abstract class TdlBaseState<Tdl extends TdlBase> extends State<TdlBase>
 
         if (widget.pageType == PageType.todo ||
             widget.pageType == PageType.today) {
-          // if the item is a series decrement the occurences left
           if (item.isSeries) {
             shouldMarkComplete = false;
-            if (item.seriesLen == 1) {
+            if (item.seriesProgress >= item.seriesLen) {
               shouldMarkComplete = true;
-              item.seriesLen = 0;
               _snackBarMsg(
                 "Series completed",
                 Icon(Icons.slideshow, color: AppConstants.todoColor),
               );
             } else {
-              item.seriesLen = item.seriesLen - 1;
+              item.seriesProgress = item.seriesProgress + 1;
               _snackBarMsg(
-                "${item.seriesLen} occurrences left in series",
+                "${item.seriesProgress}/${item.seriesLen} completed",
                 Icon(Icons.slideshow, color: AppConstants.todoColor),
               );
             }

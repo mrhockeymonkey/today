@@ -1,26 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:localstorage/localstorage.dart';
-import 'dart:convert';
-//import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jiffy/jiffy.dart';
 
 import '../models/todo_item.dart';
 import '../models/app_constants.dart';
 import './category.dart';
-import 'package:jiffy/jiffy.dart';
 
 class AppState extends Model {
   // for now we just declare categories here until we can save data to phone
   List<Category> _categories = [];
   Map<int, ToDoItem> _goals = {};
-  Map<String, dynamic> _goalItemIds = {}; // json serializable
-  Map<int, String> _goalsMap = {};
+  int _defaultCategoryIndex;
 
   final LocalStorage storage = new LocalStorage('today_app');
 
   // getter for categories
   List<Category> get categories {
     return List.from(_categories);
+  }
+
+  int get defaultCategoryIndex {
+    return _defaultCategoryIndex;
+  }
+
+  void setDefaultCategory(int categoryIndex) {
+    _defaultCategoryIndex = categoryIndex;
+    saveToStorage();
   }
 
   // getter for all items across all categories
@@ -33,17 +39,50 @@ class AppState extends Model {
   }
 
   //
-  List<ToDoItem> get allToDoAndDueItems {
+  List<ToDoItem> get allToDoItems {
     List<ToDoItem> _items = [];
     for (var c in _categories) {
-      _items.addAll(c.itemsScheduledNowDue + c.itemsToDo);
+      _items.addAll(c.itemsToDo);
     }
     return _items;
   }
 
   //
+  List<ToDoItem> get allToDoItemsExcludingGoals {
+    List<ToDoItem> _items = allToDoItems;
+    _goals.entries.forEach((element) {
+      _items.remove(element.value);
+    });
+    return _items;
+  }
+
+  //
+  List<ToDoItem> get allDueItems {
+    List<ToDoItem> _items = [];
+    for (var c in _categories) {
+      _items.addAll(c.itemsScheduledNowDue);
+    }
+    return _items;
+  }
+
+  //
+  List<ToDoItem> get allDueItemsExcludingGoals {
+    List<ToDoItem> _items = allDueItems;
+    _goals.entries.forEach((element) {
+      _items.remove(element.value);
+    });
+    return _items;
+  }
+
+  //
   List<ToDoItem> get allToDoAndDueItemsExcludingGoals {
-    List<ToDoItem> _items = allToDoAndDueItems;
+    List<ToDoItem> _items = [];
+    for (var c in _categories) {
+      _items.addAll(c.itemsScheduledNowDue);
+    }
+    for (var c in _categories) {
+      _items.addAll(c.itemsToDo);
+    }
     _goals.entries.forEach((element) {
       _items.remove(element.value);
     });
@@ -104,7 +143,6 @@ class AppState extends Model {
   //
   ToDoItem getGoalItem(int goalIndex) {
     if (_goals.containsKey(goalIndex)) {
-      var itemId = _goalItemIds[goalIndex];
       return _goals[goalIndex];
     } else {
       return null;
@@ -151,8 +189,10 @@ class AppState extends Model {
   void updateCategoryName({
     @required int categoryIndex,
     @required String newName,
+    @required String newIconName,
   }) {
     _categories[categoryIndex].name = newName;
+    _categories[categoryIndex].iconName = newIconName;
     saveToStorage();
   }
 
@@ -214,6 +254,7 @@ class AppState extends Model {
       "version": 2,
       "goals": {},
       "categories": [],
+      "default_category": _defaultCategoryIndex
     };
 
     Map<String, dynamic> jsonEncodedGoals = {};
@@ -221,11 +262,6 @@ class AppState extends Model {
       jsonEncodedGoals[key.toString()] = value.id;
     });
     appData["goals"] = jsonEncodedGoals;
-
-    // _goalItemIds.entries.forEach((element) { })
-    // _goalItemIds.forEach((id) {
-    //   appData["goalItemIds"].add(id);
-    // });
 
     _categories.forEach((item) {
       appData["categories"].add(item.toJsonEncodable());
@@ -247,12 +283,26 @@ class AppState extends Model {
       int intTomorrow = ToDoItem.toSortableDate(tomorrow);
 
       _categories
-        ..add(Category(name: "MUST DO", color: AppConstants.categoryColors[0]))
-        ..add(Category(name: "WANT TO", color: AppConstants.categoryColors[1]))
-        ..add(
-            Category(name: "SHOULD DO", color: AppConstants.categoryColors[2]))
-        ..add(Category(name: "COULD DO", color: AppConstants.categoryColors[3]))
-        ..add(Category(name: "FYI", color: AppConstants.categoryColors[4]));
+        ..add(Category(
+            name: "MUST DO",
+            color: AppConstants.categoryColors[0],
+            iconName: "flag"))
+        ..add(Category(
+            name: "WANT TO",
+            color: AppConstants.categoryColors[1],
+            iconName: "game_controller"))
+        ..add(Category(
+            name: "SHOULD DO",
+            color: AppConstants.categoryColors[2],
+            iconName: "pin"))
+        ..add(Category(
+            name: "COULD DO",
+            color: AppConstants.categoryColors[3],
+            iconName: "pin"))
+        ..add(Category(
+            name: "FYI",
+            color: AppConstants.categoryColors[4],
+            iconName: "pin"));
       _categories[0]
         ..addItem(ToDoItem.custom(title: 'Up To 5 Items Can Be Displayed Here'))
         ..addItem(ToDoItem(title: 'These Are The Rest Of Your Todo Items'));
@@ -275,14 +325,22 @@ class AppState extends Model {
       _goals[1] = _categories[1].items[0];
       _goals[2] = _categories[2].items[0];
 
+      _defaultCategoryIndex = 2;
+
       saveToStorage();
     } else {
       print("AppState.initialize: App data found, loading from local storage");
       _categories.clear();
 
+      _defaultCategoryIndex = appData['default_category'] ?? 2;
+
       // loads items into categories
       appData["categories"].forEach((i) {
-        Category c = Category(name: i['name'], color: Color(i['color']));
+        Category c = Category(
+          name: i['name'],
+          color: Color(i['color']),
+          iconName: i['iconName'] ?? "pin",
+        );
         List l = i['items'];
         l.forEach((j) {
           ToDoItem item = ToDoItem.fromStorage(
@@ -294,6 +352,7 @@ class AppState extends Model {
             repeatNum: j['repeatNum'] ?? 0,
             repeatLen: j['repeatLen'] ?? 'days',
             seriesLen: j['seriesLen'] ?? 0,
+            seriesProgress: j['seriesProgress'] ?? 0,
           );
           c.addItem(item);
         });

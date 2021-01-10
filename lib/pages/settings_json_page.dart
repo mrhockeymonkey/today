@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import '../models/app_state.dart';
-import '../models/category.dart';
 import '../models/app_constants.dart';
 
 class SettingsJsonPage extends StatefulWidget {
@@ -14,8 +13,6 @@ class SettingsJsonPage extends StatefulWidget {
 }
 
 class _SettingsJsonPageState extends State<SettingsJsonPage> {
-  TextEditingController _textFieldController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,9 +27,7 @@ class _SettingsJsonPageState extends State<SettingsJsonPage> {
 
   _buildBody() {
     AppState appState = ScopedModel.of<AppState>(context);
-    var a = appState.getJson();
-    //print(a);
-    //List<Category> categories = appState.categories;
+    var json = appState.getJson();
 
     return Column(
       children: <Widget>[
@@ -42,41 +37,13 @@ class _SettingsJsonPageState extends State<SettingsJsonPage> {
             style: TextStyle(color: Colors.white),
           ),
           color: AppConstants.appBarColor,
-          onPressed: () => {
-            Clipboard.setData(ClipboardData(text: a)),
-            print("copied to clipboard")
+          onPressed: () {
+            Clipboard.setData(ClipboardData(text: json));
+            print("copied to clipboard");
           },
         ),
-        Text(a),
+        Text(json),
       ],
     );
-    // return Container(
-    //   children:
-    //   //child: Text(a)
-    //   //child: TextBox.fromLTRBD(left, top, right, bottom, direction)
-
-    // );
   }
-
-  // _displayDialog(BuildContext context) async {
-  //   return showDialog(
-  //       context: context,
-  //       builder: (context) {
-  //         return AlertDialog(
-  //           title: Text('TextField in Dialog'),
-  //           content: TextField(
-  //             controller: _textFieldController,
-  //             decoration: InputDecoration(hintText: "TextField in Dialog"),
-  //           ),
-  //           actions: <Widget>[
-  //             new FlatButton(
-  //               child: new Text('CANCEL'),
-  //               onPressed: () {
-  //                 Navigator.of(context).pop();
-  //               },
-  //             )
-  //           ],
-  //         );
-  //       });
-  // }
 }

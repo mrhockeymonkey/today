@@ -7,7 +7,6 @@ import '../widgets/note_header.dart';
 import '../models/app_state.dart';
 import '../models/todo_item.dart';
 import '../widgets/tdl_base.dart';
-import '../widgets/highlighted_today.dart';
 import '../widgets/tdl_done.dart';
 import './settings_page.dart';
 
@@ -85,7 +84,7 @@ class _CompletedPageState extends State<CompletedPage> {
                   ),
                 ),
                 TdlDone(
-                  items: completedItems,
+                  items: completedTodayItems,
                   pageType: PageType.completed,
                 ),
                 SliverList(
@@ -100,7 +99,7 @@ class _CompletedPageState extends State<CompletedPage> {
                   ),
                 ),
                 TdlDone(
-                  items: completedTodayItems,
+                  items: completedItems,
                   pageType: PageType.completed,
                 ),
               ],

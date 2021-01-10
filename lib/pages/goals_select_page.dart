@@ -46,7 +46,7 @@ class _ItemSelectPage extends State<ItemSelectPage> {
         return ListTile(
           title: Text(item.title),
           leading: Icon(
-            AppConstants.categoryIcons[categoryIndex],
+            AppConstants.icons[category.iconName],
             color: category.color,
           ),
           subtitle: Text(

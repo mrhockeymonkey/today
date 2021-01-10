@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
+import '../widgets/checkbox_picker.dart';
 import '../models/app_state.dart';
 import '../models/category.dart';
 import '../models/app_constants.dart';
+import '../widgets/icon_picker.dart';
 
 class SettingsCategoriesPage extends StatefulWidget {
   @override
@@ -14,13 +16,6 @@ class SettingsCategoriesPage extends StatefulWidget {
 
 class _SettingsCategoriesPageState extends State<SettingsCategoriesPage> {
   TextEditingController _textFieldController = TextEditingController();
-  final List<String> nameHints = [
-    "MUST DO",
-    "WANT TO",
-    "SHOULD DO",
-    "COULD DO",
-    "FYI"
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +26,17 @@ class _SettingsCategoriesPageState extends State<SettingsCategoriesPage> {
         elevation: 0.0,
       ),
       body: _buildBody(),
+      floatingActionButton: _buildFab(),
+    );
+  }
+
+  Widget _buildFab() {
+    return FloatingActionButton(
+      child: Icon(Icons.done),
+      backgroundColor: AppConstants.appBarColor,
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
     );
   }
 
@@ -49,8 +55,12 @@ class _SettingsCategoriesPageState extends State<SettingsCategoriesPage> {
             color: category.color,
             elevation: 0.0,
             child: ListTile(
-              leading: Icon(AppConstants.categoryIcons[categoryIndex]),
+              isThreeLine: true,
+              leading: Icon(AppConstants.icons[category.iconName]),
               title: Text(category.name),
+              subtitle: appState.defaultCategoryIndex == index
+                  ? Text("Default")
+                  : Text(""),
               trailing: IconButton(
                 icon: Icon(Icons.edit),
                 onPressed: () => _displayDialog(context, categoryIndex),
@@ -66,15 +76,58 @@ class _SettingsCategoriesPageState extends State<SettingsCategoriesPage> {
     AppState appState = ScopedModel.of<AppState>(context);
     _textFieldController.clear();
     Category thisCategory = appState.categories[categoryIndex];
+    String currentCategoryName = thisCategory.name;
+    String currentIconName = thisCategory.iconName;
+    bool isDefaultCategory = false;
 
     return showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text('Category Name'),
-            content: TextField(
-              controller: _textFieldController,
-              decoration: InputDecoration(hintText: nameHints[categoryIndex]),
+            title: Text('Edit Category'),
+            content: Column(
+              children: [
+                Row(
+                  children: [
+                    Text("Name:"),
+                    FittedBox(),
+                  ],
+                ),
+                TextField(
+                  controller: _textFieldController,
+                  decoration: InputDecoration(hintText: currentCategoryName),
+                  onChanged: (String newName) {
+                    currentCategoryName = newName;
+                  },
+                ),
+                Container(
+                  height: 20,
+                ),
+                Row(
+                  children: [
+                    Text("Icon:"),
+                    FittedBox(),
+                  ],
+                ),
+                IconPicker((String newIconName) {
+                  currentIconName = newIconName;
+                }),
+                Container(
+                  height: 20,
+                ),
+                Row(
+                  children: [
+                    Text("Default:"),
+                    FittedBox(),
+                  ],
+                ),
+                CheckboxPicker(
+                  initialValue: isDefaultCategory,
+                  updateValue: (bool newValue) {
+                    isDefaultCategory = newValue;
+                  },
+                ),
+              ],
             ),
             actions: <Widget>[
               new FlatButton(
@@ -83,7 +136,11 @@ class _SettingsCategoriesPageState extends State<SettingsCategoriesPage> {
                   setState(() {
                     appState.updateCategoryName(
                         categoryIndex: categoryIndex,
-                        newName: _textFieldController.text.toUpperCase());
+                        newName: currentCategoryName.toUpperCase(),
+                        newIconName: currentIconName);
+                    if (isDefaultCategory) {
+                      appState.setDefaultCategory(categoryIndex);
+                    }
                     Navigator.of(context).pop();
                   });
                 },

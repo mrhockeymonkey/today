@@ -2,13 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-import 'models/app_state.dart';
-//import 'models/app_constants.dart';
+import './models/app_state.dart';
 import './models/app_constants.dart';
-//import 'package:flutter/services.dart';
-import 'pages/home_widget.dart';
-//import 'pages/category_page.dart';
-import 'models/category.dart';
+import './pages/home_widget.dart';
 
 class MyApp extends StatelessWidget {
   @override

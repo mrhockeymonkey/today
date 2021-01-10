@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-//import '../pages/settings_json.dart';
 
 import './settings_categories_page.dart';
 import './settings_json_page.dart';
@@ -45,7 +44,6 @@ class _SettingsPageState extends State<SettingsPage> {
                           builder: (context) => SettingsJsonPage()));
                 },
               ),
-              // Categories
               ListTile(
                 leading: Icon(
                   Icons.category,

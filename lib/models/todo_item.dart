@@ -11,6 +11,7 @@ class ToDoItem {
   int repeatNum = 0;
   String repeatLen = 'days';
   int seriesLen = 0;
+  int seriesProgress = 0;
 
   ToDoItem({
     @required this.title,
@@ -34,12 +35,12 @@ class ToDoItem {
     @required this.repeatNum,
     @required this.repeatLen,
     @required this.seriesLen,
+    @required this.seriesProgress,
   });
 
   //--------- helper methods for conditionals
   bool get isScheduled {
     // if the scheduledDate value is anything but 0 consider it to be scheduled
-    //if (_scheduledDate.millisecondsSinceEpoch > 0 && !isComplete) {
     if (scheduledDate > 0 && !isComplete) {
       return true;
     } else {
@@ -66,33 +67,13 @@ class ToDoItem {
   bool get isDue {
     // if the scheduledDate is in the past then consider it to be due
     var todaysDate = ToDoItem.toSortableDate(DateTime.now());
-    //var scheduledSortable = ToDoItem.toSortableDate(_scheduledDate);
-    //var zero = DateTime.fromMillisecondsSinceEpoch(0);
 
-    //if (scheduledSortable.isBefore(nowSortable) && _scheduledDate != zero) {
     if (scheduledDate <= todaysDate && scheduledDate > 0) {
       return true;
     } else {
       return false;
     }
   }
-
-  // Overdue is too aggressive a concept
-  // bool get isOverDue {
-  //   // calculate the difference in time from now
-  //   // done using sortable integer of format yyyymmdd
-  //   if (!isScheduled) {
-  //     return false;
-  //   } else {
-  //     var todaysDate = ToDoItem.toSortableDate(DateTime.now());
-
-  //     if (scheduledDate < todaysDate) {
-  //       return true;
-  //     } else {
-  //       return false;
-  //     }
-  //   }
-  // }
 
   int get daysOverdue {
     DateTime now = DateTime.now();
@@ -133,6 +114,7 @@ class ToDoItem {
     m['repeatNum'] = repeatNum;
     m['repeatLen'] = repeatLen;
     m['seriesLen'] = seriesLen;
+    m['seriesProgress'] = seriesProgress;
 
     return m;
   }

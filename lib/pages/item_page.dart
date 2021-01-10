@@ -167,6 +167,9 @@ class _ItemPageState extends State<ItemPage> {
                   style: TextStyle(
                     decoration: TextDecoration.none,
                   ),
+                  decoration: InputDecoration(
+                    hintText: _formData['itemSeriesLen'].toString(),
+                  ),
                   textAlign: TextAlign.center,
                   maxLines: 1,
                   maxLengthEnforced: false,
@@ -179,17 +182,10 @@ class _ItemPageState extends State<ItemPage> {
                       _formData['itemSeriesLen'] = inputParsed;
                     });
                   },
-                  // onSubmitted: (String text) {
-                  //   int numberInput = int.parse(text);
-                  //   setState(() {
-                  //     _formData['itemSeriesLen'] = numberInput;
-                  //   });
-                  //   Navigator.of(context).pop();
-                  // },
                 ),
               ),
               Expanded(
-                child: Text(" occurrences left"),
+                child: Text(" occurrences"),
               )
             ],
           ),
@@ -356,7 +352,7 @@ class _ItemPageState extends State<ItemPage> {
           title: Text("Series"),
           subtitle: _formData['itemSeriesLen'] == 0
               ? Text("Set number occurences (or episodes)")
-              : Text("${_formData['itemSeriesLen']} occurences left"),
+              : Text("${_formData['itemSeriesLen']} occurences"),
           onTap: _selectSeries,
         )
       ],
@@ -423,8 +419,5 @@ class _ItemPageState extends State<ItemPage> {
         );
       },
     );
-
-    // Category category =
-    //     ScopedModel.of<AppState>(context).categories[widget.categoryIndex];
   }
 }

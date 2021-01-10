@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '../models/app_constants.dart';
 import '../pages/later_page.dart';
 import '../pages/today_page.dart';
 import '../pages/completed_page.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 
 class Home extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    //FlutterStatusbarcolor.setStatusBarColor(Color(0xFF6A88BA));
     return _HomeState();
   }
 }
@@ -22,12 +19,6 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     print("BUILD - home_widget");
     AppConstants.changeStatusColor(Colors.transparent);
-    //AppConstants.changeNavBarColor(AppConstants.todayHeaderColor);
-    // a navigator key to for use with CategoryNavigator
-    //final navigatorKey = GlobalKey<NavigatorState>();
-
-    //var mySystemTheme = SystemUiOverlayStyle.light.copyWith(systemNavigationBarColor: AppConstants.todayHeaderColor);
-    //SystemChrome.setSystemUIOverlayStyle(mySystemTheme);
 
     // a list of pages to display per nav bar item
     final _pages = [
@@ -39,10 +30,6 @@ class _HomeState extends State<Home> {
 
     // a list of nav bar items
     final List<BottomNavigationBarItem> _bottomNavigationBarItems = [
-      // BottomNavigationBarItem(
-      //   icon: Icon(Icons.list),
-      //   title: Text('Backlog'),
-      // ),
       BottomNavigationBarItem(
         icon: Icon(Icons.today),
         label: 'Scheduled',
@@ -58,9 +45,7 @@ class _HomeState extends State<Home> {
     ];
 
     return WillPopScope(
-      onWillPop: () {
-        print("back pressed");
-      },
+      onWillPop: () async => false, // dont allow user to pop on home screen
       child: Scaffold(
         body: _pages.elementAt(_currentIndex),
         bottomNavigationBar: BottomNavigationBar(
@@ -68,22 +53,11 @@ class _HomeState extends State<Home> {
           currentIndex: _currentIndex,
           type: BottomNavigationBarType.fixed,
           items: _bottomNavigationBarItems,
-          fixedColor:
-              AppConstants.todayHeaderColor, //AppConstants.highlightColor,
+          fixedColor: AppConstants.todayHeaderColor,
           selectedFontSize: 18.0,
-          //backgroundColor: AppConstants.todayHeaderColor,
         ),
       ),
     );
-    // return Scaffold(
-    //   body: _pages.elementAt(_currentIndex),
-    //   bottomNavigationBar: BottomNavigationBar(
-    //     onTap: onTabTapped,
-    //     currentIndex: _currentIndex,
-    //     type: BottomNavigationBarType.fixed,
-    //     items: _bottomNavigationBarItems,
-    //   ),
-    // );
   }
 
   // updates displayed page based on selected nav bar item

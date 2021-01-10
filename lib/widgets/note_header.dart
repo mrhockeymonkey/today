@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import '../models/app_constants.dart';
 
 class NoteHeader extends StatelessWidget {
-  String text;
-  Color backgroundColor;
-  Color textColor;
+  final String text;
+  final Color backgroundColor;
+  final Color textColor;
 
-  NoteHeader({
+  const NoteHeader({
     @required this.text,
     this.backgroundColor = Colors.grey,
-    this.textColor = Colors.black
+    this.textColor = Colors.black,
   });
 
   @override

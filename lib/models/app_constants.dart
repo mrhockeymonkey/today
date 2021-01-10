@@ -16,11 +16,10 @@ class AppConstants extends InheritedWidget {
   static final Color laterColor = Colors.grey;
 
   // page header colors
-  static final Color laterHeaderColor = Color(0xFF07618E); //Color(0xFF23395B);
-  static final Color todoHeaderColor = Color(0xFF07618E); //Color(0xFF214D7A);
+  static final Color laterHeaderColor = Color(0xFF07618E);
+  static final Color todoHeaderColor = Color(0xFF07618E);
   static final Color todayHeaderColor = Color(0xFF07618E);
-  static final Color completedHeaderColor =
-      Color(0xFF07618E); //Color(0xFF247BA0);
+  static final Color completedHeaderColor = Color(0xFF07618E);
   static final Color highlightColor = Color(0xFF37C7CB);
 
   static final double cirleAvatarRadius = 28.0;
@@ -35,13 +34,24 @@ class AppConstants extends InheritedWidget {
     const Color(0xFF9E9E9E) // fyi
   ];
 
-  static final List<IconData> categoryIcons = [
-    Entypo.flag, //must do
-    Entypo.game_controller, //want to
-    Entypo.pin, //should do
-    Entypo.pin, //could do
-    Entypo.pin //fyi
-  ];
+  static final Map<String, IconData> icons = {
+    "flag": Entypo.flag,
+    "game_controller": Entypo.game_controller,
+    "pin": Entypo.pin,
+    "code": Entypo.code,
+    "book": Entypo.book,
+    "credit": Entypo.credit,
+    "credit_card": Entypo.credit_card,
+    "graduation_cap": Entypo.graduation_cap,
+    "help": Entypo.help,
+    "home": Entypo.home,
+    "info": Entypo.info,
+    "language": Entypo.language,
+    "leaf": Entypo.leaf,
+    "shopping_cart": Entypo.shopping_cart,
+    "star": Entypo.star,
+    "tools": Entypo.tools,
+  };
 
   final RouteObserver<Route> routeObserver = new RouteObserver<Route>();
 
@@ -51,7 +61,7 @@ class AppConstants extends InheritedWidget {
   bool updateShouldNotify(InheritedWidget oldWidget) => true;
 
   static AppConstants of(BuildContext context) =>
-      context.inheritFromWidgetOfExactType(AppConstants);
+      context.dependOnInheritedWidgetOfExactType<AppConstants>();
 
   static changeStatusColor(Color color) async {
     print("changing status bar color to " + color.toString());

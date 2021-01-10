@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 
 import '../models/todo_item.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 
 class Category {
   String name;
   final Color color;
+  String iconName;
   List<ToDoItem> _items = [];
 
   Category({
     @required this.name,
     @required this.color,
+    @required this.iconName,
   });
 
   List<ToDoItem> get items {
@@ -20,18 +21,6 @@ class Category {
   int get leftToDoCount {
     return _items.where((i) => i.isComplete == false).length;
   }
-
-  // getter for all items sorted by today,todo,done
-  // List<ToDoItem> get itemsSorted {
-  //   List<ToDoItem> _itemsTodo = _items
-  //       .where((i) => (i.isComplete == false))
-  //       .toList();
-  //   List<ToDoItem> _itemsDone =
-  //       _items.where((i) => i.isComplete == true).toList();
-  //   List<ToDoItem> _itemsSorted =
-  //       [_itemsTodoToday, _itemsTodo, _itemsDone].expand((x) => x).toList();
-  //   return _itemsSorted;
-  // }
 
   // getter for all todo items
   List<ToDoItem> get itemsToDo {
@@ -105,6 +94,7 @@ class Category {
 
     m['name'] = name;
     m['color'] = color.value;
+    m['iconName'] = iconName;
     m['items'] = _items.map((i) => i.toJsonEncodable()).toList();
 
     return m;
